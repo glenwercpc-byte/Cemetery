@@ -9,7 +9,7 @@
  */
 
 // ⚠️ 배포 후 이 줄을 본인의 Apps Script 웹앱 URL로 교체하세요. (SETUP.md 참고)
-const GAS_WEB_APP_URL = ''; // 예: 'https://script.google.com/macros/s/AKfycb.../exec'
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx_rg95yqYiOW648SCmNgMoGXy1l6ErtkDqTwtnbaH0wTBNaM_j4ynHiaLY_CX90x8BlQ/exec'; // 예: 'https://script.google.com/macros/s/AKfycb.../exec'
 
 const STATUS_LABELS = { A: 'Available', R: 'Reserved', C: 'To Be Confirmed', U: 'Used', X: '특이사항' };
 
