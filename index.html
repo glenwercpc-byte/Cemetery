@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCPC 묘지 관리 시스템</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-title">
+    <span class="mark">⛪ CCPC 묘지 관리</span>
+    <span class="sub">Chicago Covenant Presbyterian Church · Cemetery Records</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn" id="btnSync" title="Google Sheets에서 새로고침">⟳ 새로고침</button>
+    <button class="btn btn-sage" id="btnNewEntry">+ 신규 등록</button>
+    <button class="btn btn-ghost" id="btnAdminToggle">⚙ 관리자 모드</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <div id="adminBanner" class="admin-toggle-banner" style="display:none;">
+    <span>🔓 관리자 모드 — 클릭으로 직접 수정 / 삭제할 수 있습니다.</span>
+    <button class="btn btn-sm" id="btnAdminOff">끄기</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="section-switch">
+      <div class="chip active" data-section="16">Section 16</div>
+      <div class="chip" data-section="15">Section 15</div>
+      <div class="chip" data-section="all">전체</div>
+    </div>
+
+    <div class="search-box">
+      <span class="icon">🔎</span>
+      <input type="text" id="searchInput" placeholder="이름, Lot, 슬롯 번호로 검색...">
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="tabs" id="viewTabs">
+      <div class="tab active" data-view="map">🗺 지도뷰</div>
+      <div class="tab" data-view="table">📋 표뷰</div>
+      <div class="tab" data-view="stats">📊 통계</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch A"></span> Available (사용 가능)</div>
+    <div class="legend-item"><span class="swatch R"></span> Reserved (예약됨)</div>
+    <div class="legend-item"><span class="swatch C"></span> To Be Confirmed (확인 필요)</div>
+    <div class="legend-item"><span class="swatch U"></span> Used (사용중/확정)</div>
+    <span class="muted" id="lastSync"></span>
+  </div>
+
+  <!-- ===================== MAP VIEW ===================== -->
+  <div id="viewMap">
+    <div class="map-wrap" id="mapContainer">
+      <div class="loading-spinner"></div> 데이터 불러오는 중...
+    </div>
+  </div>
+
+  <!-- ===================== TABLE VIEW ===================== -->
+  <div id="viewTable" style="display:none;">
+    <div class="table-wrap">
+      <table class="data-table" id="dataTable">
+        <thead>
+          <tr>
+            <th data-sort="section">Section</th>
+            <th data-sort="lot">Lot</th>
+            <th data-sort="slot_no">Slot</th>
+            <th data-sort="status">상태</th>
+            <th data-sort="name">이름</th>
+            <th data-sort="lot_price">묘지값</th>
+            <th data-sort="funeral_cost">장례비</th>
+            <th data-sort="payment_status">납부상태</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===================== STATS VIEW ===================== -->
+  <div id="viewStats" style="display:none;">
+    <div class="stats-bar" id="statsBar"></div>
+    <div id="statsDetail" class="table-wrap" style="padding:20px;"></div>
+  </div>
+
+</div>
+
+<!-- ===================== Slot Detail / Edit Modal ===================== -->
+<div class="overlay" id="modalOverlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">묘지 정보</h3>
+      <button class="close-x" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="layout.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
