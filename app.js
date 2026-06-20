@@ -21,7 +21,6 @@ let STATE = {
   isAdmin: false,
   sortKey: null,
   sortDir: 1,
-  page16: 0,          // Section 16 지도뷰 페이지 (0,1,2 = 1/3,2/3,3/3)
   settings: { default_lot_price: { value: '3000' }, default_funeral_cost: { value: '1500' } },
 };
 
@@ -181,133 +180,50 @@ function render() {
 
 // ===================================================================
 // 지도뷰 (Map View)
-// 전체 화면을 Section16(좌) / Section15(우) 반반으로 채웁니다.
-// 특정 section만 선택하면 그 section이 화면 전체를 채웁니다.
-// Section 16은 가로로 넓어 3페이지로 나누고 ◀▶ 로 이동합니다.
 // ===================================================================
 function renderMap() {
   const container = document.getElementById('mapContainer');
-  container.innerHTML = '';
 
   if (STATE.bySection === 'all') {
-    container.className = 'map-split';
-    const left = buildSectionPane('16', true);
-    const right = buildSectionPane('15', true);
-    container.appendChild(left);
-    container.appendChild(right);
-  } else {
-    container.className = 'map-single';
-    container.appendChild(buildSectionPane(STATE.bySection, false));
+    container.innerHTML = '';
+    ['16', '15'].forEach(sec => {
+      const wrap = document.createElement('div');
+      wrap.style.marginBottom = '32px';
+      wrap.innerHTML = `<div class="map-direction-label">${SECTION_LAYOUTS[sec].label}</div>`;
+      wrap.appendChild(buildSectionGrid(sec));
+      container.appendChild(wrap);
+    });
+    return;
   }
+
+  const sec = STATE.bySection;
+  container.innerHTML = '';
+  const dirLabel = document.createElement('div');
+  dirLabel.className = 'map-direction-label';
+  dirLabel.textContent = SECTION_LAYOUTS[sec].label + (STATE.search ? ` · "${STATE.search}" 검색결과 강조` : '');
+  container.appendChild(dirLabel);
+  container.appendChild(buildSectionGrid(sec));
 }
 
-function buildSectionPane(sec, isHalf) {
+function buildSectionGrid(sec) {
   const layout = SECTION_LAYOUTS[sec];
-  const pane = document.createElement('div');
-  pane.className = 'map-pane' + (isHalf ? ' half' : '');
-
-  const header = document.createElement('div');
-  header.className = 'map-pane-header';
-
-  const title = document.createElement('div');
-  title.className = 'map-direction-label';
-  title.textContent = layout.label + (STATE.search ? ` · "${STATE.search}" 검색결과 강조` : '');
-  header.appendChild(title);
-
-  if (isHalf && !layout.pages) {
-    const scrollTag = document.createElement('div');
-    scrollTag.className = 'half-scroll-tag';
-    scrollTag.textContent = '↔ 스크롤';
-    header.appendChild(scrollTag);
-  }
-
-  // Section 16 페이지네이션 컨트롤 (◀ 1/3 ▶ 식)
-  if (layout.pages) {
-    const nav = document.createElement('div');
-    nav.className = 'page-nav';
-
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'page-nav-btn';
-    prevBtn.textContent = '◀';
-    prevBtn.disabled = STATE.page16 === 0;
-    prevBtn.addEventListener('click', () => { STATE.page16 = Math.max(0, STATE.page16 - 1); renderMap(); });
-
-    const label = document.createElement('div');
-    label.className = 'page-nav-label';
-    label.textContent = layout.pages[STATE.page16].label;
-
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'page-nav-btn';
-    nextBtn.textContent = '▶';
-    nextBtn.disabled = STATE.page16 === layout.pages.length - 1;
-    nextBtn.addEventListener('click', () => { STATE.page16 = Math.min(layout.pages.length - 1, STATE.page16 + 1); renderMap(); });
-
-    nav.appendChild(prevBtn);
-    nav.appendChild(label);
-    nav.appendChild(nextBtn);
-    header.appendChild(nav);
-  }
-
-  pane.appendChild(header);
-
-  const scrollArea = document.createElement('div');
-  scrollArea.className = 'map-pane-body';
-  const colRange = layout.pages ? layout.pages[STATE.page16] : null;
-  scrollArea.appendChild(buildSectionGrid(sec, colRange));
-  pane.appendChild(scrollArea);
-
-  return pane;
-}
-
-function buildSectionGrid(sec, colRange) {
-  const layout = SECTION_LAYOUTS[sec];
-  const colStart = colRange ? colRange.colStart : 1;
-  const colEnd = colRange ? colRange.colEnd : layout.gridCols;
-  const visibleCols = colEnd - colStart + 1;
-
-  // 이 페이지(컬럼 구간)에 실제로 보일 lot들만 골라서, 실제 사용되는 row 번호만 모아 압축
-  // (완전히 빈 줄은 제거하고 화면을 고르게 채움)
-  const visibleLots = layout.lots.filter(lotDef => {
-    const lotColEnd = lotDef.col + lotDef.colSpan - 1;
-    return !(lotDef.col > colEnd || lotColEnd < colStart);
-  });
-  const usedRowsSet = new Set();
-  visibleLots.forEach(l => {
-    for (let r = l.row; r < l.row + l.rowSpan; r++) usedRowsSet.add(r);
-  });
-  let usedRows = Array.from(usedRowsSet).sort((a, b) => a - b);
-  if (usedRows.length === 0) usedRows = Array.from({ length: layout.gridRows }, (_, i) => i + 1);
-  const rowIndexMap = {}; // 원본 row 번호 → 압축된 1-based row 번호
-  usedRows.forEach((r, idx) => { rowIndexMap[r] = idx + 1; });
-  const visibleRows = usedRows.length;
-
   const grid = document.createElement('div');
   grid.className = 'lot-grid';
-  grid.style.gridTemplateColumns = `repeat(${visibleCols}, 1fr)`;
-  grid.style.gridTemplateRows = `repeat(${visibleRows}, 1fr)`;
+  grid.style.gridTemplateColumns = `repeat(${layout.gridCols}, minmax(54px, 1fr))`;
+  grid.style.gridTemplateRows = `repeat(${layout.gridRows}, auto)`;
 
   const searchQ = STATE.search.trim().toLowerCase();
-  const seenLots = new Set(); // 같은 lot이 여러 줄(row)로 나뉜 경우, 라벨은 처음 한 번만 표시
 
-  visibleLots.forEach(lotDef => {
-    const adjCol = lotDef.col - colStart + 1;
-    const adjRowStart = rowIndexMap[lotDef.row];
-    const adjRowEnd = rowIndexMap[lotDef.row + lotDef.rowSpan - 1];
-    const adjRowSpan = adjRowEnd - adjRowStart + 1;
-    const isContinuation = seenLots.has(lotDef.lot);
-    seenLots.add(lotDef.lot);
-
+  layout.lots.forEach(lotDef => {
     const block = document.createElement('div');
-    block.className = 'lot-block' + (isContinuation ? ' lot-block-continuation' : '');
-    block.style.gridColumn = `${adjCol} / span ${lotDef.colSpan}`;
-    block.style.gridRow = `${adjRowStart} / span ${adjRowSpan}`;
+    block.className = 'lot-block';
+    block.style.gridColumn = `${lotDef.col} / span ${lotDef.colSpan}`;
+    block.style.gridRow = `${lotDef.row} / span ${lotDef.rowSpan}`;
 
-    if (!isContinuation) {
-      const labelEl = document.createElement('div');
-      labelEl.className = 'lot-block-label';
-      labelEl.textContent = lotDef.lot;
-      block.appendChild(labelEl);
-    }
+    const labelEl = document.createElement('div');
+    labelEl.className = 'lot-block-label';
+    labelEl.textContent = lotDef.lot;
+    block.appendChild(labelEl);
 
     const slotsWrap = document.createElement('div');
     slotsWrap.className = 'lot-slots';
@@ -335,7 +251,7 @@ function buildSectionGrid(sec, colRange) {
         cell.title = lotData && lotData.name ? `${lotDef.lot}-${slotNo}: ${lotData.name}` : `${lotDef.lot}-${slotNo}`;
         cell.innerHTML = `
           <div class="slot-no">${slotNo.replace(/[ab]$/,'')}</div>
-          ${lotData && lotData.name ? `<div class="slot-name">${escapeHtml(lotData.name)}</div>` : ''}
+          ${lotData && lotData.name ? `<div class="slot-name">${escapeHtml(truncate(lotData.name, 10))}</div>` : ''}
         `;
         cell.addEventListener('click', () => openSlotModal(sec, lotDef.lot, slotNo));
         slotsWrap.appendChild(cell);
