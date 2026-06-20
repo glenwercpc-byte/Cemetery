@@ -385,17 +385,18 @@ a { color: inherit; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4px 4px;
+  justify-content: flex-start;
+  padding: 3px 2px;
   cursor: pointer;
   min-height: 0;
   min-width: 0;
   position: relative;
   transition: filter 0.1s;
+  overflow: hidden;
 }
 .slot-cell:hover { filter: brightness(0.96); z-index: 3; }
 .slot-cell .slot-no {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--ink-soft);
   font-family: var(--font-mono);
   line-height: 1.15;
@@ -406,12 +407,19 @@ a { color: inherit; }
   font-size: 12px;
   font-weight: 700;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
   max-width: 100%;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
   white-space: normal;
-  overflow-wrap: normal;
+  overflow: hidden;
   word-break: keep-all;
-  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
 }
 .slot-cell.status-A { background: var(--sage-bg-strong); }
 .slot-cell.status-R { background: var(--gold-bg-strong); }
