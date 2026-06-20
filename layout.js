@@ -81,6 +81,11 @@ const SECTION_LAYOUTS = {
     gridCols: 10,
     gridRows: 5,
     direction: { west: 'top', east: 'bottom', south: 'left' },
+    // Section 15도 한 화면에 다 들어가지만, Section16과 동일하게 페이지 분할 제공 (2분할)
+    pages: [
+      { label: '1/2', colStart: 1, colEnd: 5  },
+      { label: '2/2', colStart: 6, colEnd: 10 },
+    ],
     lots: [
       { lot:'286', col:1,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
       { lot:'285', col:2,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
