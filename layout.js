@@ -16,9 +16,16 @@ const SECTION_LAYOUTS = {
   // ===================== SECTION 16 =====================
   '16': {
     label: 'Section 16',
-    gridCols: 26,
-    gridRows: 13,
+    gridCols: 21,
+    gridRows: 9,
     direction: { west: 'top-left', east: 'bottom-right' },
+    // 16구역은 가로로 너무 넓어 한 화면에 다 안 들어옵니다.
+    // 3개 페이지로 나누고 ◀▶ 버튼으로 좌우 이동합니다. (컬럼 기준 구간)
+    pages: [
+      { label: '1/3', colStart: 1,  colEnd: 7  },
+      { label: '2/3', colStart: 8,  colEnd: 14 },
+      { label: '3/3', colStart: 15, colEnd: 21 },
+    ],
     lots: [
       // 최상단 작은 블록 (230,231,232) - 4슬롯씩
       { lot:'232', col:2,  row:1, colSpan:2, rowSpan:2, cols:2, slots:['1','2','3','4'] },
@@ -71,29 +78,43 @@ const SECTION_LAYOUTS = {
   // ===================== SECTION 15 =====================
   '15': {
     label: 'Section 15',
-    gridCols: 18,
+    gridCols: 10,
     gridRows: 5,
     direction: { west: 'top', east: 'bottom', south: 'left' },
     lots: [
-      { lot:'286', col:1,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'285', col:2,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'284', col:3,  row:1, colSpan:1, rowSpan:3, cols:4, slots:['51','52','53','54'] },
-      { lot:'283', col:4,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'282', col:5,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'281', col:6,  row:1, colSpan:1, rowSpan:3, cols:2, slots:['55','56'] },
-      { lot:'280', col:7,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'279', col:8,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
-      { lot:'278', col:9,  row:1, colSpan:1, rowSpan:3, cols:1, slots:[] },
+      { lot:'286', col:1,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'285', col:2,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'284', col:3,  row:1, colSpan:1, rowSpan:2, cols:4, slots:['51','52','53','54'] },
+      { lot:'283', col:4,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'282', col:5,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'281', col:6,  row:1, colSpan:1, rowSpan:2, cols:2, slots:['55','56'] },
+      { lot:'280', col:7,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'279', col:8,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
+      { lot:'278', col:9,  row:1, colSpan:1, rowSpan:2, cols:1, slots:[] },
 
-      { lot:'234', col:1, row:4, colSpan:2, rowSpan:1, cols:5, slots:['57','58','59','60','61','63','64','65','66','67','1','2','69','70'] },
-      { lot:'235', col:3, row:4, colSpan:1, rowSpan:1, cols:4, slots:['62','68','1b','2b','3b','71','72','73','74'] },
-      { lot:'236', col:4, row:4, colSpan:1, rowSpan:1, cols:4, slots:['31','32','4','5','6','7'] },
-      { lot:'237', col:5, row:4, colSpan:1, rowSpan:1, cols:4, slots:['33','34','35','8','9','10','11'] },
-      { lot:'238', col:6, row:4, colSpan:1, rowSpan:1, cols:4, slots:['36','37','38','39','12','13','14','15','75','76'] },
-      { lot:'239', col:7, row:4, colSpan:1, rowSpan:1, cols:5, slots:['40','41','16','17','18','19','20','77','78','79','80'] },
-      { lot:'240', col:8, row:4, colSpan:1, rowSpan:1, cols:4, slots:['43','44','45','21','22','23','24'] },
-      { lot:'241', col:9, row:4, colSpan:1, rowSpan:1, cols:3, slots:['46','47','25','26','27'] },
-      { lot:'242', col:10,row:4, colSpan:1, rowSpan:1, cols:3, slots:['48','49','50','28a','29','30'] },
+      // 234~242: 중간줄(row 4)과 아래줄(row 5)로 분리 — PDF 원본의 2단 구조를 반영
+      // 234
+      { lot:'234', col:1, row:4, colSpan:2, rowSpan:1, cols:5, slots:['57','58','59','60','61','63','64','65','66','67'] },
+      { lot:'234', col:1, row:5, colSpan:2, rowSpan:1, cols:4, slots:['1','2','69','70'] },
+      // 235
+      { lot:'235', col:3, row:4, colSpan:1, rowSpan:1, cols:4, slots:['62','68','1b','2b','3b'] },
+      { lot:'235', col:3, row:5, colSpan:1, rowSpan:1, cols:3, slots:['71','72','73','74'] },
+      // 236 (아래줄 없음)
+      { lot:'236', col:4, row:4, colSpan:1, rowSpan:2, cols:4, slots:['31','32','4','5','6','7'] },
+      // 237 (아래줄 없음)
+      { lot:'237', col:5, row:4, colSpan:1, rowSpan:2, cols:4, slots:['33','34','35','8','9','10','11'] },
+      // 238
+      { lot:'238', col:6, row:4, colSpan:1, rowSpan:1, cols:4, slots:['36','37','38','39','12','13','14','15'] },
+      { lot:'238', col:6, row:5, colSpan:1, rowSpan:1, cols:2, slots:['75','76'] },
+      // 239
+      { lot:'239', col:7, row:4, colSpan:1, rowSpan:1, cols:5, slots:['40','41','16','17','18','19','20'] },
+      { lot:'239', col:7, row:5, colSpan:1, rowSpan:1, cols:4, slots:['77','78','79','80'] },
+      // 240 (아래줄 없음)
+      { lot:'240', col:8, row:4, colSpan:1, rowSpan:2, cols:4, slots:['43','44','45','21','22','23','24'] },
+      // 241 (아래줄 없음)
+      { lot:'241', col:9, row:4, colSpan:1, rowSpan:2, cols:3, slots:['46','47','25','26','27'] },
+      // 242 (아래줄 없음)
+      { lot:'242', col:10,row:4, colSpan:1, rowSpan:2, cols:3, slots:['48','49','50','28a','29','30'] },
     ]
   }
 };
