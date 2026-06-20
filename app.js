@@ -21,7 +21,7 @@ let STATE = {
   isAdmin: false,
   sortKey: null,
   sortDir: 1,
-  page16: 0,          // Section 16 지도뷰 페이지 (0,1,2 = 1/3,2/3,3/3)
+  pageBySection: { '15': 0, '16': 0 },  // section별 지도뷰 페이지 위치
   settings: { default_lot_price: { value: '3000' }, default_funeral_cost: { value: '1500' } },
 };
 
@@ -215,7 +215,7 @@ function buildSectionPane(sec, isHalf) {
   title.textContent = layout.label + (STATE.search ? ` · "${STATE.search}" 검색결과 강조` : '');
   header.appendChild(title);
 
-  // Section 16 페이지네이션 컨트롤 (◀ 1/3 ▶ 식) — 단독모드/분할모드 모두 동일하게 표시
+  // 페이지네이션 컨트롤 (◀ 1/2, 1/3 등 식) — section마다 독립적인 페이지 위치 유지
   if (layout.pages) {
     const nav = document.createElement('div');
     nav.className = 'page-nav';
@@ -223,18 +223,24 @@ function buildSectionPane(sec, isHalf) {
     const prevBtn = document.createElement('button');
     prevBtn.className = 'page-nav-btn';
     prevBtn.textContent = '◀';
-    prevBtn.disabled = STATE.page16 === 0;
-    prevBtn.addEventListener('click', () => { STATE.page16 = Math.max(0, STATE.page16 - 1); renderMap(); });
+    prevBtn.disabled = STATE.pageBySection[sec] === 0;
+    prevBtn.addEventListener('click', () => {
+      STATE.pageBySection[sec] = Math.max(0, STATE.pageBySection[sec] - 1);
+      renderMap();
+    });
 
     const label = document.createElement('div');
     label.className = 'page-nav-label';
-    label.textContent = layout.pages[STATE.page16].label;
+    label.textContent = layout.pages[STATE.pageBySection[sec]].label;
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'page-nav-btn';
     nextBtn.textContent = '▶';
-    nextBtn.disabled = STATE.page16 === layout.pages.length - 1;
-    nextBtn.addEventListener('click', () => { STATE.page16 = Math.min(layout.pages.length - 1, STATE.page16 + 1); renderMap(); });
+    nextBtn.disabled = STATE.pageBySection[sec] === layout.pages.length - 1;
+    nextBtn.addEventListener('click', () => {
+      STATE.pageBySection[sec] = Math.min(layout.pages.length - 1, STATE.pageBySection[sec] + 1);
+      renderMap();
+    });
 
     nav.appendChild(prevBtn);
     nav.appendChild(label);
@@ -246,7 +252,7 @@ function buildSectionPane(sec, isHalf) {
 
   const scrollArea = document.createElement('div');
   scrollArea.className = 'map-pane-body';
-  const colRange = layout.pages ? layout.pages[STATE.page16] : null;
+  const colRange = layout.pages ? layout.pages[STATE.pageBySection[sec]] : null;
   scrollArea.appendChild(buildSectionGrid(sec, colRange));
   pane.appendChild(scrollArea);
 
