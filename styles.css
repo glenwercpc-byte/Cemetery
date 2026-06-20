@@ -257,54 +257,128 @@ a { color: inherit; }
 .stat.clay .num { color: var(--clay); }
 
 /* ===================================================================
-   지도뷰 (Map view)
+   지도뷰 (Map view) — 화면을 꽉 채우는 분할 레이아웃
    =================================================================== */
-.map-wrap {
+
+/* "전체" 모드: 좌우 반반 분할 */
+#mapContainer.map-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  height: calc(100vh - 230px);
+  min-height: 520px;
+}
+/* 특정 section만: 화면 전체 */
+#mapContainer.map-single {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: calc(100vh - 230px);
+  min-height: 560px;
+}
+
+.map-pane {
   background: var(--paper-raised);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 28px;
-  overflow-x: auto;
-}
-.map-direction-label {
-  font-size: 12px;
-  color: var(--ink-soft);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.lot-grid {
-  display: grid;
-  gap: 10px;
-  position: relative;
-}
-
-.lot-block {
-  border: 2px dashed var(--line-strong);
-  border-radius: 4px;
-  background: var(--paper);
   display: flex;
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  align-self: start;
+}
+
+.map-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.map-pane-body {
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+.map-direction-label {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Section 16 페이지 네비게이션 (◀ 1/3 ▶) */
+.page-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.page-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.page-nav-btn:hover:not(:disabled) { background: var(--ink); color: white; border-color: var(--ink); }
+.page-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-nav-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 32px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.lot-grid {
+  display: grid;
+  gap: 8px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.lot-block {
+  border: 2px dashed var(--line-strong);
+  border-radius: 5px;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 .lot-block-label {
   text-align: center;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--danger);
-  padding: 3px 0;
+  padding: 4px 0;
   border-bottom: 1px solid var(--line);
   background: rgba(179,84,63,0.06);
   font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+.lot-block-continuation {
+  border-top-style: solid;
+  border-top-width: 1px;
+  margin-top: -1px;
 }
 .lot-slots {
   display: grid;
   flex: 1;
-  align-content: start;
+  min-height: 0;
 }
 .slot-cell {
   border: 1px solid var(--line);
@@ -312,30 +386,31 @@ a { color: inherit; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4px 2px;
+  padding: 4px 4px;
   cursor: pointer;
-  min-height: 40px;
-  max-height: 70px;
+  min-height: 0;
+  min-width: 0;
   position: relative;
   transition: filter 0.1s;
-  overflow: hidden;
 }
 .slot-cell:hover { filter: brightness(0.96); z-index: 3; }
 .slot-cell .slot-no {
-  font-size: 8.5px;
+  font-size: 11px;
   color: var(--ink-soft);
   font-family: var(--font-mono);
-  line-height: 1.1;
+  line-height: 1.15;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 .slot-cell .slot-name {
-  font-size: 8.5px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-align: center;
-  line-height: 1.15;
+  line-height: 1.2;
   max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: keep-all;
   width: 100%;
 }
 .slot-cell.status-A { background: var(--sage-bg-strong); }
@@ -353,10 +428,12 @@ a { color: inherit; }
   background: var(--paper-raised);
   border: 1px solid var(--line);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 table.data-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
   font-size: 13.5px;
 }
@@ -552,4 +629,37 @@ table.data-table tr:hover td { background: var(--paper); }
   .app-header { padding: 14px 16px; }
   .main { padding: 16px 16px 80px; }
   .form-grid { grid-template-columns: 1fr; }
+  .app-title .sub { display: none; }
+  .app-title .mark { font-size: 18px; }
+  .header-actions { gap: 6px; }
+  .header-actions .btn { padding: 7px 10px; font-size: 12.5px; }
+  .toolbar { gap: 8px; }
+  .tabs .tab { padding: 7px 11px; font-size: 12.5px; }
+  .chip { padding: 8px 14px; }
+  .search-box { min-width: 0; max-width: none; flex: 1 1 100%; order: 3; }
+  .section-switch { order: 1; }
+  .tabs { order: 2; margin-left: auto; }
+
+  /* 좁은 화면에서도 좌우 분할은 유지 (위아래로 쌓지 않음). 칸이 좁아지는 대신
+     pane 내부에 가로 스크롤을 허용해 최소 너비를 보장합니다. */
+  #mapContainer.map-split {
+    height: calc(100vh - 280px);
+    min-height: 420px;
+    gap: 8px;
+  }
+  #mapContainer.map-single {
+    height: calc(100vh - 280px);
+    min-height: 480px;
+  }
+  .map-pane-header { padding: 8px 10px 6px; flex-wrap: wrap; gap: 4px; }
+  .map-pane-body { padding: 8px; overflow: auto; }
+  .map-pane.half .map-pane-body .lot-grid { min-width: 600px; height: 100%; }
+  .map-single .map-pane-body .lot-grid { min-width: 600px; height: 100%; }
+  .slot-cell .slot-no { font-size: 9px; }
+  .slot-cell .slot-name { font-size: 9.5px; }
+  .lot-block-label { font-size: 11px; }
+  .map-direction-label { font-size: 10.5px; white-space: nowrap; }
+  .page-nav-btn { width: 26px; height: 26px; font-size: 12px; }
 }
+
+
