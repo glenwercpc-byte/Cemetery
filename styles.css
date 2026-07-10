@@ -359,6 +359,32 @@ a { color: inherit; }
   min-height: 0;
   overflow: hidden;
 }
+
+/* 모든 슬롯이 Available(사용 가능)인 lot — 작게 표시 */
+.lot-block.lot-block-small {
+  border-color: var(--line);
+  border-style: dotted;
+  opacity: 0.7;
+  align-self: start;
+  max-height: 80px;
+}
+.lot-block.lot-block-small .lot-block-label {
+  font-size: 10px;
+  padding: 2px 0;
+  color: var(--ink-soft);
+  background: transparent;
+  border-bottom-color: var(--line);
+}
+.lot-block.lot-block-small .slot-cell {
+  min-height: 0;
+  padding: 1px;
+}
+.lot-block.lot-block-small .slot-no {
+  font-size: 8px;
+}
+.lot-block.lot-block-small .slot-name {
+  display: none; /* Available이면 이름 없으므로 표시 불필요 */
+}
 .lot-block-label {
   text-align: center;
   font-weight: 700;
