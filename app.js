@@ -297,8 +297,17 @@ function buildSectionGrid(sec, colRange) {
     const isContinuation = seenLots.has(lotDef.lot);
     seenLots.add(lotDef.lot);
 
+    // 이 lot의 모든 슬롯이 Available('A')인지 확인
+    // → 전부 Available이면 작게(small), 하나라도 Used/Reserved/Confirmed면 표준 크기
+    const allAvailable = lotDef.slots.length > 0 && lotDef.slots.every(slotNo => {
+      const d = findLot(sec, lotDef.lot, slotNo);
+      return !d || d.status === 'A';
+    });
+
     const block = document.createElement('div');
-    block.className = 'lot-block' + (isContinuation ? ' lot-block-continuation' : '');
+    block.className = 'lot-block'
+      + (isContinuation ? ' lot-block-continuation' : '')
+      + (allAvailable ? ' lot-block-small' : '');
     block.style.gridColumn = `${adjCol} / span ${lotDef.colSpan}`;
     block.style.gridRow = `${adjRowStart} / span ${adjRowSpan}`;
 
