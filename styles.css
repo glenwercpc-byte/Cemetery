@@ -697,3 +697,130 @@ table.data-table tr:hover td { background: var(--paper); }
 }
 
 
+
+/* ===================================================================
+   인트로 오버레이 — 전체 지도 표시 후 클릭 시 줌인 전환
+   =================================================================== */
+#introOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0a0a0a;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+#introMap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: 25% 80%;
+  will-change: transform, opacity;
+}
+
+#introMapImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  animation: introFadeIn 0.8s ease-out forwards;
+}
+
+@keyframes introFadeIn {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Section 15,16 구역 링 표시 — 지도 위에 살짝 반짝이는 원 */
+#introZoneHint {
+  position: absolute;
+  /* 지도상 Section 15,16 위치 — 좌하단 약 25%, 80% 지점 */
+  left: 25%;
+  top: 80%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: introFadeIn 1s ease-out 0.5s both;
+}
+
+#introZoneRing {
+  width: 120px;
+  height: 120px;
+  border: 3px solid rgba(255, 220, 100, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(255, 220, 100, 0.2), 0 0 30px rgba(255, 220, 100, 0.4);
+  animation: ringPulse 2s ease-in-out infinite 1s;
+}
+
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.85; }
+  50%       { transform: scale(1.12); opacity: 0.5;  }
+}
+
+/* 중앙 오버레이 텍스트 박스 */
+#introClickPrompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  background: rgba(10, 10, 10, 0.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 36px 52px;
+  transition: opacity 0.4s;
+  animation: introFadeIn 0.8s ease-out 0.4s both;
+}
+
+.intro-logo {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.intro-title {
+  font-family: 'Noto Serif KR', Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.intro-sub {
+  font-size: 14px;
+  opacity: 0.7;
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+}
+
+.intro-click {
+  font-size: 13px;
+  opacity: 0.85;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 9px 22px;
+  display: inline-block;
+  animation: clickBlink 2s ease-in-out infinite 1.2s;
+}
+
+@keyframes clickBlink {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.35; }
+}
+
+/* 앱 본체는 인트로가 있는 동안 뒤에 미리 로드 */
+.app-header,
+.main {
+  animation: appFadeIn 0.5s ease-out forwards;
+}
+
+@keyframes appFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
