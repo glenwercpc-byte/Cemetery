@@ -16,7 +16,7 @@ const STATUS_LABELS = { A: 'Available', R: 'Reserved', C: 'To Be Confirmed', U: 
 let STATE = {
   lots: [],          // 전체 슬롯 데이터 (배열)
   bySection: '16',    // 현재 선택된 section ('15'|'16'|'all')
-  view: 'map',        // 'map'|'table'|'stats'
+  view: 'stats',      // 인트로 후 통계뷰로 시작
   search: '',
   isAdmin: false,
   sortKey: null,
@@ -762,9 +762,49 @@ function setAdminMode(on) {
 }
 
 // ------------------------------------------------------------------
+// 인트로 오버레이 — 지도 클릭 시 Section15,16 구역으로 줌인하면서 앱 진입
+// ------------------------------------------------------------------
+function initIntro() {
+  const overlay = document.getElementById('introOverlay');
+  if (!overlay) return;
+
+  overlay.addEventListener('click', () => {
+    if (overlay.dataset.animating) return;
+    overlay.dataset.animating = '1';
+
+    // 1단계: "클릭하세요" 힌트 페이드 아웃
+    const prompt = document.getElementById('introClickPrompt');
+    if (prompt) prompt.style.opacity = '0';
+
+    // 2단계: 지도를 Section 15,16 구역(좌하단)으로 점점 줌인
+    //   지도 1090×960 기준, Section15=하단중앙, 16=그 위쪽
+    //   transform-origin: 25% 78% 지점으로 줌인
+    const mapEl = document.getElementById('introMap');
+    mapEl.style.transition = 'transform 1.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease 1.2s';
+    mapEl.style.transformOrigin = '25% 80%';
+    mapEl.style.transform = 'scale(3.5)';
+    mapEl.style.opacity = '0';
+
+    // 3단계: 줌인 완료 후 오버레이 제거 → 앱 표시
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.4s';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        // 통계뷰 탭 활성화 표시 동기화
+        document.querySelectorAll('.tab[data-view]').forEach(t => {
+          t.classList.toggle('active', t.dataset.view === 'stats');
+        });
+      }, 400);
+    }, 1800);
+  });
+}
+
+// ------------------------------------------------------------------
 // 시작
 // ------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
   loadData();
+  initIntro();
 });
