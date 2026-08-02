@@ -776,27 +776,24 @@ function initIntro() {
     const prompt = document.getElementById('introClickPrompt');
     if (prompt) prompt.style.opacity = '0';
 
-    // 2단계: 지도를 Section 15,16 구역(좌하단)으로 점점 줌인
-    //   지도 1090×960 기준, Section15=하단중앙, 16=그 위쪽
-    //   transform-origin: 25% 78% 지점으로 줌인
+    // 2단계: 지도를 Section 15,16 구역(left:32.5%, top:75.4%)으로 줌인
     const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 1.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease 1.2s';
-    mapEl.style.transformOrigin = '25% 80%';
+    mapEl.style.transition = 'transform 2.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s ease 2.0s';
+    mapEl.style.transformOrigin = '32.5% 75.4%';
     mapEl.style.transform = 'scale(3.5)';
     mapEl.style.opacity = '0';
 
-    // 3단계: 줌인 완료 후 오버레이 제거 → 앱 표시
+    // 3단계: 줌인 + 페이드아웃 완료 후 앱 표시
     setTimeout(() => {
-      overlay.style.transition = 'opacity 0.4s';
+      overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
       setTimeout(() => {
         overlay.style.display = 'none';
-        // 통계뷰 탭 활성화 표시 동기화
         document.querySelectorAll('.tab[data-view]').forEach(t => {
           t.classList.toggle('active', t.dataset.view === 'stats');
         });
-      }, 400);
-    }, 1800);
+      }, 600);
+    }, 3200);
   });
 }
 
