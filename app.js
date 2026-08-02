@@ -778,12 +778,12 @@ function initIntro() {
 
     // 2단계: 지도를 Section 15,16 구역(left:32.5%, top:75.4%)으로 줌인
     const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 2.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s ease 2.0s';
+    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 2.0s ease 4.0s';
     mapEl.style.transformOrigin = '32.5% 75.4%';
     mapEl.style.transform = 'scale(3.5)';
     mapEl.style.opacity = '0';
 
-    // 3단계: 줌인 + 페이드아웃 완료 후 앱 표시
+    // 3단계: 줌인(5초) + 페이드아웃(2초) 완료 후 앱 표시
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
@@ -793,7 +793,7 @@ function initIntro() {
           t.classList.toggle('active', t.dataset.view === 'stats');
         });
       }, 600);
-    }, 3200);
+    }, 6200);
   });
 }
 
