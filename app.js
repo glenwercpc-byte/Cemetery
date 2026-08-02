@@ -419,39 +419,92 @@ function renderTable() {
 // 통계뷰 (Stats View)
 // ===================================================================
 function renderStats() {
-  const lots = getFilteredLots();
+  const all = STATE.lots; // 전체 데이터 (섹션 필터 없이)
+
+  // Section별로 집계
+  const sections = ['15', '16'];
+  const sectionTotals = { '15': 81, '16': 179 }; // 전체 슬롯 수 (seed 기준)
+
   const bySection = {};
-  const byStatus = {};
-  lots.forEach(l => {
-    bySection[l.section] = (bySection[l.section] || 0) + 1;
-    byStatus[l.status] = (byStatus[l.status] || 0) + 1;
+  sections.forEach(s => {
+    bySection[s] = { total: 0, used: 0, available: 0, reserved: 0, confirmed: 0 };
   });
 
-  const statClass = { A: 'sage', R: 'gold', C: 'clay', U: '', X: '' };
+  all.forEach(l => {
+    const s = l.section;
+    if (!bySection[s]) return;
+    bySection[s].total++;
+    if (l.status === 'A') bySection[s].available++;
+    else if (l.status === 'R') bySection[s].reserved++;
+    else if (l.status === 'C') bySection[s].confirmed++;
+    else if (l.status === 'U') bySection[s].used++;
+  });
+
+  // 전체 합계
+  const grand = { total: 0, used: 0, available: 0, reserved: 0, confirmed: 0 };
+  sections.forEach(s => {
+    Object.keys(grand).forEach(k => { grand[k] += bySection[s][k]; });
+  });
+
+  // 상단 전체 요약 카드
   const statsBar = document.getElementById('statsBar');
   statsBar.innerHTML = `
-    <div class="stat"><div class="num">${lots.length}</div><div class="lbl">전체 슬롯</div></div>
-    ${Object.keys(byStatus).sort().map(st => `
-      <div class="stat ${statClass[st] || ''}">
-        <div class="num">${byStatus[st]}</div>
-        <div class="lbl">${STATUS_LABELS[st] || st}</div>
+    <div class="stat"><div class="num">${grand.total}</div><div class="lbl">전체 슬롯</div></div>
+    <div class="stat sage"><div class="num">${grand.available}</div><div class="lbl">사용 가능</div></div>
+    <div class="stat"><div class="num">${grand.used}</div><div class="lbl">사용중</div></div>
+    <div class="stat gold"><div class="num">${grand.reserved}</div><div class="lbl">예약됨</div></div>
+    <div class="stat clay"><div class="num">${grand.confirmed}</div><div class="lbl">확인 필요</div></div>
+  `;
+
+  // Section별 상세 카드
+  const detail = document.getElementById('statsDetail');
+  detail.style.padding = '24px';
+  detail.innerHTML = sections.map(s => {
+    const d = bySection[s];
+    const usedPct   = d.total ? Math.round((d.used + d.reserved + d.confirmed) / d.total * 100) : 0;
+    const availPct  = d.total ? Math.round(d.available / d.total * 100) : 0;
+    const barUsed   = d.total ? Math.round((d.used + d.reserved + d.confirmed) / d.total * 100) : 0;
+
+    return `
+      <div class="stats-section-card">
+        <div class="stats-section-header">
+          <span class="stats-section-title">Section ${s}</span>
+          <span class="stats-section-sub">전체 ${d.total}개 슬롯</span>
+        </div>
+
+        <div class="stats-progress-wrap">
+          <div class="stats-progress-bar">
+            <div class="stats-progress-fill used"   style="width:${Math.round(d.used/d.total*100)}%"></div>
+            <div class="stats-progress-fill reserved" style="width:${Math.round(d.reserved/d.total*100)}%"></div>
+            <div class="stats-progress-fill confirmed" style="width:${Math.round(d.confirmed/d.total*100)}%"></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-cell available">
+            <div class="stats-cell-num">${d.available}</div>
+            <div class="stats-cell-lbl">사용 가능</div>
+            <div class="stats-cell-pct">${availPct}%</div>
+          </div>
+          <div class="stats-cell used">
+            <div class="stats-cell-num">${d.used}</div>
+            <div class="stats-cell-lbl">사용중</div>
+            <div class="stats-cell-pct">${d.total ? Math.round(d.used/d.total*100) : 0}%</div>
+          </div>
+          <div class="stats-cell reserved">
+            <div class="stats-cell-num">${d.reserved}</div>
+            <div class="stats-cell-lbl">예약됨</div>
+            <div class="stats-cell-pct">${d.total ? Math.round(d.reserved/d.total*100) : 0}%</div>
+          </div>
+          <div class="stats-cell confirmed">
+            <div class="stats-cell-num">${d.confirmed}</div>
+            <div class="stats-cell-lbl">확인 필요</div>
+            <div class="stats-cell-pct">${d.total ? Math.round(d.confirmed/d.total*100) : 0}%</div>
+          </div>
+        </div>
       </div>
-    `).join('')}
-  `;
-
-  const totalLotPrice = lots.reduce((sum, l) => sum + (parseFloat(l.lot_price) || 0), 0);
-  const totalFuneralCost = lots.reduce((sum, l) => sum + (parseFloat(l.funeral_cost) || 0), 0);
-  const totalPaid = lots.reduce((sum, l) => sum + (parseFloat(l.paid_amount) || 0), 0);
-
-  document.getElementById('statsDetail').innerHTML = `
-    <h3 style="margin-top:0;font-family:var(--font-display);">매출 / 비용 요약</h3>
-    <div class="detail-row"><span class="k">묘지 가격 합계</span><span class="v">$${totalLotPrice.toLocaleString()}</span></div>
-    <div class="detail-row"><span class="k">장례 비용 합계</span><span class="v">$${totalFuneralCost.toLocaleString()}</span></div>
-    <div class="detail-row"><span class="k">납부 합계</span><span class="v">$${totalPaid.toLocaleString()}</span></div>
-    <div class="detail-row"><span class="k">미수금 (추정)</span><span class="v">$${Math.max(0, totalLotPrice + totalFuneralCost - totalPaid).toLocaleString()}</span></div>
-    <h3 style="font-family:var(--font-display);">Section별 분포</h3>
-    ${Object.keys(bySection).sort().map(s => `<div class="detail-row"><span class="k">Section ${s}</span><span class="v">${bySection[s]}개 슬롯</span></div>`).join('')}
-  `;
+    `;
+  }).join('');
 }
 
 // ===================================================================
