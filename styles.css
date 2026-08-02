@@ -824,3 +824,107 @@ table.data-table tr:hover td { background: var(--paper); }
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* ===================================================================
+   Section별 통계 카드 (새 디자인)
+   =================================================================== */
+#statsDetail {
+  background: transparent !important;
+  border: none !important;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stats-section-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px 28px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.stats-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stats-section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.stats-section-sub {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* 진행 막대 */
+.stats-progress-wrap {
+  margin-bottom: 20px;
+}
+
+.stats-progress-bar {
+  height: 10px;
+  background: var(--sage-bg-strong);
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.stats-progress-fill {
+  height: 100%;
+  transition: width 0.6s ease;
+}
+.stats-progress-fill.used     { background: #9aa8b4; }
+.stats-progress-fill.reserved { background: var(--gold-bg-strong); }
+.stats-progress-fill.confirmed { background: var(--clay-bg); }
+
+/* 4칸 숫자 그리드 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.stats-cell {
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1px solid var(--line);
+}
+.stats-cell.available { background: var(--sage-bg); border-color: var(--sage-bg-strong); }
+.stats-cell.used      { background: var(--slate-bg); }
+.stats-cell.reserved  { background: var(--gold-bg); border-color: var(--gold-bg-strong); }
+.stats-cell.confirmed { background: var(--clay-bg); }
+
+.stats-cell-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+.stats-cell.available .stats-cell-num { color: #3f6b3d; }
+.stats-cell.reserved  .stats-cell-num { color: #7a5d1c; }
+.stats-cell.confirmed .stats-cell-num { color: #7a4d28; }
+
+.stats-cell-lbl {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.stats-cell-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
