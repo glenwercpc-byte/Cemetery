@@ -779,7 +779,7 @@ function initIntro() {
     // 2단계: 지도를 Section 15,16 구역(left:32.5%, top:75.4%)으로 줌인
     const mapEl = document.getElementById('introMap');
     mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '30% 68%';
+    mapEl.style.transformOrigin = '30% 66%';
     mapEl.style.transform = 'scale(3.5)';
     mapEl.style.opacity = '0';
 
