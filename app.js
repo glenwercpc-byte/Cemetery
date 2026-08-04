@@ -1,982 +1,449 @@
-/**
- * app.js — CCPC 묘지 관리 시스템 프론트엔드 로직
- *
- * 데이터 소스:
- *  1) 기본값: GAS_WEB_APP_URL이 설정되면 Google Sheets(Apps Script API)에서 로드
- *  2) 설정 전이거나 실패 시: seed-data.json (PDF에서 추출한 초기 데이터)을 로드해 오프라인으로도 동작
- *
- * GAS_WEB_APP_URL은 SETUP.md 안내에 따라 배포 후 이 값을 본인의 Web App URL로 바꿔주세요.
- */
+// ====================================================
+// CCPC 묘지 관리 시스템 — app.js
+// ====================================================
 
-// ⚠️ 배포 후 이 줄을 본인의 Apps Script 웹앱 URL로 교체하세요. (SETUP.md 참고)
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx_rg95yqYiOW648SCmNgMoGXy1l6ErtkDqTwtnbaH0wTBNaM_j4ynHiaLY_CX90x8BlQ/exec';
 
-const STATUS_LABELS = { A: 'Available', R: 'Reserved', C: 'To Be Confirmed', U: 'Used', X: '특이사항' };
+const STATUS_LABELS = { A:'Available', R:'Reserved', C:'To Be Confirmed', U:'Used' };
 
 let STATE = {
-  lots: [],          // 전체 슬롯 데이터 (배열)
-  bySection: '16',    // 현재 선택된 section ('15'|'16'|'all')
-  view: 'stats',      // 인트로 후 통계뷰로 시작
+  data: [],           // 전체 데이터
+  section: '16',
+  view: 'list',
   search: '',
   isAdmin: false,
-  sortKey: null,
-  sortDir: 1,
-  pageBySection: { '15': 0, '16': 0 },  // section별 지도뷰 페이지 위치
-  settings: { default_lot_price: { value: '3000' }, default_funeral_cost: { value: '1500' } },
+  mapZoom: 1,
 };
 
-// ------------------------------------------------------------------
-// JSONP 헬퍼 (GAS와 통신; CORS 우회용으로 기존 시스템과 동일한 패턴)
-// ------------------------------------------------------------------
-let jsonpCounter = 0;
+// ─── JSONP ─────────────────────────────────────────
+let _cbIdx = 0;
 function jsonpRequest(url, params) {
   return new Promise((resolve, reject) => {
-    const cbName = 'jsonp_cb_' + (jsonpCounter++);
-    const script = document.createElement('script');
-    const qs = new URLSearchParams({ ...params, callback: cbName }).toString();
-    window[cbName] = (data) => {
-      resolve(data);
-      delete window[cbName];
-      script.remove();
-    };
-    script.onerror = () => {
-      reject(new Error('JSONP request failed: ' + url));
-      delete window[cbName];
-      script.remove();
-    };
-    script.src = url + '?' + qs;
-    document.body.appendChild(script);
-    setTimeout(() => {
-      if (window[cbName]) {
-        reject(new Error('JSONP timeout'));
-        delete window[cbName];
-        script.remove();
-      }
-    }, 15000);
+    const cb = 'cb_' + (_cbIdx++);
+    const s = document.createElement('script');
+    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
+    window[cb] = d => { resolve(d); delete window[cb]; s.remove(); };
+    s.onerror = () => { reject(new Error('JSONP failed')); delete window[cb]; s.remove(); };
+    s.src = url + '?' + qs;
+    document.body.appendChild(s);
+    setTimeout(() => { if(window[cb]){ reject(new Error('timeout')); delete window[cb]; s.remove(); }}, 15000);
   });
 }
-
-async function gasCall(action, params = {}) {
-  if (!GAS_WEB_APP_URL) throw new Error('GAS_WEB_APP_URL not configured');
+async function gasCall(action, params={}) {
+  if (!GAS_WEB_APP_URL) throw new Error('no url');
   return jsonpRequest(GAS_WEB_APP_URL, { action, ...params });
 }
 
-// ------------------------------------------------------------------
-// 데이터 로드
-// ------------------------------------------------------------------
+// ─── Data Load ─────────────────────────────────────
 async function loadData() {
-  showMapLoading();
   if (GAS_WEB_APP_URL) {
     try {
       const res = await gasCall('getall');
-      if (res.ok) {
-        STATE.lots = res.lots.map(normalizeLot);
-        await loadSettingsRemote();
-        setLastSync('Google Sheets 연결됨');
+      if (res.ok && res.lots && res.lots.length > 0) {
+        STATE.data = res.lots.map(normalize);
+        setSync('Google Sheets 연결됨');
         render();
         return;
       }
-    } catch (err) {
-      console.warn('GAS load failed, falling back to seed data:', err);
-    }
+    } catch(e) { console.warn('GAS 실패, 로컬 데이터 사용:', e.message); }
   }
-  // fallback: seed json
   try {
-    const res = await fetch('seed-data.json');
-    const data = await res.json();
-    STATE.lots = data.map(normalizeLot);
-    setLastSync(GAS_WEB_APP_URL ? 'Sheets 연결 실패 — 초기 데이터로 표시 중' : '오프라인 초기 데이터 (Sheets 미연동)');
-  } catch (err) {
-    setLastSync('데이터 로드 실패');
-    console.error(err);
-  }
+    const r = await fetch('grave-data.json');
+    STATE.data = (await r.json()).map(normalize);
+    setSync('오프라인 데이터');
+  } catch(e) { setSync('데이터 로드 실패'); }
   render();
 }
 
-function normalizeLot(l) {
+function normalize(r) {
   return {
-    id: l.id || `${l.section}-${l.lot}-${l.slot_no}`,
-    section: String(l.section),
-    lot: String(l.lot),
-    slot_no: String(l.slot_no),
-    status: l.status || 'A',
-    name: l.name || '',
-    name_kr: l.name_kr || '',
-    contact: l.contact || '',
-    burial_date: l.burial_date || '',
-    lot_price: l.lot_price || '',
-    funeral_cost: l.funeral_cost || '',
-    paid_amount: l.paid_amount || '',
-    payment_status: l.payment_status || '',
-    notes: l.notes || '',
-    updated_at: l.updated_at || '',
-    updated_by: l.updated_by || '',
+    id: r.id || `${r.section}-${r.lot}-${r.grave}`,
+    section: String(r.section),
+    lot: String(r.lot),
+    grave: String(r.grave || r.slot_no || ''),
+    dir: r.dir || '',
+    status: r.status || 'U',
+    name: r.name || '',
+    name_kr: r.name_kr || '',
   };
 }
 
-async function loadSettingsRemote() {
-  try {
-    const res = await gasCall('getsettings');
-    if (res.ok) STATE.settings = res.settings;
-  } catch (e) { /* keep defaults */ }
+function setSync(msg) {
+  document.getElementById('lastSync').textContent = ' · ' + msg + ' · ' + new Date().toLocaleTimeString('ko-KR');
 }
 
-function setLastSync(msg) {
-  document.getElementById('lastSync').textContent = '  ·  ' + msg + '  ·  ' + new Date().toLocaleTimeString('ko-KR');
-}
-
-function showMapLoading() {
-  document.getElementById('mapContainer').innerHTML = '<div class="loading-spinner"></div> 데이터 불러오는 중...';
-}
-
-// ------------------------------------------------------------------
-// Toast
-// ------------------------------------------------------------------
-let toastTimer;
-function showToast(msg, isError) {
+// ─── Toast ─────────────────────────────────────────
+let _toastTimer;
+function showToast(msg, isErr) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show' + (isError ? ' error' : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = 'toast'; }, 2600);
+  t.className = 'toast show' + (isErr ? ' error' : '');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.className = 'toast', 2800);
 }
 
-// ------------------------------------------------------------------
-// 필터링
-// ------------------------------------------------------------------
-function getFilteredLots() {
-  let lots = STATE.lots;
-  if (STATE.bySection !== 'all') {
-    lots = lots.filter(l => l.section === STATE.bySection);
-  }
+// ─── Filter ────────────────────────────────────────
+function getFiltered() {
+  let data = STATE.data.filter(r => r.section === STATE.section);
   if (STATE.search.trim()) {
     const q = STATE.search.trim().toLowerCase();
-    lots = lots.filter(l =>
-      l.lot.toLowerCase().includes(q) ||
-      l.slot_no.toLowerCase().includes(q) ||
-      (l.name || '').toLowerCase().includes(q) ||
-      (l.name_kr || '').toLowerCase().includes(q) ||
-      l.id.toLowerCase().includes(q)
+    data = data.filter(r =>
+      r.lot.includes(q) || r.grave.includes(q) ||
+      r.name.toLowerCase().includes(q) || r.name_kr.toLowerCase().includes(q)
     );
   }
+  return data;
+}
+
+function getLots() {
+  const data = getFiltered();
+  const lots = {};
+  data.forEach(r => {
+    if (!lots[r.lot]) lots[r.lot] = [];
+    lots[r.lot].push(r);
+  });
   return lots;
 }
 
-function findLot(section, lot, slot_no) {
-  return STATE.lots.find(l => l.section === section && l.lot === lot && l.slot_no === slot_no);
-}
-
-// ------------------------------------------------------------------
-// 렌더링 디스패치
-// ------------------------------------------------------------------
+// ─── Render dispatch ───────────────────────────────
 function render() {
-  document.getElementById('viewMap').style.display = STATE.view === 'map' ? '' : 'none';
-  document.getElementById('viewTable').style.display = STATE.view === 'table' ? '' : 'none';
+  document.getElementById('viewList').style.display  = STATE.view === 'list'  ? '' : 'none';
+  document.getElementById('viewMap').style.display   = STATE.view === 'map'   ? '' : 'none';
   document.getElementById('viewStats').style.display = STATE.view === 'stats' ? '' : 'none';
+  document.getElementById('searchWrap').style.display = STATE.view !== 'map' ? '' : 'none';
 
-  if (STATE.view === 'map') renderMap();
-  else if (STATE.view === 'table') renderTable();
-  else if (STATE.view === 'stats') renderStats();
+  if (STATE.view === 'list')  renderList();
+  if (STATE.view === 'map')   renderMap();
+  if (STATE.view === 'stats') renderStats();
 }
 
-// ===================================================================
-// 지도뷰 (Map View)
-// "전체" 모드: 항상 좌우로 분할 — 왼쪽 Section 15(전체), 오른쪽 Section 16(현재 페이지)
-// 단독 모드: 해당 section이 화면 전체를 채움. Section 16은 가로로 넓어
-//            3페이지로 나누고 ◀▶ 로 이동(다음 페이지를 누르면 오른쪽 남은 부분이,
-//            이전 페이지를 누르면 왼쪽 시작 부분이 보임).
-// ===================================================================
-function renderMap() {
-  const container = document.getElementById('mapContainer');
-  container.innerHTML = '';
-
-  if (STATE.bySection === 'all') {
-    container.className = 'map-split';
-    const left = buildSectionPane('15', true);   // 왼쪽: Section 15
-    const right = buildSectionPane('16', true);  // 오른쪽: Section 16 (현재 페이지)
-    container.appendChild(left);
-    container.appendChild(right);
-  } else {
-    container.className = 'map-single';
-    container.appendChild(buildSectionPane(STATE.bySection, false));
-  }
+function escHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function buildSectionPane(sec, isHalf) {
-  const layout = SECTION_LAYOUTS[sec];
-  const pane = document.createElement('div');
-  pane.className = 'map-pane' + (isHalf ? ' half' : '');
+// ─── LIST VIEW ─────────────────────────────────────
+function renderList() {
+  const lots = getLots();
+  const container = document.getElementById('listContainer');
 
-  const header = document.createElement('div');
-  header.className = 'map-pane-header';
-
-  const title = document.createElement('div');
-  title.className = 'map-direction-label';
-  title.textContent = layout.label + (STATE.search ? ` · "${STATE.search}" 검색결과 강조` : '');
-  header.appendChild(title);
-
-  // 페이지네이션 컨트롤 (◀ 1/2, 1/3 등 식) — section마다 독립적인 페이지 위치 유지
-  if (layout.pages) {
-    const nav = document.createElement('div');
-    nav.className = 'page-nav';
-
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'page-nav-btn';
-    prevBtn.textContent = '◀';
-    prevBtn.disabled = STATE.pageBySection[sec] === 0;
-    prevBtn.addEventListener('click', () => {
-      STATE.pageBySection[sec] = Math.max(0, STATE.pageBySection[sec] - 1);
-      renderMap();
-    });
-
-    const label = document.createElement('div');
-    label.className = 'page-nav-label';
-    label.textContent = layout.pages[STATE.pageBySection[sec]].label;
-
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'page-nav-btn';
-    nextBtn.textContent = '▶';
-    nextBtn.disabled = STATE.pageBySection[sec] === layout.pages.length - 1;
-    nextBtn.addEventListener('click', () => {
-      STATE.pageBySection[sec] = Math.min(layout.pages.length - 1, STATE.pageBySection[sec] + 1);
-      renderMap();
-    });
-
-    nav.appendChild(prevBtn);
-    nav.appendChild(label);
-    nav.appendChild(nextBtn);
-    header.appendChild(nav);
-  }
-
-  pane.appendChild(header);
-
-  const scrollArea = document.createElement('div');
-  scrollArea.className = 'map-pane-body';
-  const colRange = layout.pages ? layout.pages[STATE.pageBySection[sec]] : null;
-  scrollArea.appendChild(buildSectionGrid(sec, colRange));
-  pane.appendChild(scrollArea);
-
-  return pane;
-}
-
-function buildSectionGrid(sec, colRange) {
-  const layout = SECTION_LAYOUTS[sec];
-  const colStart = colRange ? colRange.colStart : 1;
-  const colEnd = colRange ? colRange.colEnd : layout.gridCols;
-  const visibleCols = colEnd - colStart + 1;
-
-  // 이 페이지(컬럼 구간)에 실제로 보일 lot들만 골라서, 실제 사용되는 row 번호만 모아 압축
-  // (완전히 빈 줄은 제거하고 화면을 고르게 채움)
-  const visibleLots = layout.lots.filter(lotDef => {
-    const lotColEnd = lotDef.col + lotDef.colSpan - 1;
-    return !(lotDef.col > colEnd || lotColEnd < colStart);
-  });
-  const usedRowsSet = new Set();
-  visibleLots.forEach(l => {
-    for (let r = l.row; r < l.row + l.rowSpan; r++) usedRowsSet.add(r);
-  });
-  let usedRows = Array.from(usedRowsSet).sort((a, b) => a - b);
-  if (usedRows.length === 0) usedRows = Array.from({ length: layout.gridRows }, (_, i) => i + 1);
-  const rowIndexMap = {}; // 원본 row 번호 → 압축된 1-based row 번호
-  usedRows.forEach((r, idx) => { rowIndexMap[r] = idx + 1; });
-  const visibleRows = usedRows.length;
-
-  const grid = document.createElement('div');
-  grid.className = 'lot-grid';
-  grid.style.gridTemplateColumns = `repeat(${visibleCols}, 1fr)`;
-  grid.style.gridTemplateRows = `repeat(${visibleRows}, 1fr)`;
-
-  const searchQ = STATE.search.trim().toLowerCase();
-  const seenLots = new Set(); // 같은 lot이 여러 줄(row)로 나뉜 경우, 라벨은 처음 한 번만 표시
-
-  visibleLots.forEach(lotDef => {
-    const adjCol = lotDef.col - colStart + 1;
-    const adjRowStart = rowIndexMap[lotDef.row];
-    const adjRowEnd = rowIndexMap[lotDef.row + lotDef.rowSpan - 1];
-    const adjRowSpan = adjRowEnd - adjRowStart + 1;
-    const isContinuation = seenLots.has(lotDef.lot);
-    seenLots.add(lotDef.lot);
-
-    // 이 lot의 모든 슬롯이 Available('A')인지 확인
-    // → 전부 Available이면 작게(small), 하나라도 Used/Reserved/Confirmed면 표준 크기
-    const allAvailable = lotDef.slots.length > 0 && lotDef.slots.every(slotNo => {
-      const d = findLot(sec, lotDef.lot, slotNo);
-      return !d || d.status === 'A';
-    });
-
-    const block = document.createElement('div');
-    block.className = 'lot-block'
-      + (isContinuation ? ' lot-block-continuation' : '')
-      + (allAvailable ? ' lot-block-small' : '');
-    block.style.gridColumn = `${adjCol} / span ${lotDef.colSpan}`;
-    block.style.gridRow = `${adjRowStart} / span ${adjRowSpan}`;
-
-    if (!isContinuation) {
-      const labelEl = document.createElement('div');
-      labelEl.className = 'lot-block-label';
-      labelEl.textContent = lotDef.lot;
-      block.appendChild(labelEl);
-    }
-
-    const slotsWrap = document.createElement('div');
-    slotsWrap.className = 'lot-slots';
-    const nRows = Math.ceil(lotDef.slots.length / lotDef.cols) || 1;
-    slotsWrap.style.gridTemplateColumns = `repeat(${lotDef.cols}, 1fr)`;
-    slotsWrap.style.gridTemplateRows = `repeat(${nRows}, 1fr)`;
-
-    if (lotDef.slots.length === 0) {
-      const cell = document.createElement('div');
-      cell.className = 'slot-cell empty';
-      slotsWrap.appendChild(cell);
-    } else {
-      lotDef.slots.forEach(slotNo => {
-        const lotData = findLot(sec, lotDef.lot, slotNo);
-        const cell = document.createElement('div');
-        const status = lotData ? lotData.status : 'A';
-        cell.className = `slot-cell status-${status}`;
-        const isMatch = searchQ && lotData && (
-          lotDef.lot.toLowerCase().includes(searchQ) ||
-          slotNo.toLowerCase().includes(searchQ) ||
-          (lotData.name || '').toLowerCase().includes(searchQ)
-        );
-        if (isMatch) cell.classList.add('highlight');
-
-        cell.title = lotData && lotData.name ? `${lotDef.lot}-${slotNo}: ${lotData.name}` : `${lotDef.lot}-${slotNo}`;
-        cell.innerHTML = `
-          <div class="slot-no">${slotNo.replace(/[ab]$/,'')}</div>
-          ${lotData && lotData.name ? `<div class="slot-name">${escapeHtml(lotData.name)}</div>` : ''}
-        `;
-        cell.addEventListener('click', () => openSlotModal(sec, lotDef.lot, slotNo));
-        slotsWrap.appendChild(cell);
-      });
-    }
-    block.appendChild(slotsWrap);
-    grid.appendChild(block);
-  });
-
-  return grid;
-}
-
-function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-}
-
-// ===================================================================
-// 표뷰 (Table View)
-// ===================================================================
-// 영문 성씨(Last name) → 한글 변환 매핑
-const LAST_NAME_MAP = {
-  'Kim':'김', 'Lee':'이', 'Park':'박', 'Pak':'박',
-  'Choi':'최', 'Choe':'최',
-  'Jung':'정', 'Chung':'정', 'Jeong':'정',
-  'Yoon':'윤', 'Yun':'윤',
-  'Lim':'임', 'Im':'임', 'Rhim':'임',
-  'Kwon':'권', 'Kweon':'권',
-  'Cho':'조', 'Joh':'조',
-  'Yang':'양',
-  'Chang':'장',
-  'Baek':'백', 'Paek':'백',
-  'Ahn':'안', 'An':'안',
-  'Oh':'오', 'Oh':'오',
-  'Han':'한',
-  'Yoo':'유', 'Yu':'유',
-  'Hong':'홍',
-  'Sim':'심', 'Shim':'심',
-  'Sohn':'손', 'Son':'손',
-  'Moon':'문',
-  'Jun':'전', 'Jeon':'전',
-  'Ban':'반',
-  'Koh':'고', 'Ko':'고',
-  'Faron':'파론',
-  'Hyeon':'현', 'Hyun':'현',
-  'Gu':'구', 'Koo':'구',
-  'Nam':'남',
-  'Hwang':'황',
-  'Rhee':'이', 'Ri':'이', 'Ree':'이',
-  'So':'소',
-  'Chun':'천', 'Cheon':'천',
-  'Cha':'차',
-  'Ma':'마',
-  'Suh':'서', 'Seo':'서',
-  'Ra':'나', 'Rha':'나', 'Na':'나',
-  'Sa':'사',
-  'Ha':'하',
-  'Kang':'강', 'Gang':'강',
-  'Shin':'신', 'Sin':'신',
-  'Jang':'장',
-  'Bae':'배',
-  'Kwak':'곽',
-  'Wang':'왕',
-  'Sim':'심',
-};
-
-// 영문 이름(First Last 또는 First Middle Last) → 한국식 표기(성 이름)
-function toKoreanName(engName) {
-  if (!engName || engName.trim() === '') return '';
-  const skip = ['Available','Reserved','Reserved','(C)','(R)','Exchanged'];
-  if (skip.some(s => engName.includes(s))) return '';
-  const parts = engName.trim().split(/\s+/);
-  if (parts.length < 2) return '';
-  const last = parts[parts.length - 1];
-  const firsts = parts.slice(0, parts.length - 1).join(' ');
-  const krLast = LAST_NAME_MAP[last] || last;
-  // 한글 성씨로 변환됐으면 "성 이름" 형식, 아니면 "Last First" 형식
-  if (LAST_NAME_MAP[last]) {
-    return `${krLast} ${firsts}`;
-  }
-  // 매핑 안 된 성씨는 영문 그대로 Last, First 순으로만 바꿔줌
-  return `${last}, ${firsts}`;
-}
-
-function renderTable() {
-  let lots = getFilteredLots();
-
-  if (STATE.sortKey) {
-    lots = [...lots].sort((a, b) => {
-      const av = (a[STATE.sortKey] || '').toString();
-      const bv = (b[STATE.sortKey] || '').toString();
-      const an = parseFloat(av), bn = parseFloat(bv);
-      let cmp;
-      if (!isNaN(an) && !isNaN(bn) && /^-?\d+\.?\d*$/.test(av) && /^-?\d+\.?\d*$/.test(bv)) {
-        cmp = an - bn;
-      } else {
-        cmp = av.localeCompare(bv, 'ko');
-      }
-      return cmp * STATE.sortDir;
-    });
-  } else {
-    lots = [...lots].sort((a, b) => a.section.localeCompare(b.section) || a.lot.localeCompare(b.lot, undefined, {numeric:true}) || a.slot_no.localeCompare(b.slot_no, undefined, {numeric:true}));
-  }
-
-  const tbody = document.getElementById('tableBody');
-  if (lots.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div></td></tr>`;
+  if (Object.keys(lots).length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div>';
     return;
   }
 
-  tbody.innerHTML = lots.map(l => {
-    const krName = l.name_kr || toKoreanName(l.name);
-    return `
-    <tr>
-      <td class="mono">${l.section}</td>
-      <td class="mono">${l.lot}</td>
-      <td class="mono">${l.slot_no}</td>
-      <td><span class="status-badge ${l.status}">${STATUS_LABELS[l.status] || l.status}</span></td>
-      <td>${escapeHtml(l.name) || '<span class="muted">—</span>'}</td>
-      <td class="kr-name-cell" data-id="${l.id}" title="클릭하여 한글 이름 수정">
-        ${escapeHtml(krName) || '<span class="muted kr-name-empty">+ 한글 이름 입력</span>'}
-      </td>
-      <td class="row-actions">
-        <button class="btn btn-sm" data-act="view" data-id="${l.id}">보기</button>
-      </td>
-    </tr>
-  `}).join('');
+  // 헤더
+  const hasDir = STATE.section === '16';
+  const headerCols = hasDir
+    ? `<div class="lv-h-grave">Grave</div><div class="lv-h-dir">Dir</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`
+    : `<div class="lv-h-grave">Grave</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`;
 
-  tbody.querySelectorAll('button[data-act="view"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const lot = STATE.lots.find(l => l.id === btn.dataset.id);
-      if (lot) openSlotModal(lot.section, lot.lot, lot.slot_no);
+  let html = '';
+  Object.entries(lots)
+    .sort((a,b) => parseInt(a[0]) - parseInt(b[0]))
+    .forEach(([lotNo, graves]) => {
+      const usedCount = graves.filter(r => r.status !== 'A').length;
+      const availCount = graves.filter(r => r.status === 'A').length;
+      html += `
+      <div class="lot-group">
+        <div class="lot-header">
+          <span class="lot-num">Lot ${lotNo}</span>
+          <span class="lot-summary">
+            <span class="ls-used">사용중/예약 ${usedCount}</span>
+            <span class="ls-avail">Available ${availCount}</span>
+          </span>
+        </div>
+        <div class="lv-header ${hasDir ? 'has-dir' : ''}">${headerCols}</div>
+        <div class="lv-rows">
+      `;
+      graves
+        .sort((a,b) => parseInt(a.grave) - parseInt(b.grave))
+        .forEach(r => {
+          const krVal = r.name_kr || toKoreanName(r.name);
+          const dirCell = hasDir ? `<div class="lv-cell lv-dir">${escHtml(r.dir)}</div>` : '';
+          html += `
+          <div class="lv-row status-bg-${r.status}${hasDir?' has-dir-row':''}" data-id="${r.id}">
+            <div class="lv-cell lv-grave mono">${escHtml(r.grave)}</div>
+            ${dirCell}
+            <div class="lv-cell lv-status"><span class="status-badge ${r.status}">${STATUS_LABELS[r.status]||r.status}</span></div>
+            <div class="lv-cell lv-name">${r.status === 'A' ? '<span class="avail-dash">—</span>' : escHtml(r.name)}</div>
+            <div class="lv-cell lv-kr kr-name-cell" data-id="${r.id}" title="클릭 → 한글 이름 수정">
+              ${r.status === 'A' ? '' : (escHtml(krVal) || '<span class="kr-empty">+ 입력</span>')}
+            </div>
+          </div>`;
+        });
+      html += `</div></div>`;
+    });
+
+  container.innerHTML = html;
+
+  // 행 클릭 → 상세 모달
+  container.querySelectorAll('.lv-row').forEach(row => {
+    row.addEventListener('click', e => {
+      if (e.target.closest('.kr-name-cell') || e.target.tagName === 'INPUT') return;
+      const r = STATE.data.find(d => d.id === row.dataset.id);
+      if (r) openDetailModal(r);
     });
   });
 
   // 한글 이름 인라인 편집
-  tbody.querySelectorAll('.kr-name-cell').forEach(cell => {
-    cell.addEventListener('click', () => {
-      if (cell.querySelector('input')) return; // 이미 편집 중
-      const id = cell.dataset.id;
-      const lot = STATE.lots.find(l => l.id === id);
-      if (!lot) return;
-      const current = lot.name_kr || toKoreanName(lot.name);
-
+  container.querySelectorAll('.kr-name-cell').forEach(cell => {
+    cell.addEventListener('click', e => {
+      e.stopPropagation();
+      if (cell.querySelector('input')) return;
+      const r = STATE.data.find(d => d.id === cell.dataset.id);
+      if (!r || r.status === 'A') return;
+      const cur = r.name_kr || toKoreanName(r.name);
       const input = document.createElement('input');
-      input.type = 'text';
-      input.value = current;
+      input.type = 'text'; input.value = cur;
       input.className = 'kr-name-input';
-      input.placeholder = '한글 이름 입력';
-      cell.innerHTML = '';
-      cell.appendChild(input);
-      input.focus();
-      input.select();
+      input.placeholder = '한글 이름';
+      cell.innerHTML = ''; cell.appendChild(input);
+      input.focus(); input.select();
 
-      async function saveKrName() {
+      async function save() {
         const newVal = input.value.trim();
-        if (newVal === lot.name_kr) {
-          // 변경 없으면 복원
-          cell.textContent = newVal || '';
-          if (!newVal) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
-          return;
-        }
-        const payload = { ...lot, name_kr: newVal };
+        if (newVal === r.name_kr) { cell.textContent = newVal || ''; if(!newVal) cell.innerHTML='<span class="kr-empty">+ 입력</span>'; return; }
         try {
           if (GAS_WEB_APP_URL) {
-            const res = await gasCall('upsert', { payload: JSON.stringify(payload), user: getAdminName() });
+            const res = await gasCall('upsert', { payload: JSON.stringify({...r, name_kr: newVal}), user: 'editor' });
             if (!res.ok) throw new Error(res.error);
           }
-          lot.name_kr = newVal;
-          cell.textContent = newVal || '';
-          if (!newVal) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
-          showToast(GAS_WEB_APP_URL ? '저장됐습니다' : '저장됐습니다 (로컬 — Sheets 미연동)');
-        } catch (err) {
+          r.name_kr = newVal;
+          cell.textContent = newVal; if(!newVal) cell.innerHTML='<span class="kr-empty">+ 입력</span>';
+          showToast('저장됐습니다');
+        } catch(err) {
           showToast('저장 실패: ' + err.message, true);
-          cell.textContent = lot.name_kr || '';
-          if (!lot.name_kr) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
+          cell.textContent = r.name_kr || ''; if(!r.name_kr) cell.innerHTML='<span class="kr-empty">+ 입력</span>';
         }
       }
-
       input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { input.blur(); }
-        if (e.key === 'Escape') {
-          lot.name_kr = lot.name_kr || '';
-          cell.textContent = lot.name_kr;
-          if (!lot.name_kr) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
-        }
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') { cell.textContent = r.name_kr || ''; if(!r.name_kr) cell.innerHTML='<span class="kr-empty">+ 입력</span>'; }
       });
-      input.addEventListener('blur', saveKrName);
+      input.addEventListener('blur', save);
     });
   });
 }
 
-// ===================================================================
-// 통계뷰 (Stats View)
-// ===================================================================
+// ─── MAP VIEW ──────────────────────────────────────
+const MAP_IMAGES = { '15': 'map-section15-1.jpg', '16': 'map-section16-1.jpg' };
+
+function renderMap() {
+  const img = document.getElementById('mapImg');
+  const src = MAP_IMAGES[STATE.section];
+  if (img.dataset.src !== src) {
+    img.src = src;
+    img.dataset.src = src;
+    STATE.mapZoom = 1;
+    document.getElementById('mapImgInner').style.transform = 'scale(1)';
+  }
+}
+
+function initMapZoom() {
+  const wrap = document.getElementById('mapImgWrap');
+  const inner = document.getElementById('mapImgInner');
+
+  document.getElementById('btnZoomIn').onclick = () => { STATE.mapZoom = Math.min(STATE.mapZoom * 1.3, 6); inner.style.transform = `scale(${STATE.mapZoom})`; };
+  document.getElementById('btnZoomOut').onclick = () => { STATE.mapZoom = Math.max(STATE.mapZoom / 1.3, 0.5); inner.style.transform = `scale(${STATE.mapZoom})`; };
+  document.getElementById('btnZoomReset').onclick = () => { STATE.mapZoom = 1; inner.style.transform = 'scale(1)'; };
+
+  // 핀치 줌 (모바일)
+  let lastDist = 0;
+  wrap.addEventListener('touchstart', e => { if(e.touches.length===2) lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); });
+  wrap.addEventListener('touchmove', e => {
+    if(e.touches.length===2) {
+      const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * (d/lastDist), 0.5), 6);
+      inner.style.transform = `scale(${STATE.mapZoom})`;
+      lastDist = d; e.preventDefault();
+    }
+  }, { passive: false });
+
+  // 마우스 휠 줌
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * delta, 0.5), 6);
+    inner.style.transform = `scale(${STATE.mapZoom})`;
+  }, { passive: false });
+
+  // 드래그
+  let isDragging = false, startX, startY, scrollLeft, scrollTop;
+  wrap.addEventListener('mousedown', e => { isDragging=true; startX=e.pageX-wrap.offsetLeft; startY=e.pageY-wrap.offsetTop; scrollLeft=wrap.scrollLeft; scrollTop=wrap.scrollTop; wrap.style.cursor='grabbing'; });
+  wrap.addEventListener('mouseleave', () => { isDragging=false; wrap.style.cursor='grab'; });
+  wrap.addEventListener('mouseup', () => { isDragging=false; wrap.style.cursor='grab'; });
+  wrap.addEventListener('mousemove', e => { if(!isDragging) return; e.preventDefault(); const x=e.pageX-wrap.offsetLeft; const y=e.pageY-wrap.offsetTop; wrap.scrollLeft=scrollLeft-(x-startX); wrap.scrollTop=scrollTop-(y-startY); });
+}
+
+// ─── STATS VIEW ────────────────────────────────────
 function renderStats() {
-  const all = STATE.lots; // 전체 데이터 (섹션 필터 없이)
-
-  // Section별로 집계
-  const sections = ['15', '16'];
-  const sectionTotals = { '15': 81, '16': 179 }; // 전체 슬롯 수 (seed 기준)
-
+  const all = STATE.data;
+  const sections = ['15','16'];
   const bySection = {};
-  sections.forEach(s => {
-    bySection[s] = { total: 0, used: 0, available: 0, reserved: 0, confirmed: 0 };
-  });
-
-  all.forEach(l => {
-    const s = l.section;
+  sections.forEach(s => { bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0 }; });
+  all.forEach(r => {
+    const s = r.section;
     if (!bySection[s]) return;
     bySection[s].total++;
-    if (l.status === 'A') bySection[s].available++;
-    else if (l.status === 'R') bySection[s].reserved++;
-    else if (l.status === 'C') bySection[s].confirmed++;
-    else if (l.status === 'U') bySection[s].used++;
+    if (r.status==='A') bySection[s].available++;
+    else if (r.status==='R') bySection[s].reserved++;
+    else if (r.status==='C') bySection[s].confirmed++;
+    else bySection[s].used++;
   });
+  const grand = { total:0, available:0, used:0, reserved:0, confirmed:0 };
+  sections.forEach(s => Object.keys(grand).forEach(k => grand[k] += bySection[s][k]));
 
-  // 전체 합계
-  const grand = { total: 0, used: 0, available: 0, reserved: 0, confirmed: 0 };
-  sections.forEach(s => {
-    Object.keys(grand).forEach(k => { grand[k] += bySection[s][k]; });
-  });
-
-  // 상단 전체 요약 카드
-  const statsBar = document.getElementById('statsBar');
-  statsBar.innerHTML = `
+  document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="num">${grand.total}</div><div class="lbl">전체 슬롯</div></div>
-    <div class="stat sage"><div class="num">${grand.available}</div><div class="lbl">사용 가능</div></div>
+    <div class="stat sage"><div class="num">${grand.available}</div><div class="lbl">Available</div></div>
     <div class="stat"><div class="num">${grand.used}</div><div class="lbl">사용중</div></div>
-    <div class="stat gold"><div class="num">${grand.reserved}</div><div class="lbl">예약됨</div></div>
+    <div class="stat gold"><div class="num">${grand.reserved}</div><div class="lbl">Reserved</div></div>
     <div class="stat clay"><div class="num">${grand.confirmed}</div><div class="lbl">확인 필요</div></div>
   `;
 
-  // Section별 상세 카드
   const detail = document.getElementById('statsDetail');
-  detail.style.padding = '24px';
+  detail.style.cssText = 'background:transparent;border:none;display:flex;gap:24px;flex-wrap:wrap;padding:0;';
   detail.innerHTML = sections.map(s => {
     const d = bySection[s];
-    const usedPct   = d.total ? Math.round((d.used + d.reserved + d.confirmed) / d.total * 100) : 0;
-    const availPct  = d.total ? Math.round(d.available / d.total * 100) : 0;
-    const barUsed   = d.total ? Math.round((d.used + d.reserved + d.confirmed) / d.total * 100) : 0;
-
     return `
-      <div class="stats-section-card">
-        <div class="stats-section-header">
-          <span class="stats-section-title">Section ${s}</span>
-          <span class="stats-section-sub">전체 ${d.total}개 슬롯</span>
-        </div>
-
-        <div class="stats-progress-wrap">
-          <div class="stats-progress-bar">
-            <div class="stats-progress-fill used"   style="width:${Math.round(d.used/d.total*100)}%"></div>
-            <div class="stats-progress-fill reserved" style="width:${Math.round(d.reserved/d.total*100)}%"></div>
-            <div class="stats-progress-fill confirmed" style="width:${Math.round(d.confirmed/d.total*100)}%"></div>
-          </div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stats-cell available">
-            <div class="stats-cell-num">${d.available}</div>
-            <div class="stats-cell-lbl">사용 가능</div>
-            <div class="stats-cell-pct">${availPct}%</div>
-          </div>
-          <div class="stats-cell used">
-            <div class="stats-cell-num">${d.used}</div>
-            <div class="stats-cell-lbl">사용중</div>
-            <div class="stats-cell-pct">${d.total ? Math.round(d.used/d.total*100) : 0}%</div>
-          </div>
-          <div class="stats-cell reserved">
-            <div class="stats-cell-num">${d.reserved}</div>
-            <div class="stats-cell-lbl">예약됨</div>
-            <div class="stats-cell-pct">${d.total ? Math.round(d.reserved/d.total*100) : 0}%</div>
-          </div>
-          <div class="stats-cell confirmed">
-            <div class="stats-cell-num">${d.confirmed}</div>
-            <div class="stats-cell-lbl">확인 필요</div>
-            <div class="stats-cell-pct">${d.total ? Math.round(d.confirmed/d.total*100) : 0}%</div>
-          </div>
+    <div class="stats-section-card">
+      <div class="stats-section-header">
+        <span class="stats-section-title">Section ${s}</span>
+        <span class="stats-section-sub">전체 ${d.total}개 슬롯</span>
+      </div>
+      <div class="stats-progress-wrap">
+        <div class="stats-progress-bar">
+          <div class="stats-progress-fill used" style="width:${d.total?Math.round(d.used/d.total*100):0}%"></div>
+          <div class="stats-progress-fill reserved" style="width:${d.total?Math.round(d.reserved/d.total*100):0}%"></div>
+          <div class="stats-progress-fill confirmed" style="width:${d.total?Math.round(d.confirmed/d.total*100):0}%"></div>
         </div>
       </div>
-    `;
+      <div class="stats-grid">
+        <div class="stats-cell available"><div class="stats-cell-num">${d.available}</div><div class="stats-cell-lbl">Available</div><div class="stats-cell-pct">${d.total?Math.round(d.available/d.total*100):0}%</div></div>
+        <div class="stats-cell used"><div class="stats-cell-num">${d.used}</div><div class="stats-cell-lbl">사용중</div><div class="stats-cell-pct">${d.total?Math.round(d.used/d.total*100):0}%</div></div>
+        <div class="stats-cell reserved"><div class="stats-cell-num">${d.reserved}</div><div class="stats-cell-lbl">Reserved</div><div class="stats-cell-pct">${d.total?Math.round(d.reserved/d.total*100):0}%</div></div>
+        <div class="stats-cell confirmed"><div class="stats-cell-num">${d.confirmed}</div><div class="stats-cell-lbl">확인 필요</div><div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div></div>
+      </div>
+    </div>`;
   }).join('');
 }
 
-// ===================================================================
-// 모달: 상세보기 / 수정 / 신규등록
-// ===================================================================
-function openModal(title, bodyHtml, footerHtml) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalBody').innerHTML = bodyHtml;
-  document.getElementById('modalFooter').innerHTML = footerHtml;
+// ─── Detail Modal ──────────────────────────────────
+function openDetailModal(r) {
+  document.getElementById('modalTitle').textContent = `Section ${r.section} · Lot ${r.lot} · Grave ${r.grave}`;
+  const krVal = r.name_kr || toKoreanName(r.name);
+  document.getElementById('modalBody').innerHTML = `
+    <div class="detail-row"><span class="k">상태</span><span class="v"><span class="status-badge ${r.status}">${STATUS_LABELS[r.status]||r.status}</span></span></div>
+    <div class="detail-row"><span class="k">Name</span><span class="v">${escHtml(r.name)||'—'}</span></div>
+    <div class="detail-row"><span class="k">이름</span><span class="v">${escHtml(krVal)||'—'}</span></div>
+    ${r.dir ? `<div class="detail-row"><span class="k">방향</span><span class="v">${escHtml(r.dir)}</span></div>` : ''}
+  `;
+  document.getElementById('modalFooter').innerHTML = `<button class="btn" onclick="document.getElementById('modalOverlay').style.display='none'">닫기</button>`;
   document.getElementById('modalOverlay').style.display = 'flex';
 }
-function closeModal() {
-  document.getElementById('modalOverlay').style.display = 'none';
-}
 
-function openSlotModal(section, lot, slot_no) {
-  const data = findLot(section, lot, slot_no) || normalizeLot({ section, lot, slot_no, status: 'A' });
-
-  if (STATE.isAdmin) {
-    renderEditForm(data, false);
-  } else {
-    renderDetailView(data);
+// ─── 한글 성씨 변환 ─────────────────────────────────
+const LAST_NAME_MAP = {
+  'Kim':'김','Lee':'이','Park':'박','Pak':'박','Choi':'최','Choe':'최',
+  'Jung':'정','Chung':'정','Jeong':'정','Yoon':'윤','Yun':'윤',
+  'Lim':'임','Im':'임','Kwon':'권','Cho':'조','Yang':'양','Chang':'장',
+  'Baek':'백','Paek':'백','Ahn':'안','An':'안','Oh':'오','Han':'한',
+  'Yoo':'유','Yu':'유','Hong':'홍','Sim':'심','Shim':'심',
+  'Sohn':'손','Son':'손','Moon':'문','Jun':'전','Jeon':'전',
+  'Ban':'반','Koh':'고','Ko':'고','Hyeon':'현','Hyun':'현','Gu':'구',
+  'Nam':'남','Hwang':'황','Rhee':'이','So':'소','Chun':'천','Cha':'차',
+  'Ma':'마','Suh':'서','Ra':'나','Sa':'사','Faron':'파론',
+  'Lim':'임','Baek':'백','Moon':'문','Kwon':'권',
+};
+function toKoreanName(n) {
+  if (!n || !n.trim()) return '';
+  // "Lee, Doo Ri" 형식 (Last, First)
+  if (n.includes(',')) {
+    const [last, first] = n.split(',').map(s=>s.trim());
+    const kr = LAST_NAME_MAP[last];
+    return kr ? `${kr} ${first}` : `${last}, ${first}`;
   }
+  // "Doo Ri Lee" 형식 (First Last)
+  const parts = n.trim().split(/\s+/);
+  if (parts.length < 2) return '';
+  const last = parts[parts.length-1];
+  const first = parts.slice(0,-1).join(' ');
+  const kr = LAST_NAME_MAP[last];
+  return kr ? `${kr} ${first}` : `${last}, ${first}`;
 }
 
-function renderDetailView(l) {
-  const body = `
-    <div class="detail-row"><span class="k">위치</span><span class="v mono">Section ${l.section} · Lot ${l.lot} · Slot ${l.slot_no}</span></div>
-    <div class="detail-row"><span class="k">상태</span><span class="v"><span class="status-badge ${l.status}">${STATUS_LABELS[l.status] || l.status}</span></span></div>
-    <div class="detail-row"><span class="k">이름</span><span class="v">${escapeHtml(l.name) || '—'}</span></div>
-    ${l.name_kr ? `<div class="detail-row"><span class="k">한글 이름</span><span class="v">${escapeHtml(l.name_kr)}</span></div>` : ''}
-    ${l.contact ? `<div class="detail-row"><span class="k">연락처</span><span class="v">${escapeHtml(l.contact)}</span></div>` : ''}
-    ${l.burial_date ? `<div class="detail-row"><span class="k">안장일</span><span class="v">${escapeHtml(l.burial_date)}</span></div>` : ''}
-    ${l.lot_price ? `<div class="detail-row"><span class="k">묘지 가격</span><span class="v">$${Number(l.lot_price).toLocaleString()}</span></div>` : ''}
-    ${l.funeral_cost ? `<div class="detail-row"><span class="k">장례 비용</span><span class="v">$${Number(l.funeral_cost).toLocaleString()}</span></div>` : ''}
-    ${l.paid_amount ? `<div class="detail-row"><span class="k">납부액</span><span class="v">$${Number(l.paid_amount).toLocaleString()}</span></div>` : ''}
-    ${l.payment_status ? `<div class="detail-row"><span class="k">납부 상태</span><span class="v">${escapeHtml(l.payment_status)}</span></div>` : ''}
-    ${l.notes ? `<div class="detail-row"><span class="k">비고</span><span class="v">${escapeHtml(l.notes)}</span></div>` : ''}
-    ${l.updated_at ? `<div class="detail-row"><span class="k muted">최종 수정</span><span class="v muted" style="font-size:12px;">${escapeHtml(l.updated_at)} ${l.updated_by ? '· ' + escapeHtml(l.updated_by) : ''}</span></div>` : ''}
-  `;
-  const footer = `<button class="btn" id="btnModalClose2">닫기</button>`;
-  openModal(`${l.section}구역 Lot ${l.lot} - ${l.slot_no}`, body, footer);
-  document.getElementById('btnModalClose2').addEventListener('click', closeModal);
-}
-
-function renderEditForm(l, isNew) {
-  const body = `
-    <div class="form-grid">
-      <div class="field full">
-        <label>위치</label>
-        <div class="mono" style="padding:8px 0;">Section ${l.section} · Lot ${l.lot} · Slot ${l.slot_no}</div>
-      </div>
-      <div class="field">
-        <label>상태</label>
-        <select id="f_status">
-          <option value="A" ${l.status==='A'?'selected':''}>Available (사용 가능)</option>
-          <option value="R" ${l.status==='R'?'selected':''}>Reserved (예약됨)</option>
-          <option value="C" ${l.status==='C'?'selected':''}>To Be Confirmed</option>
-          <option value="U" ${l.status==='U'?'selected':''}>Used (사용중)</option>
-          <option value="X" ${l.status==='X'?'selected':''}>특이사항</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>이름 (영문)</label>
-        <input id="f_name" type="text" value="${escapeAttr(l.name)}" placeholder="예: John Doe">
-      </div>
-      <div class="field">
-        <label>한글 이름</label>
-        <input id="f_name_kr" type="text" value="${escapeAttr(l.name_kr)}">
-      </div>
-      <div class="field">
-        <label>연락처</label>
-        <input id="f_contact" type="text" value="${escapeAttr(l.contact)}" placeholder="010-0000-0000">
-      </div>
-      <div class="field">
-        <label>안장일</label>
-        <input id="f_burial_date" type="date" value="${escapeAttr(l.burial_date)}">
-      </div>
-      <div class="field">
-        <label>묘지 가격 (USD)</label>
-        <input id="f_lot_price" type="number" value="${escapeAttr(l.lot_price)}" placeholder="${STATE.settings.default_lot_price?.value || ''}">
-      </div>
-      <div class="field">
-        <label>장례 비용 (USD)</label>
-        <input id="f_funeral_cost" type="number" value="${escapeAttr(l.funeral_cost)}" placeholder="${STATE.settings.default_funeral_cost?.value || ''}">
-      </div>
-      <div class="field">
-        <label>납부액 (USD)</label>
-        <input id="f_paid_amount" type="number" value="${escapeAttr(l.paid_amount)}">
-      </div>
-      <div class="field">
-        <label>납부 상태</label>
-        <select id="f_payment_status">
-          <option value="" ${!l.payment_status?'selected':''}>—</option>
-          <option value="완납" ${l.payment_status==='완납'?'selected':''}>완납</option>
-          <option value="일부납" ${l.payment_status==='일부납'?'selected':''}>일부납</option>
-          <option value="미납" ${l.payment_status==='미납'?'selected':''}>미납</option>
-        </select>
-      </div>
-      <div class="field full">
-        <label>비고</label>
-        <textarea id="f_notes">${escapeHtml(l.notes)}</textarea>
-      </div>
-    </div>
-  `;
-  const footer = `
-    ${!isNew ? `<button class="btn btn-danger" id="btnDeleteSlot">삭제</button>` : ''}
-    <span class="spacer"></span>
-    <button class="btn" id="btnCancelEdit">취소</button>
-    <button class="btn btn-primary" id="btnSaveSlot">저장</button>
-  `;
-  openModal(`${isNew ? '신규 등록' : '수정'} — ${l.section}구역 Lot ${l.lot} / ${l.slot_no}`, body, footer);
-
-  document.getElementById('btnCancelEdit').addEventListener('click', closeModal);
-  document.getElementById('btnSaveSlot').addEventListener('click', () => saveSlotFromForm(l));
-  const delBtn = document.getElementById('btnDeleteSlot');
-  if (delBtn) delBtn.addEventListener('click', () => confirmDeleteSlot(l));
-}
-
-function escapeAttr(s) { return escapeHtml(s || ''); }
-
-async function saveSlotFromForm(original) {
-  const payload = {
-    id: original.id,
-    section: original.section,
-    lot: original.lot,
-    slot_no: original.slot_no,
-    status: document.getElementById('f_status').value,
-    name: document.getElementById('f_name').value.trim(),
-    name_kr: document.getElementById('f_name_kr').value.trim(),
-    contact: document.getElementById('f_contact').value.trim(),
-    burial_date: document.getElementById('f_burial_date').value,
-    lot_price: document.getElementById('f_lot_price').value,
-    funeral_cost: document.getElementById('f_funeral_cost').value,
-    paid_amount: document.getElementById('f_paid_amount').value,
-    payment_status: document.getElementById('f_payment_status').value,
-    notes: document.getElementById('f_notes').value.trim(),
-  };
-
-  const saveBtn = document.getElementById('btnSaveSlot');
-  saveBtn.disabled = true;
-  saveBtn.textContent = '저장 중...';
-
-  try {
-    if (GAS_WEB_APP_URL) {
-      const res = await gasCall('upsert', { payload: JSON.stringify(payload), user: getAdminName() });
-      if (!res.ok) throw new Error(res.error || 'save failed');
-    }
-    // 로컬 state 업데이트 (낙관적 업데이트)
-    const idx = STATE.lots.findIndex(l => l.id === payload.id);
-    const merged = normalizeLot({ ...original, ...payload, updated_at: new Date().toISOString(), updated_by: getAdminName() });
-    if (idx >= 0) STATE.lots[idx] = merged; else STATE.lots.push(merged);
-
-    closeModal();
-    showToast(GAS_WEB_APP_URL ? '저장했습니다 (Google Sheets 반영됨)' : '저장했습니다 (로컬에만 반영 — Sheets 미연동)');
-    render();
-  } catch (err) {
-    showToast('저장 실패: ' + err.message, true);
-    saveBtn.disabled = false;
-    saveBtn.textContent = '저장';
-  }
-}
-
-function confirmDeleteSlot(l) {
-  if (!confirm(`${l.section}구역 Lot ${l.lot} / ${l.slot_no} 데이터를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
-  deleteSlot(l);
-}
-
-async function deleteSlot(l) {
-  try {
-    if (GAS_WEB_APP_URL) {
-      const res = await gasCall('delete', { id: l.id, user: getAdminName() });
-      if (!res.ok) throw new Error(res.error || 'delete failed');
-    }
-    STATE.lots = STATE.lots.filter(x => x.id !== l.id);
-    closeModal();
-    showToast('삭제했습니다');
-    render();
-  } catch (err) {
-    showToast('삭제 실패: ' + err.message, true);
-  }
-}
-
-function getAdminName() {
-  return localStorage.getItem('ccpc_cemetery_admin_name') || 'admin';
-}
-
-// ===================================================================
-// 신규 등록 (새 Lot/Slot 만들기 — 기존 레이아웃 밖의 항목도 등록 가능)
-// ===================================================================
-function openNewEntryModal() {
-  const body = `
-    <div class="form-grid">
-      <div class="field">
-        <label>Section</label>
-        <select id="new_section">
-          <option value="16">Section 16</option>
-          <option value="15">Section 15</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Lot 번호</label>
-        <input id="new_lot" type="text" placeholder="예: 193">
-      </div>
-      <div class="field full">
-        <label>슬롯 번호</label>
-        <input id="new_slot" type="text" placeholder="예: 81">
-      </div>
-    </div>
-    <p class="muted" style="font-size:12.5px;margin-top:14px;">
-      Section/Lot/슬롯 번호를 입력 후 '다음'을 누르면 상세 정보(이름, 비용 등)를 입력하는 화면으로 이동합니다.
-      이미 등록된 슬롯이면 기존 데이터를 불러와 수정할 수 있습니다.
-    </p>
-  `;
-  const footer = `
-    <button class="btn" id="btnCancelNew">취소</button>
-    <button class="btn btn-primary" id="btnNextNew">다음</button>
-  `;
-  openModal('신규 등록', body, footer);
-  document.getElementById('btnCancelNew').addEventListener('click', closeModal);
-  document.getElementById('btnNextNew').addEventListener('click', () => {
-    const section = document.getElementById('new_section').value;
-    const lot = document.getElementById('new_lot').value.trim();
-    const slot_no = document.getElementById('new_slot').value.trim();
-    if (!lot || !slot_no) { showToast('Lot 번호와 슬롯 번호를 입력해주세요.', true); return; }
-    const existing = findLot(section, lot, slot_no);
-    const data = existing || normalizeLot({
-      section, lot, slot_no, status: 'U',
-      lot_price: STATE.settings.default_lot_price?.value || '',
-      funeral_cost: STATE.settings.default_funeral_cost?.value || '',
-    });
-    renderEditForm(data, !existing);
-  });
-}
-
-// ===================================================================
-// 이벤트 바인딩 / 초기화
-// ===================================================================
-function bindEvents() {
-  document.querySelectorAll('.chip[data-section]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.chip[data-section]').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      STATE.bySection = chip.dataset.section;
-      render();
-    });
-  });
-
-  document.querySelectorAll('.tab[data-view]').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab[data-view]').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      STATE.view = tab.dataset.view;
-      render();
-    });
-  });
-
-  let searchDebounce;
-  document.getElementById('searchInput').addEventListener('input', (e) => {
-    clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(() => {
-      STATE.search = e.target.value;
-      render();
-    }, 150);
-  });
-
-  document.querySelectorAll('#dataTable th[data-sort]').forEach(th => {
-    th.addEventListener('click', () => {
-      const key = th.dataset.sort;
-      if (STATE.sortKey === key) STATE.sortDir *= -1;
-      else { STATE.sortKey = key; STATE.sortDir = 1; }
-      renderTable();
-    });
-  });
-
-  document.getElementById('btnSync').addEventListener('click', loadData);
-  document.getElementById('btnNewEntry').addEventListener('click', openNewEntryModal);
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('modalOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'modalOverlay') closeModal();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  document.getElementById('btnAdminToggle').addEventListener('click', toggleAdminMode);
-  document.getElementById('btnAdminOff').addEventListener('click', () => setAdminMode(false));
-}
-
-function toggleAdminMode() {
-  if (STATE.isAdmin) { setAdminMode(false); return; }
-  const pin = prompt('관리자 모드 PIN을 입력하세요:');
+// ─── 관리자 모드 ────────────────────────────────────
+function toggleAdmin() {
+  if (STATE.isAdmin) { STATE.isAdmin=false; document.getElementById('adminBanner').style.display='none'; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; showToast('관리자 모드 해제'); return; }
+  const pin = prompt('관리자 PIN:');
   if (pin === null) return;
-  // 간단한 PIN 보호 (SETUP.md에서 변경 방법 안내). 보안이 중요하면 GAS 쪽에서 별도 인증을 추가하세요.
-  const ADMIN_PIN = '0000';
-  if (pin !== ADMIN_PIN) { showToast('PIN이 일치하지 않습니다.', true); return; }
-  const name = prompt('관리자 이름(또는 이니셜)을 입력하세요 (변경 기록에 표시됩니다):', getAdminName());
-  if (name) localStorage.setItem('ccpc_cemetery_admin_name', name);
-  setAdminMode(true);
+  if (pin !== '0000') { showToast('PIN이 틀렸습니다', true); return; }
+  STATE.isAdmin = true;
+  document.getElementById('adminBanner').style.display='flex';
+  document.getElementById('btnAdminToggle').textContent='🔓 관리자 (켜짐)';
+  showToast('관리자 모드');
 }
 
-function setAdminMode(on) {
-  STATE.isAdmin = on;
-  document.getElementById('adminBanner').style.display = on ? 'flex' : 'none';
-  document.getElementById('btnAdminToggle').textContent = on ? '🔓 관리자 모드 (켜짐)' : '⚙ 관리자 모드';
-  showToast(on ? '관리자 모드를 켰습니다.' : '관리자 모드를 끔');
-  render();
-}
-
-// ------------------------------------------------------------------
-// 인트로 오버레이 — 지도 클릭 시 Section15,16 구역으로 줌인하면서 앱 진입
-// ------------------------------------------------------------------
+// ─── 인트로 ────────────────────────────────────────
 function initIntro() {
   const overlay = document.getElementById('introOverlay');
   if (!overlay) return;
-
   overlay.addEventListener('click', () => {
     if (overlay.dataset.animating) return;
     overlay.dataset.animating = '1';
-
-    // 1단계: "클릭하세요" 힌트 페이드 아웃
     const prompt = document.getElementById('introClickPrompt');
     if (prompt) prompt.style.opacity = '0';
-
-    // 2단계: 지도를 Section 15,16 구역(left:32.5%, top:75.4%)으로 줌인
     const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '35.4% 80.1%';
+    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
+    mapEl.style.transformOrigin = '30% 66%';
     mapEl.style.transform = 'scale(3.5)';
     mapEl.style.opacity = '0';
-
-    // 3단계: 줌인(5초) + 페이드아웃(2초) 완료 후 앱 표시
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        document.querySelectorAll('.tab[data-view]').forEach(t => {
-          t.classList.toggle('active', t.dataset.view === 'stats');
-        });
-      }, 600);
+      setTimeout(() => { overlay.style.display='none'; }, 600);
     }, 6200);
   });
 }
 
-// ------------------------------------------------------------------
-// 시작
-// ------------------------------------------------------------------
+// ─── 이벤트 바인딩 ──────────────────────────────────
+function bindEvents() {
+  document.querySelectorAll('.chip[data-section]').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.chip[data-section]').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      STATE.section = c.dataset.section;
+      render();
+    });
+  });
+
+  document.querySelectorAll('.view-tab[data-view]').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.view-tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      STATE.view = t.dataset.view;
+      render();
+    });
+  });
+
+  let searchTimer;
+  document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { STATE.search = e.target.value; render(); }, 150);
+  });
+
+  document.getElementById('btnSync').addEventListener('click', loadData);
+  document.getElementById('btnAdminToggle').addEventListener('click', toggleAdmin);
+  document.getElementById('btnAdminOff').addEventListener('click', () => { STATE.isAdmin=false; document.getElementById('adminBanner').style.display='none'; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; });
+  document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalOverlay').style.display='none');
+  document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') e.target.style.display='none'; });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modalOverlay').style.display='none'; });
+}
+
+// ─── 시작 ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
-  loadData();
   initIntro();
+  initMapZoom();
+  loadData();
 });
