@@ -365,6 +365,70 @@ function escapeHtml(s) {
 // ===================================================================
 // 표뷰 (Table View)
 // ===================================================================
+// 영문 성씨(Last name) → 한글 변환 매핑
+const LAST_NAME_MAP = {
+  'Kim':'김', 'Lee':'이', 'Park':'박', 'Pak':'박',
+  'Choi':'최', 'Choe':'최',
+  'Jung':'정', 'Chung':'정', 'Jeong':'정',
+  'Yoon':'윤', 'Yun':'윤',
+  'Lim':'임', 'Im':'임', 'Rhim':'임',
+  'Kwon':'권', 'Kweon':'권',
+  'Cho':'조', 'Joh':'조',
+  'Yang':'양',
+  'Chang':'장',
+  'Baek':'백', 'Paek':'백',
+  'Ahn':'안', 'An':'안',
+  'Oh':'오', 'Oh':'오',
+  'Han':'한',
+  'Yoo':'유', 'Yu':'유',
+  'Hong':'홍',
+  'Sim':'심', 'Shim':'심',
+  'Sohn':'손', 'Son':'손',
+  'Moon':'문',
+  'Jun':'전', 'Jeon':'전',
+  'Ban':'반',
+  'Koh':'고', 'Ko':'고',
+  'Faron':'파론',
+  'Hyeon':'현', 'Hyun':'현',
+  'Gu':'구', 'Koo':'구',
+  'Nam':'남',
+  'Hwang':'황',
+  'Rhee':'이', 'Ri':'이', 'Ree':'이',
+  'So':'소',
+  'Chun':'천', 'Cheon':'천',
+  'Cha':'차',
+  'Ma':'마',
+  'Suh':'서', 'Seo':'서',
+  'Ra':'나', 'Rha':'나', 'Na':'나',
+  'Sa':'사',
+  'Ha':'하',
+  'Kang':'강', 'Gang':'강',
+  'Shin':'신', 'Sin':'신',
+  'Jang':'장',
+  'Bae':'배',
+  'Kwak':'곽',
+  'Wang':'왕',
+  'Sim':'심',
+};
+
+// 영문 이름(First Last 또는 First Middle Last) → 한국식 표기(성 이름)
+function toKoreanName(engName) {
+  if (!engName || engName.trim() === '') return '';
+  const skip = ['Available','Reserved','Reserved','(C)','(R)','Exchanged'];
+  if (skip.some(s => engName.includes(s))) return '';
+  const parts = engName.trim().split(/\s+/);
+  if (parts.length < 2) return '';
+  const last = parts[parts.length - 1];
+  const firsts = parts.slice(0, parts.length - 1).join(' ');
+  const krLast = LAST_NAME_MAP[last] || last;
+  // 한글 성씨로 변환됐으면 "성 이름" 형식, 아니면 "Last First" 형식
+  if (LAST_NAME_MAP[last]) {
+    return `${krLast} ${firsts}`;
+  }
+  // 매핑 안 된 성씨는 영문 그대로 Last, First 순으로만 바꿔줌
+  return `${last}, ${firsts}`;
+}
+
 function renderTable() {
   let lots = getFilteredLots();
 
@@ -387,25 +451,25 @@ function renderTable() {
 
   const tbody = document.getElementById('tableBody');
   if (lots.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = lots.map(l => `
+  tbody.innerHTML = lots.map(l => {
+    const krName = l.name_kr || toKoreanName(l.name);
+    return `
     <tr>
       <td class="mono">${l.section}</td>
       <td class="mono">${l.lot}</td>
       <td class="mono">${l.slot_no}</td>
       <td><span class="status-badge ${l.status}">${STATUS_LABELS[l.status] || l.status}</span></td>
       <td>${escapeHtml(l.name) || '<span class="muted">—</span>'}</td>
-      <td>${l.lot_price ? '$' + Number(l.lot_price).toLocaleString() : '<span class="muted">—</span>'}</td>
-      <td>${l.funeral_cost ? '$' + Number(l.funeral_cost).toLocaleString() : '<span class="muted">—</span>'}</td>
-      <td>${l.payment_status ? escapeHtml(l.payment_status) : '<span class="muted">—</span>'}</td>
+      <td>${escapeHtml(krName) || '<span class="muted">—</span>'}</td>
       <td class="row-actions">
         <button class="btn btn-sm" data-act="view" data-id="${l.id}">보기</button>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 
   tbody.querySelectorAll('button[data-act="view"]').forEach(btn => {
     btn.addEventListener('click', () => {
