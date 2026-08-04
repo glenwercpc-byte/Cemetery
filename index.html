@@ -10,14 +10,11 @@
 </head>
 <body>
 
-<!-- ===================== INTRO OVERLAY ===================== -->
+<!-- ====== INTRO ====== -->
 <div id="introOverlay">
   <div id="introMap">
     <img id="introMapImg" src="cemetery-map.png" alt="Ridgewood Cemetery Map">
-    <!-- Section 15,16 구역 하이라이트 (지도 좌하단 구역) -->
-    <div id="introZoneHint">
-      <div id="introZoneRing"></div>
-    </div>
+    <div id="introZoneHint"><div id="introZoneRing"></div></div>
     <div id="introClickPrompt">
       <div class="intro-logo">⛪</div>
       <div class="intro-title">CCPC 묘지 관리 시스템</div>
@@ -27,14 +24,14 @@
   </div>
 </div>
 
+<!-- ====== 앱 본체 ====== -->
 <header class="app-header">
   <div class="app-title">
     <span class="mark">⛪ CCPC 묘지 관리</span>
     <span class="sub">Chicago Covenant Presbyterian Church · Cemetery Records</span>
   </div>
   <div class="header-actions">
-    <button class="btn" id="btnSync" title="Google Sheets에서 새로고침">⟳ 새로고침</button>
-    <button class="btn btn-sage" id="btnNewEntry">+ 신규 등록</button>
+    <button class="btn" id="btnSync">⟳ 새로고침</button>
     <button class="btn btn-ghost" id="btnAdminToggle">⚙ 관리자 모드</button>
   </div>
 </header>
@@ -42,79 +39,69 @@
 <div class="main">
 
   <div id="adminBanner" class="admin-toggle-banner" style="display:none;">
-    <span>🔓 관리자 모드 — 클릭으로 직접 수정 / 삭제할 수 있습니다.</span>
+    <span>🔓 관리자 모드 — 한글 이름 편집, 상태 수정 가능합니다.</span>
     <button class="btn btn-sm" id="btnAdminOff">끄기</button>
   </div>
 
+  <!-- 탭 + 섹션 선택 + 검색 -->
   <div class="toolbar">
     <div class="section-switch">
       <div class="chip active" data-section="16">Section 16</div>
       <div class="chip" data-section="15">Section 15</div>
-      <div class="chip" data-section="all">전체</div>
     </div>
 
-    <div class="search-box">
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="list">📋 List View</button>
+      <button class="view-tab" data-view="map">🗺 Map View</button>
+      <button class="view-tab" data-view="stats">📊 통계</button>
+    </div>
+
+    <div class="search-box" id="searchWrap">
       <span class="icon">🔎</span>
-      <input type="text" id="searchInput" placeholder="이름, Lot, 슬롯 번호로 검색...">
-    </div>
-
-    <div class="spacer"></div>
-
-    <div class="tabs" id="viewTabs">
-      <div class="tab active" data-view="map">🗺 지도뷰</div>
-      <div class="tab" data-view="table">📋 표뷰</div>
-      <div class="tab" data-view="stats">📊 통계</div>
+      <input type="text" id="searchInput" placeholder="이름, Lot, Grave 번호 검색...">
     </div>
   </div>
 
-  <div class="legend">
-    <div class="legend-item"><span class="swatch A"></span> Available (사용 가능)</div>
-    <div class="legend-item"><span class="swatch R"></span> Reserved (예약됨)</div>
-    <div class="legend-item"><span class="swatch C"></span> To Be Confirmed (확인 필요)</div>
-    <div class="legend-item"><span class="swatch U"></span> Used (사용중/확정)</div>
+  <div class="legend" id="legendBar">
+    <div class="legend-item"><span class="swatch A"></span> Available</div>
+    <div class="legend-item"><span class="swatch R"></span> Reserved</div>
+    <div class="legend-item"><span class="swatch C"></span> To Be Confirmed</div>
+    <div class="legend-item"><span class="swatch U"></span> Used</div>
     <span class="muted" id="lastSync"></span>
   </div>
 
-  <!-- ===================== MAP VIEW ===================== -->
-  <div id="viewMap">
-    <div class="map-wrap" id="mapContainer">
-      <div class="loading-spinner"></div> 데이터 불러오는 중...
+  <!-- ====== LIST VIEW ====== -->
+  <div id="viewList">
+    <div class="list-wrap" id="listContainer"></div>
+  </div>
+
+  <!-- ====== MAP VIEW ====== -->
+  <div id="viewMap" style="display:none;">
+    <div class="map-img-wrap" id="mapImgWrap">
+      <div class="map-img-inner" id="mapImgInner">
+        <img id="mapImg" src="" alt="Section Map">
+      </div>
+    </div>
+    <div class="map-controls">
+      <button class="btn btn-sm" id="btnZoomIn">＋ 확대</button>
+      <button class="btn btn-sm" id="btnZoomOut">－ 축소</button>
+      <button class="btn btn-sm" id="btnZoomReset">⊡ 원래 크기</button>
     </div>
   </div>
 
-  <!-- ===================== TABLE VIEW ===================== -->
-  <div id="viewTable" style="display:none;">
-    <div class="table-wrap">
-      <table class="data-table" id="dataTable">
-        <thead>
-          <tr>
-            <th data-sort="section">Section</th>
-            <th data-sort="lot">Lot</th>
-            <th data-sort="slot_no">Slot</th>
-            <th data-sort="status">상태</th>
-            <th data-sort="name">Name</th>
-            <th data-sort="name_kr">이름</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===================== STATS VIEW ===================== -->
+  <!-- ====== STATS VIEW ====== -->
   <div id="viewStats" style="display:none;">
     <div class="stats-bar" id="statsBar"></div>
-    <div id="statsDetail" class="table-wrap" style="padding:20px;"></div>
+    <div class="table-wrap" id="statsDetail"></div>
   </div>
 
 </div>
 
-<!-- ===================== Slot Detail / Edit Modal ===================== -->
+<!-- 상세 모달 -->
 <div class="overlay" id="modalOverlay" style="display:none;">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalTitle">묘지 정보</h3>
+      <h3 id="modalTitle">상세 정보</h3>
       <button class="close-x" id="modalClose">&times;</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
