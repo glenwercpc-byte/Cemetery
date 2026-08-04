@@ -928,3 +928,29 @@ table.data-table tr:hover td { background: var(--paper); }
   font-weight: 700;
   color: var(--ink-soft);
 }
+
+/* 한글 이름 인라인 편집 */
+.kr-name-cell {
+  cursor: pointer;
+  min-width: 120px;
+  transition: background 0.15s;
+}
+.kr-name-cell:hover {
+  background: var(--slate-bg);
+}
+.kr-name-empty {
+  font-size: 12px;
+  color: var(--ink-soft);
+  opacity: 0.6;
+}
+.kr-name-input {
+  width: 100%;
+  min-width: 100px;
+  padding: 4px 8px;
+  border: 2px solid var(--slate);
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  background: var(--paper-raised);
+  outline: none;
+}
