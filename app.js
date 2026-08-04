@@ -464,7 +464,9 @@ function renderTable() {
       <td class="mono">${l.slot_no}</td>
       <td><span class="status-badge ${l.status}">${STATUS_LABELS[l.status] || l.status}</span></td>
       <td>${escapeHtml(l.name) || '<span class="muted">—</span>'}</td>
-      <td>${escapeHtml(krName) || '<span class="muted">—</span>'}</td>
+      <td class="kr-name-cell" data-id="${l.id}" title="클릭하여 한글 이름 수정">
+        ${escapeHtml(krName) || '<span class="muted kr-name-empty">+ 한글 이름 입력</span>'}
+      </td>
       <td class="row-actions">
         <button class="btn btn-sm" data-act="view" data-id="${l.id}">보기</button>
       </td>
@@ -475,6 +477,62 @@ function renderTable() {
     btn.addEventListener('click', () => {
       const lot = STATE.lots.find(l => l.id === btn.dataset.id);
       if (lot) openSlotModal(lot.section, lot.lot, lot.slot_no);
+    });
+  });
+
+  // 한글 이름 인라인 편집
+  tbody.querySelectorAll('.kr-name-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (cell.querySelector('input')) return; // 이미 편집 중
+      const id = cell.dataset.id;
+      const lot = STATE.lots.find(l => l.id === id);
+      if (!lot) return;
+      const current = lot.name_kr || toKoreanName(lot.name);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = current;
+      input.className = 'kr-name-input';
+      input.placeholder = '한글 이름 입력';
+      cell.innerHTML = '';
+      cell.appendChild(input);
+      input.focus();
+      input.select();
+
+      async function saveKrName() {
+        const newVal = input.value.trim();
+        if (newVal === lot.name_kr) {
+          // 변경 없으면 복원
+          cell.textContent = newVal || '';
+          if (!newVal) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
+          return;
+        }
+        const payload = { ...lot, name_kr: newVal };
+        try {
+          if (GAS_WEB_APP_URL) {
+            const res = await gasCall('upsert', { payload: JSON.stringify(payload), user: getAdminName() });
+            if (!res.ok) throw new Error(res.error);
+          }
+          lot.name_kr = newVal;
+          cell.textContent = newVal || '';
+          if (!newVal) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
+          showToast(GAS_WEB_APP_URL ? '저장됐습니다' : '저장됐습니다 (로컬 — Sheets 미연동)');
+        } catch (err) {
+          showToast('저장 실패: ' + err.message, true);
+          cell.textContent = lot.name_kr || '';
+          if (!lot.name_kr) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
+        }
+      }
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { input.blur(); }
+        if (e.key === 'Escape') {
+          lot.name_kr = lot.name_kr || '';
+          cell.textContent = lot.name_kr;
+          if (!lot.name_kr) cell.innerHTML = '<span class="muted kr-name-empty">+ 한글 이름 입력</span>';
+        }
+      });
+      input.addEventListener('blur', saveKrName);
     });
   });
 }
