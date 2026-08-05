@@ -24,7 +24,7 @@
   </div>
 </div>
 
-<!-- ====== 앱 본체 ====== -->
+<!-- ====== 앱 본체 (세로 flex) ====== -->
 <header class="app-header">
   <div class="app-title">
     <span class="mark">⛪ CCPC 묘지 관리</span>
@@ -36,34 +36,29 @@
   </div>
 </header>
 
-<div class="main">
-
-  <div id="adminBanner" class="admin-toggle-banner" style="display:none;">
-    <span>🔓 관리자 모드 — 한글 이름 편집, 상태 수정 가능합니다.</span>
+<!-- 컨트롤 바 (스크롤해도 고정) -->
+<div class="control-bar">
+  <div id="adminBanner" class="admin-toggle-banner" style="display:none;margin-bottom:6px;">
+    <span>🔓 관리자 모드 — 셀 클릭으로 직접 수정 가능합니다.</span>
     <button class="btn btn-sm" id="btnAdminOff">끄기</button>
   </div>
-
-  <!-- 탭 + 섹션 선택 + 검색 -->
   <div class="toolbar">
     <div class="section-switch">
       <div class="chip active" data-section="15">Section 15</div>
       <div class="chip" data-section="16">Section 16</div>
     </div>
-
     <div class="view-tabs">
       <button class="view-tab" data-view="list">📋 List View</button>
       <button class="view-tab" data-view="map">🗺 Map View</button>
       <button class="view-tab" data-view="pdfview">📄 PDF View</button>
       <button class="view-tab active" data-view="stats">📊 통계</button>
     </div>
-
     <div class="search-box" id="searchWrap">
       <span class="icon">🔎</span>
       <input type="text" id="searchInput" placeholder="이름 검색 후 Enter...">
       <button id="searchClear" class="search-clear" style="display:none;" title="검색 지우기">✕</button>
     </div>
   </div>
-
   <div class="legend" id="legendBar">
     <div class="legend-item"><span class="swatch A"></span> Available</div>
     <div class="legend-item"><span class="swatch R"></span> Reserved</div>
@@ -71,59 +66,41 @@
     <div class="legend-item"><span class="swatch U"></span> Used</div>
     <span class="muted" id="lastSync"></span>
   </div>
+</div>
 
-  <!-- ====== LIST VIEW ====== -->
+<!-- 메인 콘텐츠 (뷰별 교체) -->
+<div class="main" id="mainArea">
+
+  <!-- LIST VIEW -->
   <div id="viewList">
     <div class="list-wrap" id="listContainer"></div>
   </div>
 
-  <!-- ====== MAP VIEW (인터랙티브 + PDF 나란히) ====== -->
-  <div id="viewMap" style="display:none;">
-    <div class="map-view-outer">
-      <!-- 왼쪽: 인터랙티브 그리드 -->
-      <div class="map-panel-left">
-        <div class="map-panel-title">📐 Interactive Map</div>
-        <div class="map-controls">
-          <button class="btn btn-sm" id="btnZoomIn">＋</button>
-          <button class="btn btn-sm" id="btnZoomOut">－</button>
-          <button class="btn btn-sm" id="btnZoomReset">⊡</button>
-          <span class="muted" style="font-size:12px;margin-left:6px;">셀 클릭 → 수정</span>
-        </div>
-        <div class="map-img-wrap" id="mapImgWrap"></div>
-      </div>
+  <!-- MAP VIEW — 현재 섹션 인터랙티브 그리드 전체 화면 -->
+  <div id="viewMap" style="display:none;" class="full-view">
+    <div class="map-topbar">
+      <button class="btn btn-sm" id="btnZoomIn">＋</button>
+      <button class="btn btn-sm" id="btnZoomOut">－</button>
+      <button class="btn btn-sm" id="btnZoomReset">⊡</button>
+      <span class="muted" style="font-size:12px;margin-left:6px;">셀 클릭 → 수정</span>
+    </div>
+    <div class="map-img-wrap full-map-wrap" id="mapImgWrap"></div>
+  </div>
 
-      <!-- 오른쪽: PDF 원본 (Section 15, 16 동시) -->
-      <div class="map-panel-right">
-        <div class="map-panel-title">📄 PDF 원본</div>
-        <div class="pdf-both-wrap">
-          <div class="pdf-each">
-            <div class="pdf-each-title">Section 15</div>
-            <div class="pdf-controls">
-              <button class="btn btn-sm" data-pdf="15" data-act="in">＋</button>
-              <button class="btn btn-sm" data-pdf="15" data-act="out">－</button>
-              <button class="btn btn-sm" data-pdf="15" data-act="reset">⊡</button>
-            </div>
-            <div class="pdf-scroll-wrap" id="pdfWrap15">
-              <img id="pdfImg15" src="map-section15-1.jpg" alt="Section 15">
-            </div>
-          </div>
-          <div class="pdf-each">
-            <div class="pdf-each-title">Section 16</div>
-            <div class="pdf-controls">
-              <button class="btn btn-sm" data-pdf="16" data-act="in">＋</button>
-              <button class="btn btn-sm" data-pdf="16" data-act="out">－</button>
-              <button class="btn btn-sm" data-pdf="16" data-act="reset">⊡</button>
-            </div>
-            <div class="pdf-scroll-wrap" id="pdfWrap16">
-              <img id="pdfImg16" src="map-section16-1.jpg" alt="Section 16">
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- PDF VIEW — 현재 섹션 PDF 전체 화면 -->
+  <div id="viewPdf" style="display:none;" class="full-view">
+    <div class="map-topbar">
+      <button class="btn btn-sm" id="btnPdfZoomIn">＋</button>
+      <button class="btn btn-sm" id="btnPdfZoomOut">－</button>
+      <button class="btn btn-sm" id="btnPdfZoomReset">⊡</button>
+      <span class="muted" style="font-size:12px;margin-left:6px;" id="pdfLabel"></span>
+    </div>
+    <div class="pdf-scroll-wrap full-pdf-wrap" id="pdfMainWrap">
+      <img id="pdfMainImg" src="" alt="PDF View">
     </div>
   </div>
 
-  <!-- ====== STATS VIEW ====== -->
+  <!-- STATS VIEW -->
   <div id="viewStats" style="display:none;">
     <div class="stats-bar" id="statsBar"></div>
     <div class="table-wrap" id="statsDetail"></div>
@@ -131,7 +108,7 @@
 
 </div>
 
-<!-- 상세 모달 -->
+<!-- 상세/수정 모달 -->
 <div class="overlay" id="modalOverlay" style="display:none;">
   <div class="modal">
     <div class="modal-header">
