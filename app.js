@@ -4,7 +4,7 @@
 
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx_rg95yqYiOW648SCmNgMoGXy1l6ErtkDqTwtnbaH0wTBNaM_j4ynHiaLY_CX90x8BlQ/exec';
 
-const STATUS_LABELS = { A:'Available', R:'Reserved', C:'Need Confirm', U:'Used' };
+const STATUS_LABELS = { A:'Available', R:'Reserved', C:'확인 필요', U:'Used' };
 
 let STATE = {
   data: [],           // 전체 데이터
@@ -133,7 +133,7 @@ function renderList() {
       STATE.search = '';
       document.getElementById('searchInput').value = '';
       render();
-    }, 3000);
+    }, 5000);
     return;
   }
 
@@ -305,7 +305,7 @@ function renderStats() {
     <div class="stat sage"><div class="num">${grand.available}</div><div class="lbl">Available</div></div>
     <div class="stat"><div class="num">${grand.used}</div><div class="lbl">사용중</div></div>
     <div class="stat gold"><div class="num">${grand.reserved}</div><div class="lbl">Reserved</div></div>
-    <div class="stat clay"><div class="num">${grand.confirmed}</div><div class="lbl">Need Confirm</div></div>
+    <div class="stat clay"><div class="num">${grand.confirmed}</div><div class="lbl">확인 필요</div></div>
   `;
 
   const detail = document.getElementById('statsDetail');
@@ -329,7 +329,7 @@ function renderStats() {
         <div class="stats-cell available"><div class="stats-cell-num">${d.available}</div><div class="stats-cell-lbl">Available</div><div class="stats-cell-pct">${d.total?Math.round(d.available/d.total*100):0}%</div></div>
         <div class="stats-cell used"><div class="stats-cell-num">${d.used}</div><div class="stats-cell-lbl">사용중</div><div class="stats-cell-pct">${d.total?Math.round(d.used/d.total*100):0}%</div></div>
         <div class="stats-cell reserved"><div class="stats-cell-num">${d.reserved}</div><div class="stats-cell-lbl">Reserved</div><div class="stats-cell-pct">${d.total?Math.round(d.reserved/d.total*100):0}%</div></div>
-        <div class="stats-cell confirmed"><div class="stats-cell-num">${d.confirmed}</div><div class="stats-cell-lbl">Need Confirm</div><div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div></div>
+        <div class="stats-cell confirmed"><div class="stats-cell-num">${d.confirmed}</div><div class="stats-cell-lbl">확인 필요</div><div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div></div>
       </div>
     </div>`;
   }).join('');
