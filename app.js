@@ -108,9 +108,9 @@ function getLots() {
 // ─── Render dispatch ───────────────────────────────
 function render() {
   document.getElementById('viewList').style.display  = STATE.view === 'list'  ? '' : 'none';
-  document.getElementById('viewMap').style.display   = STATE.view === 'map'   ? '' : 'none';
+  document.getElementById('viewMap').style.display   = (STATE.view === 'map' || STATE.view === 'pdfview') ? '' : 'none';
   document.getElementById('viewStats').style.display = STATE.view === 'stats' ? '' : 'none';
-  document.getElementById('searchWrap').style.display = STATE.view !== 'map' ? '' : 'none';
+  document.getElementById('searchWrap').style.display = ''; // 항상 표시
 
   if (STATE.view === 'list')  renderList();
   if (STATE.view === 'map')   renderMap();
@@ -128,14 +128,16 @@ function renderList() {
 
   if (Object.keys(lots).length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div>';
-    // 3초 후 검색 초기화 후 전체 화면으로 복귀
-    setTimeout(() => {
+    clearTimeout(window._searchReturnTimer);
+    window._searchReturnTimer = setTimeout(() => {
       STATE.search = '';
       document.getElementById('searchInput').value = '';
       render();
     }, 5000);
     return;
   }
+  // 결과 있으면 자동복귀 취소
+  clearTimeout(window._searchReturnTimer);
 
   // 컬럼 헤더 (DIR 없음)
   const headerCols = `<div class="lv-h-grave">Grave</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`;
@@ -182,6 +184,24 @@ function renderList() {
   }
 
   container.innerHTML = html;
+
+  // 검색 중이면: 첫 번째 결과 Lot 그룹으로 스크롤 + 해당 셀 빨간 테두리 깜빡임
+  if (STATE.search.trim()) {
+    setTimeout(() => {
+      const firstGroup = container.querySelector('.lot-group');
+      if (firstGroup) firstGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // 검색 매칭된 lv-row에 깜빡임 효과
+      container.querySelectorAll('.lv-row').forEach(row => {
+        const r = STATE.data.find(d => d.id === row.dataset.id);
+        if (!r) return;
+        const q = STATE.search.trim().toLowerCase();
+        if (r.lot.toLowerCase().includes(q) || r.grave.toLowerCase().includes(q) ||
+            (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)) {
+          row.classList.add('search-blink');
+        }
+      });
+    }, 50);
+  }
 
   // 행 클릭 → 상세 모달
   container.querySelectorAll('.lv-row').forEach(row => {
@@ -352,6 +372,25 @@ function renderMap() {
 
   wrap.innerHTML = dirHtml + html;
 
+  // 검색 중이면: 매칭 셀 빨간 테두리 + 해당 영역으로 스크롤
+  if (STATE.search.trim()) {
+    const q = STATE.search.trim().toLowerCase();
+    const matchedCells = [];
+    wrap.querySelectorAll('.imap-cell').forEach(cell => {
+      const { sec: csec, lot, grave } = cell.dataset;
+      const r = findRecord(csec, lot, grave);
+      if (!r) return;
+      if (lot.toLowerCase().includes(q) || grave.toLowerCase().includes(q) ||
+          (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)) {
+        cell.classList.add('search-blink');
+        matchedCells.push(cell);
+      }
+    });
+    if (matchedCells.length > 0) {
+      setTimeout(() => matchedCells[0].scrollIntoView({ behavior:'smooth', block:'center', inline:'center' }), 100);
+    }
+  }
+
   // 셀 클릭 → 수정 모달
   wrap.querySelectorAll('.imap-cell').forEach(cell => {
     cell.addEventListener('click', () => {
@@ -442,24 +481,77 @@ function initMapZoom() {
     if (grid) grid.style.transform = `scale(${STATE.mapZoom})`;
   }
 
-  // 마우스 휠 줌
+  // 마우스 휠 줌 (인터랙티브)
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
     STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * (e.deltaY>0?0.9:1.1), 0.4), 5);
     applyZoom();
   }, { passive: false });
 
-  // 드래그
+  // 드래그 (인터랙티브)
   let isDrag=false, sx, sy, sl, st;
   wrap.addEventListener('mousedown', e => { isDrag=true; sx=e.pageX-wrap.offsetLeft; sy=e.pageY-wrap.offsetTop; sl=wrap.scrollLeft; st=wrap.scrollTop; wrap.style.cursor='grabbing'; });
   wrap.addEventListener('mouseleave', ()=>{ isDrag=false; wrap.style.cursor='grab'; });
   wrap.addEventListener('mouseup',    ()=>{ isDrag=false; wrap.style.cursor='grab'; });
   wrap.addEventListener('mousemove',  e=>{ if(!isDrag) return; e.preventDefault(); wrap.scrollLeft=sl-(e.pageX-wrap.offsetLeft-sx); wrap.scrollTop=st-(e.pageY-wrap.offsetTop-sy); });
+
+  // PDF View 토글
+  const PDF_IMAGES = { '15': 'map-section15-1.jpg', '16': 'map-section16-1.jpg' };
+  let pdfZoom = 1;
+  let pdfVisible = false;
+
+  document.getElementById('btnTogglePdf').addEventListener('click', () => {
+    pdfVisible = !pdfVisible;
+    document.getElementById('mapPanelPdf').style.display = pdfVisible ? '' : 'none';
+    document.getElementById('btnTogglePdf').textContent = pdfVisible ? '📄 PDF View 닫기' : '📄 PDF View 열기';
+    document.getElementById('mapPanelWrap').className = pdfVisible ? 'map-panel-wrap split' : 'map-panel-wrap';
+    // 현재 섹션 이미지 로드
+    const img = document.getElementById('pdfImg');
+    const src = PDF_IMAGES[STATE.section];
+    if (img.src.indexOf(src) < 0) { img.src = src; pdfZoom = 1; img.style.transform = 'scale(1)'; }
+  });
+
+  // Section 바뀌면 PDF 이미지도 교체
+  const origRenderMap = renderMap;
+  STATE._pdfSyncSection = null;
+
+  document.getElementById('btnPdfZoomIn').onclick    = () => { pdfZoom = Math.min(pdfZoom*1.25,5); document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`; };
+  document.getElementById('btnPdfZoomOut').onclick   = () => { pdfZoom = Math.max(pdfZoom/1.25,0.4); document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`; };
+  document.getElementById('btnPdfZoomReset').onclick = () => { pdfZoom=1; document.getElementById('pdfImg').style.transform='scale(1)'; };
+
+  // PDF 패널 드래그
+  const pdfW = document.getElementById('pdfWrap');
+  let pd=false, px, py, pl, pt;
+  pdfW.addEventListener('mousedown', e=>{ pd=true; px=e.pageX-pdfW.offsetLeft; py=e.pageY-pdfW.offsetTop; pl=pdfW.scrollLeft; pt=pdfW.scrollTop; pdfW.style.cursor='grabbing'; });
+  pdfW.addEventListener('mouseleave', ()=>{ pd=false; pdfW.style.cursor='grab'; });
+  pdfW.addEventListener('mouseup',    ()=>{ pd=false; pdfW.style.cursor='grab'; });
+  pdfW.addEventListener('mousemove',  e=>{ if(!pd) return; pdfW.scrollLeft=pl-(e.pageX-pdfW.offsetLeft-px); pdfW.scrollTop=pt-(e.pageY-pdfW.offsetTop-py); });
+  pdfW.addEventListener('wheel', e => {
+    e.preventDefault();
+    pdfZoom = Math.min(Math.max(pdfZoom*(e.deltaY>0?0.9:1.1),0.4),5);
+    document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`;
+  }, { passive:false });
+
+  // Section 바뀔 때 PDF 이미지 동기화
+  const origChipClick = null;
+  document.querySelectorAll('.chip[data-section]').forEach(c => {
+    c.addEventListener('click', () => {
+      if (pdfVisible) {
+        const img = document.getElementById('pdfImg');
+        img.src = PDF_IMAGES[c.dataset.section];
+        pdfZoom = 1; img.style.transform = 'scale(1)';
+      }
+    });
+  });
 }
 
 // ─── STATS VIEW ────────────────────────────────────
 function renderStats() {
-  const all = STATE.data;
+  const q = STATE.search.trim().toLowerCase();
+  const all = q ? STATE.data.filter(r =>
+    r.lot.toLowerCase().includes(q) || r.grave.toLowerCase().includes(q) ||
+    (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)
+  ) : STATE.data;
   const sections = ['15','16'];
   const bySection = {};
   sections.forEach(s => { bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0, lots: new Set() }; });
