@@ -131,16 +131,17 @@ function renderList() {
     return;
   }
 
-  // 헤더
-  const hasDir = STATE.section === '16';
-  const headerCols = hasDir
-    ? `<div class="lv-h-grave">Grave</div><div class="lv-h-dir">Dir</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`
-    : `<div class="lv-h-grave">Grave</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`;
+  // 컬럼 헤더 (DIR 없음)
+  const headerCols = `<div class="lv-h-grave">Grave</div><div class="lv-h-status">상태</div><div class="lv-h-name">Name</div><div class="lv-h-kr">이름</div>`;
 
+  const sorted = Object.entries(lots).sort((a,b) => parseInt(a[0]) - parseInt(b[0]));
+
+  // 4개씩 묶어서 행(row-of-lots) 구성
   let html = '';
-  Object.entries(lots)
-    .sort((a,b) => parseInt(a[0]) - parseInt(b[0]))
-    .forEach(([lotNo, graves]) => {
+  for (let i = 0; i < sorted.length; i += 4) {
+    const chunk = sorted.slice(i, i + 4);
+    html += `<div class="lots-row">`;
+    chunk.forEach(([lotNo, graves]) => {
       const usedCount = graves.filter(r => r.status !== 'A').length;
       const availCount = graves.filter(r => r.status === 'A').length;
       html += `
@@ -152,18 +153,16 @@ function renderList() {
             <span class="ls-avail">Available ${availCount}</span>
           </span>
         </div>
-        <div class="lv-header ${hasDir ? 'has-dir' : ''}">${headerCols}</div>
+        <div class="lv-header">${headerCols}</div>
         <div class="lv-rows">
       `;
       graves
         .sort((a,b) => parseInt(a.grave) - parseInt(b.grave))
         .forEach(r => {
           const krVal = r.name_kr || toKoreanName(r.name);
-          const dirCell = hasDir ? `<div class="lv-cell lv-dir">${escHtml(r.dir)}</div>` : '';
           html += `
-          <div class="lv-row status-bg-${r.status}${hasDir?' has-dir-row':''}" data-id="${r.id}">
+          <div class="lv-row status-bg-${r.status}" data-id="${r.id}">
             <div class="lv-cell lv-grave mono">${escHtml(r.grave)}</div>
-            ${dirCell}
             <div class="lv-cell lv-status"><span class="status-badge ${r.status}">${STATUS_LABELS[r.status]||r.status}</span></div>
             <div class="lv-cell lv-name">${r.status === 'A' ? '<span class="avail-dash">—</span>' : escHtml(r.name)}</div>
             <div class="lv-cell lv-kr kr-name-cell" data-id="${r.id}" title="클릭 → 한글 이름 수정">
@@ -173,6 +172,8 @@ function renderList() {
         });
       html += `</div></div>`;
     });
+    html += `</div>`;
+  }
 
   container.innerHTML = html;
 
