@@ -186,8 +186,17 @@ function renderList() {
     });
 
     if (foundRows.length > 0) {
-      // 찾으면 → 해당 첫 번째 행으로 스크롤
+      // 찾으면 → Lot 번호 알림 + 첫 번째 행으로 스크롤
       clearTimeout(window._searchReturnTimer);
+      const foundLots = [...new Set(foundRows.map(row => {
+        const r = STATE.data.find(d => d.id === row.dataset.id);
+        return r ? r.lot : null;
+      }).filter(Boolean))];
+      if (foundLots.length === 1) {
+        showToast(`Lot ${foundLots[0]} 에서 찾았습니다.`);
+      } else {
+        showToast(`Lot ${foundLots.join(', ')} 에서 ${foundRows.length}명 찾았습니다.`);
+      }
       setTimeout(() => foundRows[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     } else {
       // 못 찾으면 → "없음" 메시지 + 5초 후 초기화
@@ -354,7 +363,7 @@ function renderMap() {
 
       html += `<div class="imap-cell status-cell-${status}" data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}" title="Lot ${lotDef.lot} / Grave ${grave}">
         <div class="imap-grave-no">${grave}</div>
-        ${status !== 'A' && displayName ? `<div class="imap-name">${escHtml(displayName)}</div>` : ''}
+        ${status !== 'A' && displayName ? `<div class="imap-name" title="${escHtml(displayName)}">${escHtml(displayName.slice(0,4))}</div>` : ''}
       </div>`;
     });
 
@@ -387,6 +396,12 @@ function renderMap() {
     });
     if (matchedCells.length > 0) {
       clearTimeout(window._searchReturnTimer);
+      const foundLots = [...new Set(matchedCells.map(c => c.dataset.lot))];
+      if (foundLots.length === 1) {
+        showToast(`Lot ${foundLots[0]} 에서 찾았습니다.`);
+      } else {
+        showToast(`Lot ${foundLots.join(', ')} 에서 ${matchedCells.length}명 찾았습니다.`);
+      }
       setTimeout(() => matchedCells[0].scrollIntoView({ behavior:'smooth', block:'center', inline:'center' }), 100);
     } else {
       showToast('검색 결과가 없습니다.', true);
@@ -504,53 +519,35 @@ function initMapZoom() {
   wrap.addEventListener('mouseup',    ()=>{ isDrag=false; wrap.style.cursor='grab'; });
   wrap.addEventListener('mousemove',  e=>{ if(!isDrag) return; e.preventDefault(); wrap.scrollLeft=sl-(e.pageX-wrap.offsetLeft-sx); wrap.scrollTop=st-(e.pageY-wrap.offsetTop-sy); });
 
-  // PDF View 토글
-  const PDF_IMAGES = { '15': 'map-section15-1.jpg', '16': 'map-section16-1.jpg' };
-  let pdfZoom = 1;
-  let pdfVisible = false;
+  // PDF View — Section 15, 16 각각 줌/드래그
+  const pdfZooms = { '15': 1, '16': 1 };
 
-  document.getElementById('btnTogglePdf').addEventListener('click', () => {
-    pdfVisible = !pdfVisible;
-    document.getElementById('mapPanelPdf').style.display = pdfVisible ? '' : 'none';
-    document.getElementById('btnTogglePdf').textContent = pdfVisible ? '📄 PDF View 닫기' : '📄 PDF View 열기';
-    document.getElementById('mapPanelWrap').className = pdfVisible ? 'map-panel-wrap split' : 'map-panel-wrap';
-    // 현재 섹션 이미지 로드
-    const img = document.getElementById('pdfImg');
-    const src = PDF_IMAGES[STATE.section];
-    if (img.src.indexOf(src) < 0) { img.src = src; pdfZoom = 1; img.style.transform = 'scale(1)'; }
+  document.querySelectorAll('[data-pdf][data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sec = btn.dataset.pdf;
+      const act = btn.dataset.act;
+      const img = document.getElementById(`pdfImg${sec}`);
+      if (act === 'in')    pdfZooms[sec] = Math.min(pdfZooms[sec]*1.3, 6);
+      if (act === 'out')   pdfZooms[sec] = Math.max(pdfZooms[sec]/1.3, 0.3);
+      if (act === 'reset') pdfZooms[sec] = 1;
+      img.style.transform = `scale(${pdfZooms[sec]})`;
+    });
   });
 
-  // Section 바뀌면 PDF 이미지도 교체
-  const origRenderMap = renderMap;
-  STATE._pdfSyncSection = null;
-
-  document.getElementById('btnPdfZoomIn').onclick    = () => { pdfZoom = Math.min(pdfZoom*1.25,5); document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`; };
-  document.getElementById('btnPdfZoomOut').onclick   = () => { pdfZoom = Math.max(pdfZoom/1.25,0.4); document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`; };
-  document.getElementById('btnPdfZoomReset').onclick = () => { pdfZoom=1; document.getElementById('pdfImg').style.transform='scale(1)'; };
-
-  // PDF 패널 드래그
-  const pdfW = document.getElementById('pdfWrap');
-  let pd=false, px, py, pl, pt;
-  pdfW.addEventListener('mousedown', e=>{ pd=true; px=e.pageX-pdfW.offsetLeft; py=e.pageY-pdfW.offsetTop; pl=pdfW.scrollLeft; pt=pdfW.scrollTop; pdfW.style.cursor='grabbing'; });
-  pdfW.addEventListener('mouseleave', ()=>{ pd=false; pdfW.style.cursor='grab'; });
-  pdfW.addEventListener('mouseup',    ()=>{ pd=false; pdfW.style.cursor='grab'; });
-  pdfW.addEventListener('mousemove',  e=>{ if(!pd) return; pdfW.scrollLeft=pl-(e.pageX-pdfW.offsetLeft-px); pdfW.scrollTop=pt-(e.pageY-pdfW.offsetTop-py); });
-  pdfW.addEventListener('wheel', e => {
-    e.preventDefault();
-    pdfZoom = Math.min(Math.max(pdfZoom*(e.deltaY>0?0.9:1.1),0.4),5);
-    document.getElementById('pdfImg').style.transform=`scale(${pdfZoom})`;
-  }, { passive:false });
-
-  // Section 바뀔 때 PDF 이미지 동기화
-  const origChipClick = null;
-  document.querySelectorAll('.chip[data-section]').forEach(c => {
-    c.addEventListener('click', () => {
-      if (pdfVisible) {
-        const img = document.getElementById('pdfImg');
-        img.src = PDF_IMAGES[c.dataset.section];
-        pdfZoom = 1; img.style.transform = 'scale(1)';
-      }
-    });
+  // PDF 패널 드래그 (15, 16 각각)
+  ['15','16'].forEach(sec => {
+    const pdfW = document.getElementById(`pdfWrap${sec}`);
+    if (!pdfW) return;
+    let pd=false, px, py, pl, pt;
+    pdfW.addEventListener('mousedown', e=>{ pd=true; px=e.pageX-pdfW.offsetLeft; py=e.pageY-pdfW.offsetTop; pl=pdfW.scrollLeft; pt=pdfW.scrollTop; pdfW.style.cursor='grabbing'; });
+    pdfW.addEventListener('mouseleave', ()=>{ pd=false; pdfW.style.cursor='grab'; });
+    pdfW.addEventListener('mouseup',    ()=>{ pd=false; pdfW.style.cursor='grab'; });
+    pdfW.addEventListener('mousemove',  e=>{ if(!pd) return; pdfW.scrollLeft=pl-(e.pageX-pdfW.offsetLeft-px); pdfW.scrollTop=pt-(e.pageY-pdfW.offsetTop-py); });
+    pdfW.addEventListener('wheel', e => {
+      e.preventDefault();
+      pdfZooms[sec] = Math.min(Math.max(pdfZooms[sec]*(e.deltaY>0?0.9:1.1),0.3),6);
+      document.getElementById(`pdfImg${sec}`).style.transform=`scale(${pdfZooms[sec]})`;
+    }, { passive:false });
   });
 }
 
