@@ -84,15 +84,8 @@ function showToast(msg, isErr) {
 
 // ─── Filter ────────────────────────────────────────
 function getFiltered() {
-  let data = STATE.data.filter(r => r.section === STATE.section);
-  if (STATE.search.trim()) {
-    const q = STATE.search.trim().toLowerCase();
-    data = data.filter(r =>
-      r.lot.includes(q) || r.grave.includes(q) ||
-      r.name.toLowerCase().includes(q) || r.name_kr.toLowerCase().includes(q)
-    );
-  }
-  return data;
+  // 검색어와 무관하게 항상 현재 section 전체 반환
+  return STATE.data.filter(r => r.section === STATE.section);
 }
 
 function getLots() {
@@ -127,16 +120,9 @@ function renderList() {
   const container = document.getElementById('listContainer');
 
   if (Object.keys(lots).length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="big">🔍</div>검색 결과가 없습니다.</div>';
-    clearTimeout(window._searchReturnTimer);
-    window._searchReturnTimer = setTimeout(() => {
-      STATE.search = '';
-      document.getElementById('searchInput').value = '';
-      render();
-    }, 5000);
+    container.innerHTML = '<div class="empty-state"><div class="big">🔍</div>데이터가 없습니다.</div>';
     return;
   }
-  // 결과 있으면 자동복귀 취소
   clearTimeout(window._searchReturnTimer);
 
   // 컬럼 헤더 (DIR 없음)
@@ -185,22 +171,35 @@ function renderList() {
 
   container.innerHTML = html;
 
-  // 검색 중이면: 첫 번째 결과 Lot 그룹으로 스크롤 + 해당 셀 빨간 테두리 깜빡임
+  // 검색어가 있으면: 매칭 셀 강조 + 스크롤. 없으면 5초 후 초기화
   if (STATE.search.trim()) {
-    setTimeout(() => {
-      const firstGroup = container.querySelector('.lot-group');
-      if (firstGroup) firstGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // 검색 매칭된 lv-row에 깜빡임 효과
-      container.querySelectorAll('.lv-row').forEach(row => {
-        const r = STATE.data.find(d => d.id === row.dataset.id);
-        if (!r) return;
-        const q = STATE.search.trim().toLowerCase();
-        if (r.lot.toLowerCase().includes(q) || r.grave.toLowerCase().includes(q) ||
-            (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)) {
-          row.classList.add('search-blink');
-        }
-      });
-    }, 50);
+    const q = STATE.search.trim().toLowerCase();
+    let foundRows = [];
+    container.querySelectorAll('.lv-row').forEach(row => {
+      const r = STATE.data.find(d => d.id === row.dataset.id);
+      if (!r) return;
+      if (r.lot.toLowerCase().includes(q) || r.grave.toLowerCase().includes(q) ||
+          (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)) {
+        row.classList.add('search-blink');
+        foundRows.push(row);
+      }
+    });
+
+    if (foundRows.length > 0) {
+      // 찾으면 → 해당 첫 번째 행으로 스크롤
+      clearTimeout(window._searchReturnTimer);
+      setTimeout(() => foundRows[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+    } else {
+      // 못 찾으면 → "없음" 메시지 + 5초 후 초기화
+      showToast('검색 결과가 없습니다.', true);
+      clearTimeout(window._searchReturnTimer);
+      window._searchReturnTimer = setTimeout(() => {
+        STATE.search = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchClear').style.display = 'none';
+        render();
+      }, 5000);
+    }
   }
 
   // 행 클릭 → 상세 모달
@@ -372,7 +371,7 @@ function renderMap() {
 
   wrap.innerHTML = dirHtml + html;
 
-  // 검색 중이면: 매칭 셀 빨간 테두리 + 해당 영역으로 스크롤
+  // 검색 중이면: 매칭 셀 빨간 테두리 + 해당 영역으로 스크롤. 없으면 5초 복귀
   if (STATE.search.trim()) {
     const q = STATE.search.trim().toLowerCase();
     const matchedCells = [];
@@ -387,7 +386,17 @@ function renderMap() {
       }
     });
     if (matchedCells.length > 0) {
+      clearTimeout(window._searchReturnTimer);
       setTimeout(() => matchedCells[0].scrollIntoView({ behavior:'smooth', block:'center', inline:'center' }), 100);
+    } else {
+      showToast('검색 결과가 없습니다.', true);
+      clearTimeout(window._searchReturnTimer);
+      window._searchReturnTimer = setTimeout(() => {
+        STATE.search = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchClear').style.display = 'none';
+        render();
+      }, 5000);
     }
   }
 
@@ -704,11 +713,31 @@ function bindEvents() {
     });
   });
 
-  let searchTimer;
-  document.getElementById('searchInput').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => { STATE.search = e.target.value; render(); }, 150);
+  // 검색: 엔터로만 실행
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      STATE.search = searchInput.value;
+      searchClear.style.display = STATE.search ? 'flex' : 'none';
+      render();
+    }
+    if (e.key === 'Escape') {
+      clearSearch();
+    }
   });
+
+  searchClear.addEventListener('click', clearSearch);
+
+  function clearSearch() {
+    STATE.search = '';
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    clearTimeout(window._searchReturnTimer);
+    render();
+  }
 
   document.getElementById('btnSync').addEventListener('click', loadData);
   document.getElementById('btnAdminToggle').addEventListener('click', toggleAdmin);
