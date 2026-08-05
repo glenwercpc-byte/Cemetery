@@ -9,7 +9,7 @@ const STATUS_LABELS = { A:'Available', R:'Reserved', C:'확인 필요', U:'Used'
 let STATE = {
   data: [],           // 전체 데이터
   section: '15',
-  view: 'list',
+  view: 'stats',
   search: '',
   isAdmin: false,
   mapZoom: 1,
@@ -287,18 +287,21 @@ function renderStats() {
   const all = STATE.data;
   const sections = ['15','16'];
   const bySection = {};
-  sections.forEach(s => { bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0 }; });
+  sections.forEach(s => { bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0, lots: new Set() }; });
   all.forEach(r => {
     const s = r.section;
     if (!bySection[s]) return;
     bySection[s].total++;
+    bySection[s].lots.add(r.lot);
     if (r.status==='A') bySection[s].available++;
     else if (r.status==='R') bySection[s].reserved++;
     else if (r.status==='C') bySection[s].confirmed++;
     else bySection[s].used++;
   });
   const grand = { total:0, available:0, used:0, reserved:0, confirmed:0 };
-  sections.forEach(s => Object.keys(grand).forEach(k => grand[k] += bySection[s][k]));
+  sections.forEach(s => {
+    ['total','available','used','reserved','confirmed'].forEach(k => grand[k] += bySection[s][k]);
+  });
 
   document.getElementById('statsBar').innerHTML = `
     <div class="stat"><div class="num">${grand.total}</div><div class="lbl">전체 슬롯</div></div>
@@ -312,11 +315,12 @@ function renderStats() {
   detail.style.cssText = 'background:transparent;border:none;display:flex;gap:24px;flex-wrap:wrap;padding:0;';
   detail.innerHTML = sections.map(s => {
     const d = bySection[s];
+    const lotCount = d.lots.size;
     return `
     <div class="stats-section-card">
       <div class="stats-section-header">
         <span class="stats-section-title">Section ${s}</span>
-        <span class="stats-section-sub">전체 ${d.total}개 슬롯</span>
+        <span class="stats-section-sub">전체 ${d.total}개 슬롯 · ${lotCount}개 Lot</span>
       </div>
       <div class="stats-progress-wrap">
         <div class="stats-progress-bar">
