@@ -411,3 +411,27 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
 }
 .pdf-wrap:active { cursor: grabbing; }
 .pdf-wrap img { transform-origin: top left; display: block; max-width: none; }
+
+/* 검색창 X 버튼 */
+.search-box { position: relative; }
+.search-box input { padding-right: 32px; }
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 14px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+  line-height: 1;
+}
+.search-clear:hover { background: var(--line); color: var(--ink); }
