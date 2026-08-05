@@ -233,53 +233,228 @@ function renderList() {
 }
 
 // ─── MAP VIEW ──────────────────────────────────────
-const MAP_IMAGES = { '15': 'map-section15-1.jpg', '16': 'map-section16-1.jpg' };
+// ─── MAP LAYOUTS ────────────────────────────────────
+// PDF 레이아웃을 그대로 재현한 그리드 구조 정의
+// 각 lot: { lot, col, row, graves: [grave번호 순서대로], cols: 한 행에 몇 개 }
+const MAP_LAYOUTS = {
+  '15': {
+    gridCols: 20, gridRows: 5,
+    lots: [
+      // 상단행 (WEST) — 286,285,284,283,282,281,280,279,278
+      { lot:'286', col:1,  row:1, cols:3, graves:['58','59','60'] },
+      { lot:'285', col:4,  row:1, cols:3, graves:['57','61','62'] },
+      { lot:'284', col:7,  row:1, cols:4, graves:['51','52','53','54'] },  // (51,52는 Exchanged)
+      { lot:'283', col:11, row:1, cols:4, graves:['33','34','35','36','37','38'] },
+      { lot:'282', col:15, row:1, cols:1, graves:['39'] },
+      { lot:'281', col:16, row:1, cols:2, graves:['55','56'] },
+      { lot:'280', col:18, row:1, cols:4, graves:['40','41','42','43','44','45'] },
+      { lot:'279', col:12, row:2, cols:4, graves:['46','47'] },
+      { lot:'278', col:16, row:2, cols:3, graves:['48','49','50'] },
+      // 하단행 (EAST) — 233,234,235,236,237,238,239,240,241,242
+      { lot:'233', col:1,  row:4, cols:5, graves:['63','64','65','1','2'] },
+      { lot:'234', col:4,  row:4, cols:5, graves:['66','67','68','69','70','1','2','3'] },
+      { lot:'235', col:7,  row:4, cols:4, graves:['31','32','71','72','73','74','4'] },
+      { lot:'236', col:10, row:4, cols:3, graves:['5','6','7'] },
+      { lot:'237', col:12, row:4, cols:4, graves:['8','9','10','11','12','13'] },
+      { lot:'238', col:15, row:4, cols:4, graves:['14','15','16','17','18','19','75','76'] },
+      { lot:'239', col:17, row:4, cols:4, graves:['77','78','79','80'] },
+      { lot:'240', col:15, row:5, cols:4, graves:['20','21','22','23'] },
+      { lot:'241', col:17, row:5, cols:3, graves:['24','25','26','27','28'] },
+      { lot:'242', col:19, row:5, cols:3, graves:['29','30','48'] },
+    ]
+  },
+  '16': {
+    gridCols: 28, gridRows: 8,
+    lots: [
+      // 상단 소블록 232,231,230
+      { lot:'232', col:1,  row:1, cols:2, graves:['1','2','3','4'] },
+      { lot:'231', col:4,  row:1, cols:2, graves:['1','2','3','4'] },
+      { lot:'230', col:7,  row:1, cols:2, graves:['3','4'] },
+      // 메인행 186~196
+      { lot:'186', col:1,  row:3, cols:2, graves:['1','2'] },
+      { lot:'187', col:2,  row:3, cols:4, graves:['203','204','205','206'] },
+      { lot:'188', col:4,  row:3, cols:4, graves:['207','208','209','210'] },
+      { lot:'189', col:6,  row:3, cols:4, graves:['211','212','213','214'] },
+      { lot:'190', col:8,  row:3, cols:4, graves:['215','216','217','218'] },
+      { lot:'191', col:10, row:3, cols:4, graves:['219','220','221','222'] },
+      { lot:'192', col:12, row:3, cols:4, graves:['223','224','225','226'] },
+      // 193~196: 4행으로 나뉨
+      { lot:'193', col:14, row:3, cols:4, graves:['81','82','83','84','93','94','95','96'] },
+      { lot:'194', col:16, row:3, cols:4, graves:['85','86','87','88','97','98','99','100'] },
+      { lot:'195', col:18, row:3, cols:4, graves:['89','90','91','92','101','102','103','104'] },
+      { lot:'196', col:20, row:3, cols:4, graves:['129','130','131','132','137','138','139','140'] },
+      // 170,169,168,167,166,165 (193~196 하단)
+      { lot:'170', col:14, row:5, cols:4, graves:['105','106','107','108','117','118','119','120'] },
+      { lot:'169', col:16, row:5, cols:4, graves:['109','110','111','112','121','122','123','124'] },
+      { lot:'168', col:18, row:5, cols:4, graves:['113','114','115','116','125','126','127','128'] },
+      { lot:'167', col:20, row:5, cols:4, graves:['133','134','135','136','141','142','143','144'] },
+      { lot:'166', col:22, row:5, cols:4, graves:['153','154','155','156','157','158','159','160'] },
+      { lot:'165', col:24, row:5, cols:4, graves:['169','170','171','172','173','174','175','176'] },
+      // 하단 소블록 139~144
+      { lot:'139', col:14, row:7, cols:1, graves:['1'] },
+      { lot:'140', col:15, row:7, cols:4, graves:['1','2','3','4'] },
+      { lot:'141', col:17, row:7, cols:4, graves:['1','2','3','4'] },
+      { lot:'142', col:19, row:7, cols:4, graves:['1','2','3','4'] },
+      { lot:'143', col:21, row:7, cols:4, graves:['1','2','3','4'] },
+      { lot:'144', col:23, row:7, cols:4, graves:['1','2','3','4'] },
+    ]
+  }
+};
+
+// ─── MAP VIEW (인터랙티브 그리드) ───────────────────
+function findRecord(sec, lot, grave) {
+  return STATE.data.find(r => r.section===sec && r.lot===lot && r.grave===grave);
+}
 
 function renderMap() {
-  const img = document.getElementById('mapImg');
-  const src = MAP_IMAGES[STATE.section];
-  if (img.dataset.src !== src) {
-    img.src = src;
-    img.dataset.src = src;
-    STATE.mapZoom = 1;
-    document.getElementById('mapImgInner').style.transform = 'scale(1)';
+  const wrap = document.getElementById('mapImgWrap');
+  const sec = STATE.section;
+  const layout = MAP_LAYOUTS[sec];
+
+  let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},minmax(56px,1fr));grid-template-rows:repeat(${layout.gridRows},auto);">`;
+
+  // WEST/EAST/SOUTH 방향 레이블
+  if (sec==='15') {
+    html += `<div class="imap-dir-label" style="grid-column:1/${layout.gridCols+1};grid-row:3">SOUTH ↓ &nbsp;&nbsp; WEST ↑</div>`;
+  }
+
+  layout.lots.forEach(lotDef => {
+    const nCols = lotDef.cols;
+    const nRows = Math.ceil(lotDef.graves.length / nCols);
+    html += `<div class="imap-lot" style="grid-column:${lotDef.col}/span ${nCols};grid-row:${lotDef.row}/span ${nRows};">`;
+    html += `<div class="imap-lot-label">${lotDef.lot}</div>`;
+    html += `<div class="imap-cells" style="grid-template-columns:repeat(${nCols},1fr);">`;
+
+    lotDef.graves.forEach(grave => {
+      const r = findRecord(sec, lotDef.lot, grave);
+      const status = r ? r.status : 'U';
+      const name = r ? r.name : '';
+      const nameKr = r ? (r.name_kr || toKoreanName(name)) : '';
+      const displayName = nameKr || name;
+      const id = r ? r.id : `${sec}-${lotDef.lot}-${grave}`;
+
+      html += `<div class="imap-cell status-cell-${status}" data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}" title="Lot ${lotDef.lot} / Grave ${grave}">
+        <div class="imap-grave-no">${grave}</div>
+        ${status !== 'A' && displayName ? `<div class="imap-name">${escHtml(displayName)}</div>` : ''}
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  html += `</div>`;
+
+  // 방향 레이블 추가
+  let dirHtml = `<div class="imap-direction-bar">`;
+  if (sec==='15') dirHtml += `<span>← EAST &nbsp;&nbsp; WEST →</span><span style="margin-left:auto">SOUTH ↓</span>`;
+  if (sec==='16') dirHtml += `<span>WEST ← &nbsp;&nbsp;</span><span style="margin-left:auto">→ EAST</span>`;
+  dirHtml += `</div>`;
+
+  wrap.innerHTML = dirHtml + html;
+
+  // 셀 클릭 → 수정 모달
+  wrap.querySelectorAll('.imap-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const { sec, lot, grave } = cell.dataset;
+      let r = findRecord(sec, lot, grave);
+      if (!r) {
+        // 아직 데이터 없으면 임시 생성
+        r = { id: cell.dataset.id, section: sec, lot, grave, status: 'A', name: '', name_kr: '', dir: '' };
+      }
+      openEditModal(r);
+    });
+  });
+}
+
+// ─── 편집 모달 ─────────────────────────────────────
+function openEditModal(r) {
+  document.getElementById('modalTitle').textContent = `Section ${r.section} · Lot ${r.lot} · Grave ${r.grave}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="form-grid">
+      <div class="field full">
+        <label>상태</label>
+        <select id="f_status">
+          <option value="A" ${r.status==='A'?'selected':''}>Available</option>
+          <option value="U" ${r.status==='U'?'selected':''}>Used (사용중)</option>
+          <option value="R" ${r.status==='R'?'selected':''}>Reserved (예약)</option>
+          <option value="C" ${r.status==='C'?'selected':''}>확인 필요</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Name (영문)</label>
+        <input id="f_name" type="text" value="${escHtml(r.name)}" placeholder="Last, First">
+      </div>
+      <div class="field">
+        <label>이름 (한글)</label>
+        <input id="f_name_kr" type="text" value="${escHtml(r.name_kr)}" placeholder="홍 길동">
+      </div>
+    </div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn" id="btnCancelEdit">취소</button>
+    <button class="btn btn-primary" id="btnSaveEdit">저장</button>
+  `;
+  document.getElementById('modalOverlay').style.display = 'flex';
+  document.getElementById('btnCancelEdit').onclick = () => document.getElementById('modalOverlay').style.display = 'none';
+  document.getElementById('btnSaveEdit').onclick = () => saveMapEdit(r);
+}
+
+async function saveMapEdit(original) {
+  const newStatus = document.getElementById('f_status').value;
+  const newName   = document.getElementById('f_name').value.trim();
+  const newNameKr = document.getElementById('f_name_kr').value.trim();
+
+  const payload = { ...original, status: newStatus, name: newName, name_kr: newNameKr };
+
+  const btn = document.getElementById('btnSaveEdit');
+  btn.disabled = true; btn.textContent = '저장 중...';
+
+  try {
+    if (GAS_WEB_APP_URL) {
+      const res = await gasCall('upsert', { payload: JSON.stringify(payload), user: 'map-editor' });
+      if (!res.ok) throw new Error(res.error);
+    }
+    // 로컬 state 업데이트
+    const idx = STATE.data.findIndex(r => r.id === original.id);
+    if (idx >= 0) {
+      STATE.data[idx] = { ...STATE.data[idx], ...payload };
+    } else {
+      STATE.data.push(payload);
+    }
+    document.getElementById('modalOverlay').style.display = 'none';
+    showToast(GAS_WEB_APP_URL ? '저장됐습니다' : '저장됐습니다 (로컬)');
+    renderMap(); // 맵 다시 그리기
+  } catch(err) {
+    showToast('저장 실패: ' + err.message, true);
+    btn.disabled = false; btn.textContent = '저장';
   }
 }
 
 function initMapZoom() {
   const wrap = document.getElementById('mapImgWrap');
-  const inner = document.getElementById('mapImgInner');
 
-  document.getElementById('btnZoomIn').onclick = () => { STATE.mapZoom = Math.min(STATE.mapZoom * 1.3, 6); inner.style.transform = `scale(${STATE.mapZoom})`; };
-  document.getElementById('btnZoomOut').onclick = () => { STATE.mapZoom = Math.max(STATE.mapZoom / 1.3, 0.5); inner.style.transform = `scale(${STATE.mapZoom})`; };
-  document.getElementById('btnZoomReset').onclick = () => { STATE.mapZoom = 1; inner.style.transform = 'scale(1)'; };
+  document.getElementById('btnZoomIn').onclick    = () => { STATE.mapZoom = Math.min(STATE.mapZoom*1.25, 5); applyZoom(); };
+  document.getElementById('btnZoomOut').onclick   = () => { STATE.mapZoom = Math.max(STATE.mapZoom/1.25, 0.4); applyZoom(); };
+  document.getElementById('btnZoomReset').onclick = () => { STATE.mapZoom = 1; applyZoom(); };
 
-  // 핀치 줌 (모바일)
-  let lastDist = 0;
-  wrap.addEventListener('touchstart', e => { if(e.touches.length===2) lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY); });
-  wrap.addEventListener('touchmove', e => {
-    if(e.touches.length===2) {
-      const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-      STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * (d/lastDist), 0.5), 6);
-      inner.style.transform = `scale(${STATE.mapZoom})`;
-      lastDist = d; e.preventDefault();
-    }
-  }, { passive: false });
+  function applyZoom() {
+    const grid = wrap.querySelector('.imap-grid');
+    if (grid) grid.style.transform = `scale(${STATE.mapZoom})`;
+  }
 
   // 마우스 휠 줌
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * delta, 0.5), 6);
-    inner.style.transform = `scale(${STATE.mapZoom})`;
+    STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * (e.deltaY>0?0.9:1.1), 0.4), 5);
+    applyZoom();
   }, { passive: false });
 
   // 드래그
-  let isDragging = false, startX, startY, scrollLeft, scrollTop;
-  wrap.addEventListener('mousedown', e => { isDragging=true; startX=e.pageX-wrap.offsetLeft; startY=e.pageY-wrap.offsetTop; scrollLeft=wrap.scrollLeft; scrollTop=wrap.scrollTop; wrap.style.cursor='grabbing'; });
-  wrap.addEventListener('mouseleave', () => { isDragging=false; wrap.style.cursor='grab'; });
-  wrap.addEventListener('mouseup', () => { isDragging=false; wrap.style.cursor='grab'; });
-  wrap.addEventListener('mousemove', e => { if(!isDragging) return; e.preventDefault(); const x=e.pageX-wrap.offsetLeft; const y=e.pageY-wrap.offsetTop; wrap.scrollLeft=scrollLeft-(x-startX); wrap.scrollTop=scrollTop-(y-startY); });
+  let isDrag=false, sx, sy, sl, st;
+  wrap.addEventListener('mousedown', e => { isDrag=true; sx=e.pageX-wrap.offsetLeft; sy=e.pageY-wrap.offsetTop; sl=wrap.scrollLeft; st=wrap.scrollTop; wrap.style.cursor='grabbing'; });
+  wrap.addEventListener('mouseleave', ()=>{ isDrag=false; wrap.style.cursor='grab'; });
+  wrap.addEventListener('mouseup',    ()=>{ isDrag=false; wrap.style.cursor='grab'; });
+  wrap.addEventListener('mousemove',  e=>{ if(!isDrag) return; e.preventDefault(); wrap.scrollLeft=sl-(e.pageX-wrap.offsetLeft-sx); wrap.scrollTop=st-(e.pageY-wrap.offsetTop-sy); });
 }
 
 // ─── STATS VIEW ────────────────────────────────────
