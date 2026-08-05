@@ -77,32 +77,29 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
 /* ====================================================
    LIST VIEW
    ==================================================== */
-.list-wrap{display:flex;flex-direction:column;gap:10px;}
+.list-wrap{display:flex;flex-direction:column;gap:14px;}
 
-.lot-group{background:var(--paper-raised);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-.lot-header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line);}
-.lot-num{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--danger);}
-.lot-summary{display:flex;gap:10px;font-size:12px;}
+/* Lot 4개씩 가로로 */
+.lots-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
+
+.lot-group{background:var(--paper-raised);border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:0;}
+.lot-header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.lot-num{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--danger);}
+.lot-summary{display:flex;gap:8px;font-size:11.5px;}
 .ls-used{color:#7a5d1c;font-weight:600;}
 .ls-avail{color:#3f5a3d;font-weight:600;}
 
-/* 컬럼 헤더 */
-.lv-header{display:grid;padding:6px 16px;background:var(--paper);border-bottom:1px solid var(--line);font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;gap:8px;}
-.lv-header:not(.has-dir){grid-template-columns:56px 120px 1fr 1fr;}
-.lv-header.has-dir{grid-template-columns:56px 40px 120px 1fr 1fr;}
-.lv-h-grave,.lv-h-dir,.lv-h-status,.lv-h-name,.lv-h-kr{}
+/* 컬럼 헤더 — Grave / 상태 / Name / 이름 */
+.lv-header{display:grid;grid-template-columns:36px 80px 1fr 1fr;padding:5px 10px;background:var(--paper);border-bottom:1px solid var(--line);font-size:10px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;gap:6px;}
 
 /* 데이터 행 */
 .lv-rows{display:flex;flex-direction:column;}
-.lv-row{display:grid;padding:8px 16px;gap:8px;align-items:center;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;}
+.lv-row{display:grid;grid-template-columns:36px 80px 1fr 1fr;padding:6px 10px;gap:6px;align-items:center;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;font-size:13px;}
 .lv-row:last-child{border-bottom:none;}
 .lv-row:hover{background:var(--paper);}
-.lv-row:not(.has-dir-row){grid-template-columns:56px 120px 1fr 1fr;}
-.lv-row.has-dir-row{grid-template-columns:56px 40px 120px 1fr 1fr;}
-.lv-cell{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.lv-grave{font-family:var(--font-mono);font-weight:600;color:var(--ink-soft);}
-.lv-dir{font-size:12px;color:var(--ink-soft);font-weight:600;}
-.avail-dash{color:var(--sage);font-size:14px;}
+.lv-cell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lv-grave{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--ink-soft);}
+.avail-dash{color:var(--sage);}
 
 /* Available 행 배경 */
 .status-bg-A{background:#f8fcf7;}
@@ -112,10 +109,10 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
 .status-bg-C{background:#fff7f3;}
 
 /* 한글 이름 편집 */
-.kr-name-cell{cursor:pointer;min-width:80px;transition:background .15s;border-radius:4px;padding:2px 4px;}
+.kr-name-cell{cursor:pointer;transition:background .15s;border-radius:3px;padding:1px 3px;}
 .kr-name-cell:hover{background:var(--slate-bg);}
-.kr-empty{font-size:11px;color:var(--ink-soft);opacity:.55;}
-.kr-name-input{width:100%;padding:3px 7px;border:2px solid var(--slate);border-radius:4px;font-size:13px;font-family:var(--font-body);background:var(--paper-raised);outline:none;}
+.kr-empty{font-size:10px;color:var(--ink-soft);opacity:.5;}
+.kr-name-input{width:100%;padding:2px 6px;border:2px solid var(--slate);border-radius:4px;font-size:12px;font-family:var(--font-body);background:var(--paper-raised);outline:none;}
 
 /* ====================================================
    MAP VIEW
@@ -225,10 +222,8 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
 @media(max-width:720px){
   .app-title .sub{display:none;}
   .main{padding:14px 12px 60px;}
-  .lv-row:not(.has-dir-row){grid-template-columns:44px 100px 1fr;}
-  .lv-row.has-dir-row{grid-template-columns:44px 32px 100px 1fr;}
+  .lots-row{grid-template-columns:repeat(2,1fr);}
+  .lv-header,.lv-row{grid-template-columns:32px 70px 1fr;}
   .lv-h-kr,.lv-cell.lv-kr{display:none;}
-  .lv-header:not(.has-dir){grid-template-columns:44px 100px 1fr;}
-  .lv-header.has-dir{grid-template-columns:44px 32px 100px 1fr;}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
 }
