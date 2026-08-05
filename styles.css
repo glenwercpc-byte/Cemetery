@@ -360,3 +360,54 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
 .field input:focus, .field select:focus { outline: 2px solid var(--slate); outline-offset: -1px; }
 .btn-primary { background: var(--ink); color: white; border-color: var(--ink); }
 .btn-primary:hover { background: #1c1e22; }
+
+/* ====================================================
+   검색 결과 깜빡임 효과
+   ==================================================== */
+@keyframes searchBlink {
+  0%, 100% { outline: 3px solid #e63946; outline-offset: -2px; box-shadow: 0 0 8px rgba(230,57,70,.5); }
+  50%       { outline: 3px solid transparent; box-shadow: none; }
+}
+.search-blink {
+  animation: searchBlink 0.7s ease-in-out 4;
+  outline: 3px solid #e63946;
+  outline-offset: -2px;
+  z-index: 5;
+}
+/* Map View 셀도 동일 */
+.imap-cell.search-blink {
+  animation: searchBlink 0.7s ease-in-out 4;
+  outline: 3px solid #e63946;
+  outline-offset: -2px;
+  z-index: 5;
+}
+
+/* ====================================================
+   Map Panel (인터랙티브 + PDF 나란히)
+   ==================================================== */
+.map-panel-wrap {
+  display: flex;
+  gap: 12px;
+}
+.map-panel-wrap.split .map-panel { flex: 1; min-width: 0; }
+.map-panel-wrap:not(.split) #mapPanelInteractive { flex: 1; }
+
+.map-panel { display: flex; flex-direction: column; gap: 6px; }
+.map-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding: 2px 0;
+}
+
+.pdf-wrap {
+  cursor: grab;
+  background: #f5f3ee;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: auto;
+  height: calc(100vh - 280px);
+  min-height: 400px;
+}
+.pdf-wrap:active { cursor: grabbing; }
+.pdf-wrap img { transform-origin: top left; display: block; max-width: none; }
