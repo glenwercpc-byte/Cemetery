@@ -25,23 +25,34 @@
   --font-mono: 'SF Mono',Consolas,monospace;
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;}
+html, body {
+  margin:0; padding:0;
+  background:var(--paper); color:var(--ink);
+  font-family:var(--font-body); font-size:15px; line-height:1.5;
+  height:100%; overflow:hidden;
+}
+body { display:flex; flex-direction:column; }
 
-/* ── Header ── */
-.app-header{background:var(--paper-raised);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+/* Header - 고정 */
+.app-header{background:var(--paper-raised);border-bottom:1px solid var(--line);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0;z-index:50;}
 .app-title .mark{font-family:var(--font-display);font-weight:700;font-size:19px;}
 .app-title .sub{font-size:12px;color:var(--ink-soft);margin-left:10px;}
 .header-actions{display:flex;gap:8px;}
 
-/* ── Buttons ── */
+/* Buttons */
 .btn{border:1px solid var(--line-strong);background:var(--paper-raised);color:var(--ink);padding:7px 14px;border-radius:var(--radius);font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-body);}
 .btn:hover{background:var(--paper);}
 .btn-ghost{border-color:transparent;background:transparent;}
 .btn-ghost:hover{background:var(--paper);}
 .btn-sm{padding:4px 10px;font-size:12.5px;}
 
-/* ── Main ── */
-.main{max-width:1500px;margin:0 auto;padding:20px 24px 80px;}
+/* 컨트롤 바 (toolbar + legend) - sticky freeze */
+.control-bar{flex-shrink:0;background:var(--paper);padding:10px 24px 6px;border-bottom:1px solid var(--line);z-index:40;}
+
+/* 메인 콘텐츠 - 나머지 전체 차지 */
+.main{flex:1;min-height:0;overflow:auto;padding:16px 24px 24px;}
+/* Map/PDF 뷰 - 내부 스크롤, main 스크롤 끔 */
+.main.no-scroll{overflow:hidden;padding:8px 12px;display:flex;flex-direction:column;}
 
 /* ── Toolbar ── */
 .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
@@ -509,3 +520,55 @@ html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-famil
   .map-view-outer { grid-template-columns: 1fr; }
   .pdf-scroll-wrap { height: 200px; }
 }
+
+/* ====================================================
+   전체화면 뷰 (Map View / PDF View)
+   ==================================================== */
+.full-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.map-topbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 4px 0 8px;
+}
+
+.full-map-wrap {
+  flex: 1;
+  min-height: 0;
+  background: #f5f3ee;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: auto;
+  cursor: grab;
+}
+.full-map-wrap:active { cursor: grabbing; }
+
+.full-pdf-wrap {
+  flex: 1;
+  min-height: 0;
+  background: #f5f3ee;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: auto;
+  cursor: grab;
+}
+.full-pdf-wrap:active { cursor: grabbing; }
+.full-pdf-wrap img {
+  transform-origin: top center;
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* toolbar 내 여백 */
+.toolbar { display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; }
+.legend  { display:flex; gap:12px; flex-wrap:wrap; align-items:center; font-size:12px; color:var(--ink-soft); margin-bottom:0; padding-bottom:6px; }
