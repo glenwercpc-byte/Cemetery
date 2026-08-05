@@ -100,14 +100,20 @@ function getLots() {
 
 // ─── Render dispatch ───────────────────────────────
 function render() {
-  document.getElementById('viewList').style.display  = STATE.view === 'list'  ? '' : 'none';
-  document.getElementById('viewMap').style.display   = (STATE.view === 'map' || STATE.view === 'pdfview') ? '' : 'none';
-  document.getElementById('viewStats').style.display = STATE.view === 'stats' ? '' : 'none';
-  document.getElementById('searchWrap').style.display = ''; // 항상 표시
+  const main = document.getElementById('mainArea');
+  const isFullView = STATE.view === 'map' || STATE.view === 'pdfview';
+  main.className = isFullView ? 'main no-scroll' : 'main';
 
-  if (STATE.view === 'list')  renderList();
-  if (STATE.view === 'map')   renderMap();
-  if (STATE.view === 'stats') renderStats();
+  document.getElementById('viewList').style.display  = STATE.view === 'list'    ? '' : 'none';
+  document.getElementById('viewMap').style.display   = STATE.view === 'map'     ? '' : 'none';
+  document.getElementById('viewPdf').style.display   = STATE.view === 'pdfview' ? '' : 'none';
+  document.getElementById('viewStats').style.display = STATE.view === 'stats'   ? '' : 'none';
+  document.getElementById('searchWrap').style.display = '';
+
+  if (STATE.view === 'list')    renderList();
+  if (STATE.view === 'map')     renderMap();
+  if (STATE.view === 'pdfview') renderPdfView();
+  if (STATE.view === 'stats')   renderStats();
 }
 
 function escHtml(s) {
@@ -261,24 +267,31 @@ function renderList() {
 }
 
 // ─── MAP VIEW ──────────────────────────────────────
-// ─── MAP LAYOUTS ────────────────────────────────────
-// PDF 레이아웃을 그대로 재현한 그리드 구조 정의
-// 각 lot: { lot, col, row, graves: [grave번호 순서대로], cols: 한 행에 몇 개 }
+// ─── PDF VIEW — 현재 섹션 원본 전체 화면 ───────────
+const PDF_MAP = { '15': 'map-section15-1.jpg', '16': 'map-section16-1.jpg' };
+
+function renderPdfView() {
+  const sec = STATE.section;
+  const img = document.getElementById('pdfMainImg');
+  const label = document.getElementById('pdfLabel');
+  img.src = PDF_MAP[sec];
+  label.textContent = `Section ${sec} 원본 PDF`;
+}
+
+// ─── MAP VIEW (인터랙티브 그리드 — 현재 섹션 전체) ──
 const MAP_LAYOUTS = {
   '15': {
     gridCols: 20, gridRows: 5,
     lots: [
-      // 상단행 (WEST) — 286,285,284,283,282,281,280,279,278
       { lot:'286', col:1,  row:1, cols:3, graves:['58','59','60'] },
       { lot:'285', col:4,  row:1, cols:3, graves:['57','61','62'] },
-      { lot:'284', col:7,  row:1, cols:4, graves:['51','52','53','54'] },  // (51,52는 Exchanged)
+      { lot:'284', col:7,  row:1, cols:4, graves:['51','52','53','54'] },
       { lot:'283', col:11, row:1, cols:4, graves:['33','34','35','36','37','38'] },
       { lot:'282', col:15, row:1, cols:1, graves:['39'] },
       { lot:'281', col:16, row:1, cols:2, graves:['55','56'] },
       { lot:'280', col:18, row:1, cols:4, graves:['40','41','42','43','44','45'] },
       { lot:'279', col:12, row:2, cols:4, graves:['46','47'] },
       { lot:'278', col:16, row:2, cols:3, graves:['48','49','50'] },
-      // 하단행 (EAST) — 233,234,235,236,237,238,239,240,241,242
       { lot:'233', col:1,  row:4, cols:5, graves:['63','64','65','1','2'] },
       { lot:'234', col:4,  row:4, cols:5, graves:['66','67','68','69','70','1','2','3'] },
       { lot:'235', col:7,  row:4, cols:4, graves:['31','32','71','72','73','74','4'] },
@@ -294,11 +307,9 @@ const MAP_LAYOUTS = {
   '16': {
     gridCols: 28, gridRows: 8,
     lots: [
-      // 상단 소블록 232,231,230
       { lot:'232', col:1,  row:1, cols:2, graves:['1','2','3','4'] },
       { lot:'231', col:4,  row:1, cols:2, graves:['1','2','3','4'] },
       { lot:'230', col:7,  row:1, cols:2, graves:['3','4'] },
-      // 메인행 186~196
       { lot:'186', col:1,  row:3, cols:2, graves:['1','2'] },
       { lot:'187', col:2,  row:3, cols:4, graves:['203','204','205','206'] },
       { lot:'188', col:4,  row:3, cols:4, graves:['207','208','209','210'] },
@@ -306,19 +317,16 @@ const MAP_LAYOUTS = {
       { lot:'190', col:8,  row:3, cols:4, graves:['215','216','217','218'] },
       { lot:'191', col:10, row:3, cols:4, graves:['219','220','221','222'] },
       { lot:'192', col:12, row:3, cols:4, graves:['223','224','225','226'] },
-      // 193~196: 4행으로 나뉨
       { lot:'193', col:14, row:3, cols:4, graves:['81','82','83','84','93','94','95','96'] },
       { lot:'194', col:16, row:3, cols:4, graves:['85','86','87','88','97','98','99','100'] },
       { lot:'195', col:18, row:3, cols:4, graves:['89','90','91','92','101','102','103','104'] },
       { lot:'196', col:20, row:3, cols:4, graves:['129','130','131','132','137','138','139','140'] },
-      // 170,169,168,167,166,165 (193~196 하단)
       { lot:'170', col:14, row:5, cols:4, graves:['105','106','107','108','117','118','119','120'] },
       { lot:'169', col:16, row:5, cols:4, graves:['109','110','111','112','121','122','123','124'] },
       { lot:'168', col:18, row:5, cols:4, graves:['113','114','115','116','125','126','127','128'] },
       { lot:'167', col:20, row:5, cols:4, graves:['133','134','135','136','141','142','143','144'] },
       { lot:'166', col:22, row:5, cols:4, graves:['153','154','155','156','157','158','159','160'] },
       { lot:'165', col:24, row:5, cols:4, graves:['169','170','171','172','173','174','175','176'] },
-      // 하단 소블록 139~144
       { lot:'139', col:14, row:7, cols:1, graves:['1'] },
       { lot:'140', col:15, row:7, cols:4, graves:['1','2','3','4'] },
       { lot:'141', col:17, row:7, cols:4, graves:['1','2','3','4'] },
@@ -329,15 +337,16 @@ const MAP_LAYOUTS = {
   }
 };
 
-// ─── MAP VIEW (인터랙티브 그리드) ───────────────────
 function findRecord(sec, lot, grave) {
   return STATE.data.find(r => r.section===sec && r.lot===lot && r.grave===grave);
 }
 
 function renderMap() {
   const wrap = document.getElementById('mapImgWrap');
+  if (!wrap) return;
   const sec = STATE.section;
   const layout = MAP_LAYOUTS[sec];
+  if (!layout) return;
 
   let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},minmax(56px,1fr));grid-template-rows:repeat(${layout.gridRows},auto);">`;
 
@@ -505,49 +514,45 @@ function initMapZoom() {
     if (grid) grid.style.transform = `scale(${STATE.mapZoom})`;
   }
 
-  // 마우스 휠 줌 (인터랙티브)
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
     STATE.mapZoom = Math.min(Math.max(STATE.mapZoom * (e.deltaY>0?0.9:1.1), 0.4), 5);
     applyZoom();
   }, { passive: false });
 
-  // 드래그 (인터랙티브)
   let isDrag=false, sx, sy, sl, st;
   wrap.addEventListener('mousedown', e => { isDrag=true; sx=e.pageX-wrap.offsetLeft; sy=e.pageY-wrap.offsetTop; sl=wrap.scrollLeft; st=wrap.scrollTop; wrap.style.cursor='grabbing'; });
   wrap.addEventListener('mouseleave', ()=>{ isDrag=false; wrap.style.cursor='grab'; });
   wrap.addEventListener('mouseup',    ()=>{ isDrag=false; wrap.style.cursor='grab'; });
   wrap.addEventListener('mousemove',  e=>{ if(!isDrag) return; e.preventDefault(); wrap.scrollLeft=sl-(e.pageX-wrap.offsetLeft-sx); wrap.scrollTop=st-(e.pageY-wrap.offsetTop-sy); });
 
-  // PDF View — Section 15, 16 각각 줌/드래그
-  const pdfZooms = { '15': 1, '16': 1 };
+  // PDF View 줌/드래그 (단일 패널)
+  let pdfZoom = 1;
+  document.getElementById('btnPdfZoomIn').onclick    = () => { pdfZoom = Math.min(pdfZoom*1.3,6); document.getElementById('pdfMainImg').style.transform=`scale(${pdfZoom})`; };
+  document.getElementById('btnPdfZoomOut').onclick   = () => { pdfZoom = Math.max(pdfZoom/1.3,0.3); document.getElementById('pdfMainImg').style.transform=`scale(${pdfZoom})`; };
+  document.getElementById('btnPdfZoomReset').onclick = () => { pdfZoom=1; document.getElementById('pdfMainImg').style.transform='scale(1)'; };
 
-  document.querySelectorAll('[data-pdf][data-act]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const sec = btn.dataset.pdf;
-      const act = btn.dataset.act;
-      const img = document.getElementById(`pdfImg${sec}`);
-      if (act === 'in')    pdfZooms[sec] = Math.min(pdfZooms[sec]*1.3, 6);
-      if (act === 'out')   pdfZooms[sec] = Math.max(pdfZooms[sec]/1.3, 0.3);
-      if (act === 'reset') pdfZooms[sec] = 1;
-      img.style.transform = `scale(${pdfZooms[sec]})`;
+  const pdfW = document.getElementById('pdfMainWrap');
+  let pd=false, px, py, pl, pt;
+  pdfW.addEventListener('mousedown', e=>{ pd=true; px=e.pageX-pdfW.offsetLeft; py=e.pageY-pdfW.offsetTop; pl=pdfW.scrollLeft; pt=pdfW.scrollTop; pdfW.style.cursor='grabbing'; });
+  pdfW.addEventListener('mouseleave', ()=>{ pd=false; pdfW.style.cursor='grab'; });
+  pdfW.addEventListener('mouseup',    ()=>{ pd=false; pdfW.style.cursor='grab'; });
+  pdfW.addEventListener('mousemove',  e=>{ if(!pd) return; pdfW.scrollLeft=pl-(e.pageX-pdfW.offsetLeft-px); pdfW.scrollTop=pt-(e.pageY-pdfW.offsetTop-py); });
+  pdfW.addEventListener('wheel', e => {
+    e.preventDefault();
+    pdfZoom = Math.min(Math.max(pdfZoom*(e.deltaY>0?0.9:1.1),0.3),6);
+    document.getElementById('pdfMainImg').style.transform=`scale(${pdfZoom})`;
+  }, { passive:false });
+
+  // Section 바뀔 때 PDF 이미지 자동 교체
+  document.querySelectorAll('.chip[data-section]').forEach(c => {
+    c.addEventListener('click', () => {
+      if (STATE.view === 'pdfview') {
+        renderPdfView();
+        pdfZoom = 1;
+        document.getElementById('pdfMainImg').style.transform = 'scale(1)';
+      }
     });
-  });
-
-  // PDF 패널 드래그 (15, 16 각각)
-  ['15','16'].forEach(sec => {
-    const pdfW = document.getElementById(`pdfWrap${sec}`);
-    if (!pdfW) return;
-    let pd=false, px, py, pl, pt;
-    pdfW.addEventListener('mousedown', e=>{ pd=true; px=e.pageX-pdfW.offsetLeft; py=e.pageY-pdfW.offsetTop; pl=pdfW.scrollLeft; pt=pdfW.scrollTop; pdfW.style.cursor='grabbing'; });
-    pdfW.addEventListener('mouseleave', ()=>{ pd=false; pdfW.style.cursor='grab'; });
-    pdfW.addEventListener('mouseup',    ()=>{ pd=false; pdfW.style.cursor='grab'; });
-    pdfW.addEventListener('mousemove',  e=>{ if(!pd) return; pdfW.scrollLeft=pl-(e.pageX-pdfW.offsetLeft-px); pdfW.scrollTop=pt-(e.pageY-pdfW.offsetTop-py); });
-    pdfW.addEventListener('wheel', e => {
-      e.preventDefault();
-      pdfZooms[sec] = Math.min(Math.max(pdfZooms[sec]*(e.deltaY>0?0.9:1.1),0.3),6);
-      document.getElementById(`pdfImg${sec}`).style.transform=`scale(${pdfZooms[sec]})`;
-    }, { passive:false });
   });
 }
 
