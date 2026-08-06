@@ -348,7 +348,7 @@ function renderMap() {
   const layout = MAP_LAYOUTS[sec];
   if (!layout) return;
 
-  let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},minmax(56px,1fr));grid-template-rows:repeat(${layout.gridRows},auto);">`;
+  let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},minmax(28px,1fr));grid-template-rows:repeat(${layout.gridRows},auto);">`;
 
   // WEST/EAST/SOUTH 방향 레이블
   if (sec==='15') {
