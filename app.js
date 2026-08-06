@@ -38,10 +38,17 @@ async function gasCall(action, params={}) {
 async function loadData() {
   if (GAS_WEB_APP_URL) {
     try {
-      const res = await gasCall('getall');
-      if (res.ok && res.lots && res.lots.length > 0) {
-        STATE.data = res.lots.map(normalize);
-        setSync('Google Sheets 연결됨');
+      // 섹션별로 나눠서 로드 — 한 번에 전체를 받으면 JSONP 응답이 너무 커서 잘릴 수 있음
+      const [res15, res16] = await Promise.all([
+        gasCall('getsection', { section: '15' }),
+        gasCall('getsection', { section: '16' }),
+      ]);
+      if ((res15.ok && res15.lots) || (res16.ok && res16.lots)) {
+        const lots15 = (res15.ok && res15.lots) ? res15.lots : [];
+        const lots16 = (res16.ok && res16.lots) ? res16.lots : [];
+        STATE.data = [...lots15, ...lots16].map(normalize);
+        const total = STATE.data.length;
+        setSync(`Google Sheets 연결됨 (${total}개)`);
         render();
         return;
       }
