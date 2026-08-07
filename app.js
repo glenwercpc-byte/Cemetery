@@ -63,11 +63,18 @@ async function loadData() {
 }
 
 function normalize(r) {
+  // GAS는 slot_no 필드명 사용, 로컬 JSON은 grave 필드명 사용
+  // id에서 직접 파싱해서 확실히 추출 (id 형식: "16-193-81")
+  let grave = r.grave || r.slot_no || '';
+  if (!grave && r.id) {
+    const parts = String(r.id).split('-');
+    if (parts.length >= 3) grave = parts.slice(2).join('-'); // 하이픈 포함 grave번호 지원
+  }
   return {
-    id: r.id || `${r.section}-${r.lot}-${r.grave}`,
-    section: String(r.section),
-    lot: String(r.lot),
-    grave: String(r.grave || r.slot_no || ''),
+    id: r.id || `${r.section}-${r.lot}-${grave}`,
+    section: String(r.section || ''),
+    lot: String(r.lot || ''),
+    grave: String(grave),
     dir: r.dir || '',
     status: r.status || 'U',
     name: r.name || '',
@@ -380,7 +387,11 @@ const MAP_LAYOUTS = {
 };
 
 function findRecord(sec, lot, grave) {
-  return STATE.data.find(r => r.section===sec && r.lot===lot && r.grave===grave);
+  // 모두 문자열로 변환해서 비교 (GAS에서 숫자로 올 수 있음)
+  const s = String(sec), l = String(lot), g = String(grave);
+  return STATE.data.find(r =>
+    String(r.section) === s && String(r.lot) === l && String(r.grave) === g
+  );
 }
 
 function renderMap() {
