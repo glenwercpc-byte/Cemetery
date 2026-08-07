@@ -15,7 +15,6 @@ let STATE = {
   mapZoom: 1,
 };
 
-
 // ─── JSONP ─────────────────────────────────────────
 let _cbIdx = 0;
 function jsonpRequest(url, params) {
