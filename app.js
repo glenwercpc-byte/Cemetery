@@ -410,26 +410,43 @@ function renderMap() {
     html += `<div class="imap-dir-label" style="grid-column:1/${layout.gridCols+1};grid-row:3">SOUTH ↓ &nbsp;&nbsp; WEST ↑</div>`;
   }
 
+  const seenLots = new Set(); // 같은 lot이 여러 블록일 때 라벨은 첫 번째만
+
   layout.lots.forEach(lotDef => {
-    const nCols = lotDef.cols;
-    const nRows = Math.ceil(lotDef.graves.length / nCols);
-    html += `<div class="imap-lot" style="grid-column:${lotDef.col}/span ${nCols};grid-row:${lotDef.row}/span ${nRows};">`;
-    html += `<div class="imap-lot-label">${lotDef.lot}</div>`;
+    const nCols = lotDef.cols || 1;
+    const nRows = lotDef.graves.length > 0 ? Math.ceil(lotDef.graves.length / nCols) : 1;
+    const isContinuation = seenLots.has(lotDef.lot);
+    seenLots.add(lotDef.lot);
+
+    // 연속 블록(같은 lot의 두 번째~)은 위 블록과 시각적으로 이어지게
+    const extraStyle = isContinuation ? 'border-top:none;margin-top:-1px;' : '';
+    html += `<div class="imap-lot${isContinuation ? ' imap-lot-cont' : ''}" style="grid-column:${lotDef.col}/span ${nCols};grid-row:${lotDef.row}/span ${nRows};${extraStyle}">`;
+
+    // 첫 번째 블록만 lot 라벨 표시
+    if (!isContinuation) {
+      html += `<div class="imap-lot-label">${lotDef.lot}</div>`;
+    }
+
     html += `<div class="imap-cells" style="grid-template-columns:repeat(${nCols},1fr);">`;
 
-    lotDef.graves.forEach(grave => {
-      const r = findRecord(sec, lotDef.lot, grave);
-      const status = r ? r.status : 'U';
-      const name = r ? r.name : '';
-      const nameKr = r ? (r.name_kr || toKoreanName(name)) : '';
-      const displayName = nameKr || name;
-      const id = r ? r.id : `${sec}-${lotDef.lot}-${grave}`;
+    if (lotDef.graves.length === 0) {
+      // 빈 상단 블록 — 빈 셀 하나로 공간 확보
+      html += `<div class="imap-cell imap-cell-empty status-cell-empty"></div>`;
+    } else {
+      lotDef.graves.forEach(grave => {
+        const r = findRecord(sec, lotDef.lot, grave);
+        const status = r ? r.status : 'U';
+        const name = r ? r.name : '';
+        const nameKr = r ? (r.name_kr || toKoreanName(name)) : '';
+        const displayName = nameKr || name;
+        const id = r ? r.id : `${sec}-${lotDef.lot}-${grave}`;
 
-      html += `<div class="imap-cell status-cell-${status}" data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}" title="Lot ${lotDef.lot} / Grave ${grave}">
-        <div class="imap-grave-no">${grave}</div>
-        ${status !== 'A' && displayName ? `<div class="imap-name" title="${escHtml(displayName)}">${escHtml(displayName.slice(0,4))}</div>` : ''}
-      </div>`;
-    });
+        html += `<div class="imap-cell status-cell-${status}" data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}" title="Lot ${lotDef.lot} / Grave ${grave}">
+          <div class="imap-grave-no">${grave}</div>
+          ${status !== 'A' && displayName ? `<div class="imap-name" title="${escHtml(displayName)}">${escHtml(displayName.slice(0,4))}</div>` : ''}
+        </div>`;
+      });
+    }
 
     html += `</div></div>`;
   });
