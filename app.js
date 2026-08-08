@@ -420,7 +420,8 @@ function renderMap() {
 
     // 연속 블록(같은 lot의 두 번째~)은 위 블록과 시각적으로 이어지게
     const extraStyle = isContinuation ? 'border-top:none;margin-top:-1px;' : '';
-    html += `<div class="imap-lot${isContinuation ? ' imap-lot-cont' : ''}" style="grid-column:${lotDef.col}/span ${nCols};grid-row:${lotDef.row}/span ${nRows};${extraStyle}">`;
+    const emptyClass = lotDef.graves.length === 0 ? ' imap-lot-empty' : '';
+    html += `<div class="imap-lot${isContinuation ? ' imap-lot-cont' : ''}${emptyClass}" style="grid-column:${lotDef.col}/span ${nCols};grid-row:${lotDef.row}/span ${nRows};${extraStyle}">`;
 
     // 첫 번째 블록만 lot 라벨 표시
     if (!isContinuation) {
@@ -430,8 +431,8 @@ function renderMap() {
     html += `<div class="imap-cells" style="grid-template-columns:repeat(${nCols},1fr);">`;
 
     if (lotDef.graves.length === 0) {
-      // 빈 상단 블록 — 빈 셀 하나로 공간 확보
-      html += `<div class="imap-cell imap-cell-empty status-cell-empty"></div>`;
+      // 빈 블록 — 셀 없이 얇은 테두리 라인으로만 표시 (우리 구역 아님)
+      html += `<div style="flex:1;"></div>`;
     } else {
       lotDef.graves.forEach(grave => {
         const r = findRecord(sec, lotDef.lot, grave);
