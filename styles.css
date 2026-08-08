@@ -596,3 +596,12 @@ body { display:flex; flex-direction:column; }
   min-height: 20px;
 }
 .status-cell-empty { background: var(--paper); }
+
+/* 빈 lot 블록 — 라인으로만 (우리 구역 아님) */
+.imap-lot.imap-lot-empty {
+  background: repeating-linear-gradient(
+    45deg, #f0eee9, #f0eee9 4px, #e7e4dc 4px, #e7e4dc 8px
+  );
+  border-style: dashed;
+  opacity: 0.5;
+}
