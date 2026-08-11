@@ -103,12 +103,48 @@ function getFiltered() {
 }
 
 function getLots() {
-  const data = getFiltered();
+  // MAP_LAYOUTS를 정의된 유일한 소스(Single Source of Truth)로 사용
+  // List View도 Map View와 동일한 lot/grave 구조를 기준으로 렌더링
+  const sec = STATE.section;
+  const layout = MAP_LAYOUTS[sec];
+  const q = STATE.search.trim().toLowerCase();
+
   const lots = {};
-  data.forEach(r => {
-    if (!lots[r.lot]) lots[r.lot] = [];
-    lots[r.lot].push(r);
+
+  layout.lots.forEach(lotDef => {
+    if (lotDef.graves.length === 0) return; // 빈 블록(우리 구역 아님) 제외
+
+    if (!lots[lotDef.lot]) lots[lotDef.lot] = [];
+
+    lotDef.graves.forEach(grave => {
+      // 이미 같은 lot+grave 조합이 있으면 중복 추가 안 함
+      if (lots[lotDef.lot].some(r => r.grave === grave)) return;
+
+      // STATE.data에서 실제 데이터(이름, 상태 등) 매칭
+      const r = findRecord(sec, lotDef.lot, grave);
+      const record = r || {
+        id: `${sec}-${lotDef.lot}-${grave}`,
+        section: sec, lot: lotDef.lot, grave,
+        status: 'A', name: '', name_kr: '', dir: ''
+      };
+
+      // 검색 필터 적용
+      if (q) {
+        const matches =
+          lotDef.lot.toLowerCase().includes(q) ||
+          grave.toLowerCase().includes(q) ||
+          (record.name||'').toLowerCase().includes(q) ||
+          (record.name_kr||'').toLowerCase().includes(q);
+        if (!matches) return;
+      }
+
+      lots[lotDef.lot].push(record);
+    });
+
+    // 검색 결과 없어서 빈 배열이 된 lot은 제거
+    if (lots[lotDef.lot].length === 0) delete lots[lotDef.lot];
   });
+
   return lots;
 }
 
