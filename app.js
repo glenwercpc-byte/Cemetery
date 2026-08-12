@@ -26,7 +26,7 @@ function jsonpRequest(url, params) {
     s.onerror = () => { reject(new Error('JSONP failed')); delete window[cb]; s.remove(); };
     s.src = url + '?' + qs;
     document.body.appendChild(s);
-    setTimeout(() => { if(window[cb]){ reject(new Error('timeout')); delete window[cb]; s.remove(); }}, 15000);
+    setTimeout(() => { if(window[cb]){ reject(new Error('timeout')); delete window[cb]; s.remove(); }}, 30000);
   });
 }
 async function gasCall(action, params={}) {
@@ -38,21 +38,25 @@ async function gasCall(action, params={}) {
 async function loadData() {
   if (GAS_WEB_APP_URL) {
     try {
-      // 섹션별로 나눠서 로드 — 한 번에 전체를 받으면 JSONP 응답이 너무 커서 잘릴 수 있음
-      const [res15, res16] = await Promise.all([
-        gasCall('getsection', { section: '15' }),
-        gasCall('getsection', { section: '16' }),
-      ]);
-      if ((res15.ok && res15.lots) || (res16.ok && res16.lots)) {
-        const lots15 = (res15.ok && res15.lots) ? res15.lots : [];
-        const lots16 = (res16.ok && res16.lots) ? res16.lots : [];
+      // Promise.allSettled — 하나가 실패해도 나머지 결과 사용
+      // 모바일 느린 네트워크를 위해 순차 로드로 변경
+      let lots15 = [], lots16 = [];
+      try {
+        const res15 = await gasCall('getsection', { section: '15' });
+        if (res15.ok && res15.lots) lots15 = res15.lots;
+      } catch(e) { console.warn('Section 15 로드 실패:', e.message); }
+      try {
+        const res16 = await gasCall('getsection', { section: '16' });
+        if (res16.ok && res16.lots) lots16 = res16.lots;
+      } catch(e) { console.warn('Section 16 로드 실패:', e.message); }
+
+      if (lots15.length > 0 || lots16.length > 0) {
         STATE.data = [...lots15, ...lots16].map(normalize);
-        const total = STATE.data.length;
-        setSync(`Google Sheets 연결됨 (${total}개)`);
+        setSync(`Google Sheets 연결됨 (${STATE.data.length}개)`);
         render();
         return;
       }
-    } catch(e) { console.warn('GAS 실패, 로컬 데이터 사용:', e.message); }
+    } catch(e) { console.warn('GAS 연결 실패:', e.message); }
   }
   try {
     const r = await fetch('grave-data.json');
@@ -149,6 +153,10 @@ function render() {
   document.getElementById('viewStats').style.display = STATE.view === 'stats'   ? '' : 'none';
   document.getElementById('searchWrap').style.display = '';
 
+  // Map View일 때만 줌 버튼 표시
+  const zoomBtns = document.getElementById('mapZoomBtns');
+  if (zoomBtns) zoomBtns.style.display = STATE.view === 'map' ? 'flex' : 'none';
+
   if (STATE.view === 'list')    renderList();
   if (STATE.view === 'map')     renderMap();
   if (STATE.view === 'pdfview') renderPdfView();
@@ -238,9 +246,9 @@ function renderList() {
         return r ? r.lot : null;
       }).filter(Boolean))];
       if (foundLots.length === 1) {
-        showToast(`Lot ${foundLots[0]} 에서 찾았습니다.`);
+        showToast(`Section ${STATE.section}, Lot ${foundLots[0]} 에서 찾았습니다.`);
       } else {
-        showToast(`Lot ${foundLots.join(', ')} 에서 ${foundRows.length}명 찾았습니다.`);
+        showToast(`Section ${STATE.section}, Lot ${foundLots.join(', ')} 에서 ${foundRows.length}명 찾았습니다.`);
       }
       setTimeout(() => foundRows[0].scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     } else {
@@ -495,9 +503,9 @@ function renderMap() {
       clearTimeout(window._searchReturnTimer);
       const foundLots = [...new Set(matchedCells.map(c => c.dataset.lot))];
       if (foundLots.length === 1) {
-        showToast(`Lot ${foundLots[0]} 에서 찾았습니다.`);
+        showToast(`Section ${STATE.section}, Lot ${foundLots[0]} 에서 찾았습니다.`);
       } else {
-        showToast(`Lot ${foundLots.join(', ')} 에서 ${matchedCells.length}명 찾았습니다.`);
+        showToast(`Section ${STATE.section}, Lot ${foundLots.join(', ')} 에서 ${matchedCells.length}명 찾았습니다.`);
       }
       setTimeout(() => matchedCells[0].scrollIntoView({ behavior:'smooth', block:'center', inline:'center' }), 100);
     } else {
