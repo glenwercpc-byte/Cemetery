@@ -428,12 +428,12 @@ function renderMap() {
   if (sec === '15') {
     // WEST: lot 281 상단 (col 17, row 1)
     html += `<div class="imap-dir-cell" style="grid-column:17/span 4;grid-row:1;">WEST</div>`;
-    // EAST: lot 238 위치 (col 18, row 4) — 상단과 하단 사이
-    html += `<div class="imap-dir-cell" style="grid-column:18/span 4;grid-row:4;">EAST</div>`;
-    // SOUTH: 233 왼쪽 (col 1, row 7)
-    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:1/span 1;grid-row:7;">SOUTH</div>`;
-    // NORTH: 242 오른쪽 (col 36, row 7)
-    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:36/span 1;grid-row:7;">NORTH</div>`;
+    // EAST: lot 238 하단 셀(75,76) 아래 (col 18, row 7)
+    html += `<div class="imap-dir-cell" style="grid-column:18/span 4;grid-row:7;">EAST</div>`;
+    // SOUTH: 233 왼쪽 (col 1, row 8)
+    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:1/span 1;grid-row:8;">SOUTH</div>`;
+    // NORTH: 242 오른쪽 (col 36, row 8)
+    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:36/span 1;grid-row:8;">NORTH</div>`;
   }
   if (sec === '16') {
     // WEST: lot 195 상단 (col 35, row 2)
