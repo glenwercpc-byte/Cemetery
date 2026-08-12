@@ -414,12 +414,12 @@ const MAP_LAYOUTS = {
       { lot:'166', col:43, row:5, cols:4, graves:['153','154','155','156','157','158','159','160'] },
       { lot:'165', col:47, row:5, cols:4, graves:['169','170','171','172','173','174','175','176'] },
       // Row 7 — 139~144
-      { lot:'139', col:27, row:7, cols:4, graves:['1'] },
-      { lot:'140', col:31, row:7, cols:4, graves:['1','2','3','4'] },
-      { lot:'141', col:35, row:7, cols:4, graves:['1','2','3','4'] },
-      { lot:'142', col:39, row:7, cols:4, graves:['1','2','3','4'] },
-      { lot:'143', col:43, row:7, cols:4, graves:['1','2','3','4'] },
-      { lot:'144', col:47, row:7, cols:4, graves:['1','2','3','4'] },
+      { lot:'139', col:31, row:7, cols:4, graves:['1'] },
+      { lot:'140', col:27, row:7, cols:4, graves:['4','3','2','1'] },
+      { lot:'141', col:31, row:7, cols:4, graves:['4','3','2','1'] },
+      { lot:'142', col:35, row:7, cols:4, graves:['4','3','2','1'] },
+      { lot:'143', col:39, row:7, cols:4, graves:['4','3','2','1'] },
+      { lot:'144', col:43, row:7, cols:4, graves:['4','3','2','1'] },
     ]
   }
 };
