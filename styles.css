@@ -605,3 +605,22 @@ body { display:flex; flex-direction:column; }
   border-style: dashed;
   opacity: 0.5;
 }
+
+/* grid 내 방향 레이블 */
+.imap-dir-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  background: transparent;
+  pointer-events: none;
+}
+.imap-dir-side {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 10px;
+}
