@@ -65,6 +65,12 @@
       <div class="legend-item"><span class="swatch C"></span> 확인 필요</div>
       <div class="legend-item"><span class="swatch U"></span> Used</div>
       <span class="muted" id="lastSync"></span>
+      <!-- Map View 줌 버튼 — 항상 오른쪽 끝, Map View일 때만 보임 -->
+      <div id="mapZoomBtns" style="display:none;margin-left:auto;gap:4px;align-items:center;display:flex;">
+        <button class="btn btn-sm" id="btnZoomIn">＋</button>
+        <button class="btn btn-sm" id="btnZoomOut">－</button>
+        <button class="btn btn-sm" id="btnZoomReset">⊡</button>
+      </div>
     </div>
   </div>
 </div>
@@ -79,12 +85,6 @@
 
   <!-- MAP VIEW — 현재 섹션 인터랙티브 그리드 전체 화면 -->
   <div id="viewMap" style="display:none;" class="full-view">
-    <div class="map-topbar">
-      <button class="btn btn-sm" id="btnZoomIn">＋</button>
-      <button class="btn btn-sm" id="btnZoomOut">－</button>
-      <button class="btn btn-sm" id="btnZoomReset">⊡</button>
-      <span class="muted" style="font-size:12px;margin-left:6px;">셀 클릭 → 수정</span>
-    </div>
     <div class="map-img-wrap full-map-wrap" id="mapImgWrap"></div>
   </div>
 
