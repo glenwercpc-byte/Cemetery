@@ -658,23 +658,51 @@ function initMapZoom() {
 // ─── STATS VIEW ────────────────────────────────────
 function renderStats() {
   const q = STATE.search.trim().toLowerCase();
-  const all = q ? STATE.data.filter(r =>
-    r.lot.toLowerCase().includes(q) || r.grave.toLowerCase().includes(q) ||
-    (r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q)
-  ) : STATE.data;
   const sections = ['15','16'];
   const bySection = {};
-  sections.forEach(s => { bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0, lots: new Set() }; });
-  all.forEach(r => {
-    const s = r.section;
-    if (!bySection[s]) return;
-    bySection[s].total++;
-    bySection[s].lots.add(r.lot);
-    if (r.status==='A') bySection[s].available++;
-    else if (r.status==='R') bySection[s].reserved++;
-    else if (r.status==='C') bySection[s].confirmed++;
-    else bySection[s].used++;
+
+  sections.forEach(s => {
+    bySection[s] = { total:0, available:0, used:0, reserved:0, confirmed:0, lots: new Set() };
+    const layout = MAP_LAYOUTS[s];
+    if (!layout) return;
+
+    layout.lots.forEach(lotDef => {
+      if (lotDef.graves.length === 0) return; // 빈 블록 제외
+
+      lotDef.graves.forEach(grave => {
+        // 중복 grave 제외 (같은 lot이 두 블록으로 나뉜 경우)
+        const uid = `${s}-${lotDef.lot}-${grave}`;
+        if (bySection[s]._seen) {
+          if (bySection[s]._seen.has(uid)) return;
+        } else {
+          bySection[s]._seen = new Set();
+        }
+        bySection[s]._seen.add(uid);
+
+        // 검색 필터
+        if (q) {
+          const r = findRecord(s, lotDef.lot, grave);
+          const matches =
+            lotDef.lot.toLowerCase().includes(q) ||
+            grave.toLowerCase().includes(q) ||
+            (r && (r.name||'').toLowerCase().includes(q)) ||
+            (r && (r.name_kr||'').toLowerCase().includes(q));
+          if (!matches) return;
+        }
+
+        bySection[s].total++;
+        bySection[s].lots.add(lotDef.lot);
+
+        const r = findRecord(s, lotDef.lot, grave);
+        const status = r ? r.status : 'A';
+        if (status==='A') bySection[s].available++;
+        else if (status==='R') bySection[s].reserved++;
+        else if (status==='C') bySection[s].confirmed++;
+        else bySection[s].used++;
+      });
+    });
   });
+
   const grand = { total:0, available:0, used:0, reserved:0, confirmed:0 };
   sections.forEach(s => {
     ['total','available','used','reserved','confirmed'].forEach(k => grand[k] += bySection[s][k]);
