@@ -128,21 +128,10 @@ function getLots() {
         status: 'A', name: '', name_kr: '', dir: ''
       };
 
-      // 검색 필터 적용
-      if (q) {
-        const matches =
-          lotDef.lot.toLowerCase().includes(q) ||
-          grave.toLowerCase().includes(q) ||
-          (record.name||'').toLowerCase().includes(q) ||
-          (record.name_kr||'').toLowerCase().includes(q);
-        if (!matches) return;
-      }
-
+      // 검색 필터는 renderList에서 강조로 처리 — 여기서는 항상 전체 반환
       lots[lotDef.lot].push(record);
     });
 
-    // 검색 결과 없어서 빈 배열이 된 lot은 제거
-    if (lots[lotDef.lot].length === 0) delete lots[lotDef.lot];
   });
 
   return lots;
@@ -849,8 +838,39 @@ function bindEvents() {
   searchInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) { clearSearch(); return; }
+
       STATE.search = searchInput.value;
-      searchClear.style.display = STATE.search ? 'flex' : 'none';
+      searchClear.style.display = 'flex';
+
+      // 현재 섹션에서 MAP_LAYOUTS 기준으로 결과 있는지 확인
+      function hasResultInSection(sec) {
+        const layout = MAP_LAYOUTS[sec];
+        if (!layout) return false;
+        for (const lotDef of layout.lots) {
+          if (lotDef.graves.length === 0) continue;
+          for (const grave of lotDef.graves) {
+            if (lotDef.lot.toLowerCase().includes(q) || grave.toLowerCase().includes(q)) return true;
+            const r = findRecord(sec, lotDef.lot, grave);
+            if (r && ((r.name||'').toLowerCase().includes(q) || (r.name_kr||'').toLowerCase().includes(q))) return true;
+          }
+        }
+        return false;
+      }
+
+      const curSec = STATE.section;
+      const otherSec = curSec === '15' ? '16' : '15';
+
+      if (!hasResultInSection(curSec) && hasResultInSection(otherSec)) {
+        // 다른 섹션에 결과 있으면 자동 전환
+        STATE.section = otherSec;
+        document.querySelectorAll('.chip[data-section]').forEach(c => {
+          c.classList.toggle('active', c.dataset.section === otherSec);
+        });
+        showToast(`Section ${otherSec}에서 찾았습니다.`);
+      }
+
       render();
     }
     if (e.key === 'Escape') {
