@@ -331,50 +331,33 @@ function renderPdfView() {
 // ─── MAP VIEW (인터랙티브 그리드 — 현재 섹션 전체) ──
 const MAP_LAYOUTS = {
   '15': {
-    gridCols: 35, gridRows: 5,
+    gridCols: 36, gridRows: 8,
     lots: [
-      // ── 상단 열 (row 1~2) ──────────────────────────
-      // 286: 57,58,59,60
-      { lot:'286', col:1,  row:1, cols:4, graves:['57','58','59','60'] },
-      // 285: 61,62,31,32
-      { lot:'285', col:5,  row:1, cols:4, graves:['61','62','31','32'] },
-      // 284: 상단 51,52,53,54 / 하단 33,34,35
-      { lot:'284', col:9,  row:1, cols:4, graves:['51','52','53','54','33','34','35'] },
-      // 283: 36,37,38
-      { lot:'283', col:13, row:1, cols:3, graves:['36','37','38'] },
-      // 282: 상단 빈칸, 하단 39
-      { lot:'282', col:16, row:1, cols:1, graves:[] },
-      { lot:'282', col:16, row:2, cols:1, graves:['39'] },
-      // 281: 40,41,55,56 (40,41은 281 소속)
-      { lot:'281', col:17, row:1, cols:4, graves:['40','41','55','56'] },
-      // 280: 42,43,44,45
-      { lot:'280', col:21, row:1, cols:4, graves:['42','43','44','45'] },
-      // 279: 46 (1개)
-      { lot:'279', col:25, row:1, cols:1, graves:['46'] },
-      // 278: 48,49,50
-      { lot:'278', col:26, row:1, cols:3, graves:['48','49','50'] },
-
-      // ── 하단 열 (row 4~5) ──────────────────────────
-      // 233: 63 (1개)
-      { lot:'233', col:1,  row:4, cols:1, graves:['63'] },
-      // 234: 상단 64,65,66,67 / 하단 1,2,69,70
-      { lot:'234', col:2,  row:4, cols:4, graves:['64','65','66','67','1','2','69','70'] },
-      // 235: 상단 68,1,2,3 / 하단 71,72,73,74
-      { lot:'235', col:6,  row:4, cols:4, graves:['68','1b','2b','3b','71','72','73','74'] },
-      // 236: 4,5,6,7
-      { lot:'236', col:10, row:4, cols:4, graves:['4','5','6','7'] },
-      // 237: 8,9,10,11
-      { lot:'237', col:14, row:4, cols:4, graves:['8','9','10','11'] },
-      // 238: 상단 12,13,14,15 / 하단 75,76
-      { lot:'238', col:18, row:4, cols:4, graves:['12','13','14','15','75','76'] },
-      // 239: 상단 16,17,18,19 / 하단 77,78,79,80
-      { lot:'239', col:22, row:4, cols:4, graves:['16','17','18','19','77','78','79','80'] },
-      // 240: 20,21,22,23
-      { lot:'240', col:26, row:4, cols:4, graves:['20','21','22','23'] },
-      // 241: 24,25,26
-      { lot:'241', col:30, row:4, cols:3, graves:['24','25','26'] },
-      // 242: 28,29,30
-      { lot:'242', col:33, row:4, cols:3, graves:['28','29','30'] },
+      // ── row 1: WEST 레이블 (grid 내 배치) ──────────────
+      // ── row 2~3: 상단 열 (286~278) ─────────────────────
+      { lot:'286', col:1,  row:2, cols:4, graves:['57','58','59','60'] },
+      { lot:'285', col:5,  row:2, cols:4, graves:['61','62','31','32'] },
+      { lot:'284', col:9,  row:2, cols:4, graves:['51','52','53','54','33','34','35'] },
+      { lot:'283', col:13, row:2, cols:3, graves:['36','37','38'] },
+      { lot:'282', col:16, row:2, cols:1, graves:[] },
+      { lot:'282', col:16, row:3, cols:1, graves:['39'] },
+      { lot:'281', col:17, row:2, cols:4, graves:['40','41','55','56'] },
+      { lot:'280', col:21, row:2, cols:4, graves:['42','43','44','45'] },
+      { lot:'279', col:25, row:2, cols:1, graves:['46'] },
+      { lot:'278', col:26, row:2, cols:3, graves:['48','49','50'] },
+      // ── row 4: EAST 레이블 (grid 내 배치) ──────────────
+      // ── row 5~6: 하단 열 (233~242) ─────────────────────
+      { lot:'233', col:1,  row:5, cols:1, graves:['63'] },
+      { lot:'234', col:2,  row:5, cols:4, graves:['64','65','66','67','1','2','69','70'] },
+      { lot:'235', col:6,  row:5, cols:4, graves:['68','1b','2b','3b','71','72','73','74'] },
+      { lot:'236', col:10, row:5, cols:4, graves:['4','5','6','7'] },
+      { lot:'237', col:14, row:5, cols:4, graves:['8','9','10','11'] },
+      { lot:'238', col:18, row:5, cols:4, graves:['12','13','14','15','75','76'] },
+      { lot:'239', col:22, row:5, cols:4, graves:['16','17','18','19','77','78','79','80'] },
+      { lot:'240', col:26, row:5, cols:4, graves:['20','21','22','23'] },
+      { lot:'241', col:30, row:5, cols:3, graves:['24','25','26'] },
+      { lot:'242', col:33, row:5, cols:3, graves:['28','29','30'] },
+      // ── row 7: SOUTH / NORTH 레이블 (grid 내 배치) ──────
     ]
   },
   '16': {
@@ -441,9 +424,22 @@ function renderMap() {
 
   let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},1fr);grid-template-rows:repeat(${layout.gridRows},auto);">`;
 
-  // WEST/EAST/SOUTH 방향 레이블
-  if (sec==='15') {
-    html += `<div class="imap-dir-label" style="grid-column:1/${layout.gridCols+1};grid-row:3">SOUTH ↓ &nbsp;&nbsp; WEST ↑</div>`;
+  // ── 방향 레이블 — grid 내 정확한 위치에 배치 ──────────
+  if (sec === '15') {
+    // WEST: lot 281 상단 (col 17, row 1)
+    html += `<div class="imap-dir-cell" style="grid-column:17/span 4;grid-row:1;">WEST</div>`;
+    // EAST: lot 238 위치 (col 18, row 4) — 상단과 하단 사이
+    html += `<div class="imap-dir-cell" style="grid-column:18/span 4;grid-row:4;">EAST</div>`;
+    // SOUTH: 233 왼쪽 (col 1, row 7)
+    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:1/span 1;grid-row:7;">SOUTH</div>`;
+    // NORTH: 242 오른쪽 (col 36, row 7)
+    html += `<div class="imap-dir-cell imap-dir-side" style="grid-column:36/span 1;grid-row:7;">NORTH</div>`;
+  }
+  if (sec === '16') {
+    // WEST: lot 195 상단 (col 35, row 2)
+    html += `<div class="imap-dir-cell" style="grid-column:35/span 4;grid-row:2;">WEST</div>`;
+    // EAST: lot 141 하단 (col 35, row 8)
+    html += `<div class="imap-dir-cell" style="grid-column:35/span 4;grid-row:8;">EAST</div>`;
   }
 
   const seenLots = new Set(); // 같은 lot이 여러 블록일 때 라벨은 첫 번째만
@@ -490,13 +486,7 @@ function renderMap() {
 
   html += `</div>`;
 
-  // 방향 레이블 추가
-  let dirHtml = `<div class="imap-direction-bar">`;
-  if (sec==='15') dirHtml += `<span>← EAST &nbsp;&nbsp; WEST →</span><span style="margin-left:auto">SOUTH ↓</span>`;
-  if (sec==='16') dirHtml += `<span>WEST ← &nbsp;&nbsp;</span><span style="margin-left:auto">→ EAST</span>`;
-  dirHtml += `</div>`;
-
-  wrap.innerHTML = dirHtml + html;
+  wrap.innerHTML = html;
 
   // 검색 중이면: 매칭 셀 빨간 테두리 + 해당 영역으로 스크롤. 없으면 5초 복귀
   if (STATE.search.trim()) {
