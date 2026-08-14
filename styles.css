@@ -638,3 +638,13 @@ body { display:flex; flex-direction:column; }
   text-orientation: mixed;
   font-size: 10px;
 }
+/* 자료 제공 드롭메뉴 */
+.report-menu-wrap { position: relative; }
+.report-menu-item {
+  padding: 11px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 6px;
+}
+.report-menu-item:hover { background: var(--paper); }
