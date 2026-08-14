@@ -15,31 +15,41 @@ let STATE = {
   mapZoom: 1,
 };
 
-// ─── JSONP ─────────────────────────────────────────
+// ─── GAS 호출 — fetch 방식 (모바일 호환성 우선, JSONP 폴백) ───
 let _cbIdx = 0;
-function jsonpRequest(url, params) {
+async function gasCall(action, params={}) {
+  if (!GAS_WEB_APP_URL) throw new Error('no url');
+
+  // 1차: fetch로 시도 (모바일에서 안정적)
+  try {
+    const qs = new URLSearchParams({ action, ...params }).toString();
+    const resp = await fetch(GAS_WEB_APP_URL + '?' + qs, { redirect: 'follow' });
+    const text = await resp.text();
+    // JSONP 응답이면 파싱 (callback 없이도 JSON으로 올 수 있음)
+    const json = text.startsWith('{') ? JSON.parse(text)
+               : text.match(/\((.+)\);?$/) ? JSON.parse(text.match(/\((.+)\);?$/)[1])
+               : null;
+    if (json) return json;
+  } catch(e) { /* fetch 실패 시 JSONP 폴백 */ }
+
+  // 2차: JSONP 폴백
   return new Promise((resolve, reject) => {
     const cb = 'cb_' + (_cbIdx++);
     const s = document.createElement('script');
-    const qs = new URLSearchParams({ ...params, callback: cb }).toString();
+    const qs = new URLSearchParams({ action, ...params, callback: cb }).toString();
     window[cb] = d => { resolve(d); delete window[cb]; s.remove(); };
     s.onerror = () => { reject(new Error('JSONP failed')); delete window[cb]; s.remove(); };
-    s.src = url + '?' + qs;
+    s.src = GAS_WEB_APP_URL + '?' + qs;
     document.body.appendChild(s);
     setTimeout(() => { if(window[cb]){ reject(new Error('timeout')); delete window[cb]; s.remove(); }}, 30000);
   });
 }
-async function gasCall(action, params={}) {
-  if (!GAS_WEB_APP_URL) throw new Error('no url');
-  return jsonpRequest(GAS_WEB_APP_URL, { action, ...params });
-}
 
 // ─── Data Load ─────────────────────────────────────
 async function loadData() {
+  setSync('로딩 중...');
   if (GAS_WEB_APP_URL) {
     try {
-      // Promise.allSettled — 하나가 실패해도 나머지 결과 사용
-      // 모바일 느린 네트워크를 위해 순차 로드로 변경
       let lots15 = [], lots16 = [];
       try {
         const res15 = await gasCall('getsection', { section: '15' });
@@ -52,7 +62,7 @@ async function loadData() {
 
       if (lots15.length > 0 || lots16.length > 0) {
         STATE.data = [...lots15, ...lots16].map(normalize);
-        setSync(`Google Sheets 연결됨 (${STATE.data.length}개)`);
+        setSync('Google Sheets 연결됨');
         render();
         return;
       }
@@ -418,6 +428,12 @@ function renderMap() {
   const sec = STATE.section;
   const layout = MAP_LAYOUTS[sec];
   if (!layout) return;
+
+  // 모바일에서는 첫 렌더 시 최대 줌으로 시작 (－로 줄여서 보기)
+  const isMobile = window.innerWidth <= 720;
+  if (isMobile && STATE.mapZoom === 1) {
+    STATE.mapZoom = 5;
+  }
 
   let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},1fr);grid-template-rows:repeat(${layout.gridRows},auto);">`;
 
@@ -808,8 +824,8 @@ function initIntro() {
     if (prompt) prompt.style.opacity = '0';
     const mapEl = document.getElementById('introMap');
     mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '30% 66%';
-    mapEl.style.transform = 'scale(3.5)';
+    mapEl.style.transformOrigin = '22% 72%';
+    mapEl.style.transform = 'scale(2.2)';
     mapEl.style.opacity = '0';
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.6s';
