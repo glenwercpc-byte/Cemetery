@@ -51,6 +51,15 @@
       <button class="view-tab" data-view="map">🗺 Map View</button>
       <button class="view-tab" data-view="pdfview">📄 PDF View</button>
       <button class="view-tab active" data-view="stats">📊 통계</button>
+      <!-- 자료 제공 드롭메뉴 -->
+      <div class="report-menu-wrap">
+        <button class="view-tab report-tab" onclick="toggleReportMenu()">📋 자료 제공 ▾</button>
+        <div id="reportDropMenu" style="display:none;">
+          <div class="report-menu-item" onclick="openReport();document.getElementById('reportDropMenu').style.display='none'">
+            📄 <span id="reportMenuLabel"></span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="search-box" id="searchWrap">
       <span class="icon">🔎</span>
@@ -120,9 +129,25 @@
   </div>
 </div>
 
+<!-- 자료 제공 모달 -->
+<div class="overlay" id="reportOverlay" style="display:none;">
+  <div class="modal report-modal">
+    <div class="modal-header">
+      <h3 id="reportTitleText"></h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-sm" onclick="saveReport()">💾 저장</button>
+        <button class="btn btn-sm" onclick="printReport()">🖨️ 인쇄</button>
+        <button class="close-x" onclick="document.getElementById('reportOverlay').style.display='none'">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="reportBody" style="max-height:70vh;overflow-y:auto;padding:20px 24px;"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="layout.js"></script>
 <script src="app.js"></script>
+<script src="report.js"></script>
 </body>
 </html>
