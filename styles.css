@@ -229,11 +229,29 @@ body { display:flex; flex-direction:column; }
    ==================================================== */
 @media(max-width:720px){
   .app-title .sub{display:none;}
-  .main{padding:14px 12px 60px;}
+  .main{padding:8px 8px 60px;}
   .lots-row{grid-template-columns:1fr;}
-  .lv-header,.lv-row{grid-template-columns:32px 70px 1fr;}
+  /* 모바일: Grave/상태/이름(영+한) 3열 */
+  .lv-header,.lv-row{grid-template-columns:36px 90px 1fr;}
+  /* 한글 이름 컬럼 숨기고 NAME 셀에 합침 */
   .lv-h-kr,.lv-cell.lv-kr{display:none;}
+  /* NAME 셀에 한글 이름을 줄바꿈으로 추가 */
+  .lv-cell.lv-name{white-space:normal;line-height:1.3;}
+  .lv-name-combined{display:flex;flex-direction:column;gap:1px;}
+  .lv-name-en{font-size:13px;}
+  .lv-name-ko{font-size:11px;color:var(--ink-soft);}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
+  /* Map View 모바일 카드 */
+  .imap-mobile-cards{display:flex;flex-direction:column;gap:8px;padding:8px;}
+  .imap-mc-lot{background:var(--paper-raised);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .imap-mc-lot-title{background:var(--paper);border-bottom:1px solid var(--line);padding:6px 12px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--danger);}
+  .imap-mc-rows{display:flex;flex-direction:column;}
+  .imap-mc-row{display:grid;grid-template-columns:44px 90px 1fr 1fr;align-items:center;padding:7px 12px;border-bottom:1px solid var(--line);gap:8px;font-size:13px;cursor:pointer;}
+  .imap-mc-row:last-child{border-bottom:none;}
+  .imap-mc-row:hover{background:var(--paper);}
+  .imap-mc-grave{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--ink-soft);}
+  .imap-mc-name{font-size:13px;}
+  .imap-mc-kr{font-size:12px;color:var(--ink-soft);}
 }
 
 /* ====================================================
