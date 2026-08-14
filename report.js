@@ -39,13 +39,17 @@ function getSections() {
   return REPORT_DEFAULTS.map(d => ({...d}));
 }
 
-// 통계처럼 한 화면에 렌더링
+// 통계처럼 한 화면에 렌더링 — 1~3 왼쪽, 4~6 오른쪽 2열 배치
 function renderReportView() {
   const title = YEAR + '년 장례 규정 및 현황';
   document.getElementById('reportViewTitle').textContent = title;
 
   const secs = getSections();
-  document.getElementById('reportBody').innerHTML = secs.map((s, i) => `
+  const left  = secs.slice(0, 3);   // 1,2,3
+  const right = secs.slice(3, 6);   // 4,5,6
+
+  function cardHtml(s, i) {
+    return `
     <div class="report-section-card">
       <div class="report-section-header">
         <span class="report-num">${i + 1}</span>
@@ -55,8 +59,14 @@ function renderReportView() {
       <textarea class="report-content-input" id="rc${i}"
         rows="${Math.max(3, s.content.split('\n').length + 1)}"
       >${s.content.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
-    </div>
-  `).join('');
+    </div>`;
+  }
+
+  document.getElementById('reportBody').innerHTML = `
+    <div class="report-two-col">
+      <div class="report-col">${left.map((s,i) => cardHtml(s, i)).join('')}</div>
+      <div class="report-col">${right.map((s,i) => cardHtml(s, i + 3)).join('')}</div>
+    </div>`;
 }
 
 function saveReport() {
