@@ -221,7 +221,13 @@ function renderList() {
           <div class="lv-row status-bg-${r.status}" data-id="${r.id}">
             <div class="lv-cell lv-grave mono">${escHtml(r.grave)}</div>
             <div class="lv-cell lv-status"><span class="status-badge ${r.status}">${STATUS_LABELS[r.status]||r.status}</span></div>
-            <div class="lv-cell lv-name">${r.status === 'A' ? '<span class="avail-dash">—</span>' : escHtml(r.name)}</div>
+            <div class="lv-cell lv-name">
+              ${r.status === 'A' ? '<span class="avail-dash">—</span>' :
+                window.innerWidth <= 720
+                  ? `<div class="lv-name-combined"><span class="lv-name-en">${escHtml(r.name)}</span>${krVal ? `<span class="lv-name-ko">${escHtml(krVal)}</span>` : ''}</div>`
+                  : escHtml(r.name)
+              }
+            </div>
             <div class="lv-cell lv-kr kr-name-cell" data-id="${r.id}" title="클릭 → 한글 이름 수정">
               ${r.status === 'A' ? '' : (escHtml(krVal) || '<span class="kr-empty">+ 입력</span>')}
             </div>
@@ -422,6 +428,67 @@ function findRecord(sec, lot, grave) {
   );
 }
 
+// ─── Map View 모바일 카드 모드 ──────────────────────
+function renderMapMobile(wrap, sec, layout) {
+  const q = STATE.search.trim().toLowerCase();
+  const seenLots = new Set();
+  let html = '<div class="imap-mobile-cards">';
+
+  // 상태 색상 배경 클래스 (List View와 동일)
+  const statusBg = { A:'status-bg-A', R:'status-bg-R', C:'status-bg-C', U:'' };
+
+  layout.lots.forEach(lotDef => {
+    if (lotDef.graves.length === 0 || seenLots.has(lotDef.lot)) return;
+    seenLots.add(lotDef.lot);
+
+    const rows = lotDef.graves.map(grave => {
+      const r = findRecord(sec, lotDef.lot, grave);
+      const status = r ? r.status : 'A';
+      const name = r ? r.name : '';
+      const nameKr = r ? (r.name_kr || toKoreanName(name)) : '';
+      const id = r ? r.id : `${sec}-${lotDef.lot}-${grave}`;
+      const bg = statusBg[status] || '';
+      const matched = q && (
+        lotDef.lot.toLowerCase().includes(q) ||
+        grave.toLowerCase().includes(q) ||
+        name.toLowerCase().includes(q) ||
+        nameKr.toLowerCase().includes(q)
+      );
+      return `<div class="imap-mc-row ${bg}${matched?' search-blink':''}"
+              data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}">
+        <div class="imap-mc-grave">${grave}</div>
+        <span class="status-badge ${status}">${STATUS_LABELS[status]||status}</span>
+        <div class="imap-mc-name">${status==='A'?'<span class="avail-dash">—</span>':escHtml(name)}</div>
+        <div class="imap-mc-kr">${status==='A'?'':escHtml(nameKr)}</div>
+      </div>`;
+    }).join('');
+
+    html += `<div class="imap-mc-lot">
+      <div class="imap-mc-lot-title">Lot ${lotDef.lot}</div>
+      <div class="imap-mc-rows">${rows}</div>
+    </div>`;
+  });
+
+  html += '</div>';
+  wrap.innerHTML = html;
+
+  // 셀 클릭 → 수정 모달
+  wrap.querySelectorAll('.imap-mc-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const { sec: s, lot, grave } = row.dataset;
+      let r = findRecord(s, lot, grave);
+      if (!r) r = { id: row.dataset.id, section: s, lot, grave, status:'A', name:'', name_kr:'', dir:'' };
+      openEditModal(r);
+    });
+  });
+
+  // 검색 결과 스크롤
+  if (q) {
+    const first = wrap.querySelector('.search-blink');
+    if (first) setTimeout(() => first.scrollIntoView({ behavior:'smooth', block:'center' }), 100);
+  }
+}
+
 function renderMap() {
   const wrap = document.getElementById('mapImgWrap');
   if (!wrap) return;
@@ -429,10 +496,12 @@ function renderMap() {
   const layout = MAP_LAYOUTS[sec];
   if (!layout) return;
 
-  // 모바일에서는 첫 렌더 시 최대 줌으로 시작 (－로 줄여서 보기)
   const isMobile = window.innerWidth <= 720;
-  if (isMobile && STATE.mapZoom === 1) {
-    STATE.mapZoom = 5;
+
+  // 모바일: 카드 모드 (lot별 세로 나열, 각 grave를 행으로)
+  if (isMobile) {
+    renderMapMobile(wrap, sec, layout);
+    return;
   }
 
   let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},1fr);grid-template-rows:repeat(${layout.gridRows},auto);">`;
