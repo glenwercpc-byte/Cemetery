@@ -214,12 +214,9 @@ body { display:flex; flex-direction:column; }
    INTRO OVERLAY
    ==================================================== */
 #introOverlay{position:fixed;inset:0;z-index:9999;background:#1a1812;cursor:pointer;overflow:hidden;}
-#introMap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:30% 66%;will-change:transform,opacity;}
+#introMap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:22% 72%;will-change:transform,opacity;}
 #introMapImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;animation:introFadeIn .8s ease-out forwards;}
 @keyframes introFadeIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
-#introZoneHint{position:absolute;left:30%;top:66%;transform:translate(-50%,-50%);pointer-events:none;animation:introFadeIn 1s ease-out .5s both;}
-#introZoneRing{width:180px;height:180px;border:3px solid rgba(255,220,100,.85);border-radius:50%;box-shadow:0 0 0 8px rgba(255,220,100,.15),0 0 36px rgba(255,220,100,.35);animation:ringPulse 2s ease-in-out infinite 1s;}
-@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.1);opacity:.45}}
 #introClickPrompt{position:absolute;top:20px;right:20px;text-align:center;color:white;background:rgba(10,10,10,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 22px;transition:opacity .4s;animation:introFadeIn .8s ease-out .4s both;min-width:220px;}
 .intro-logo{font-size:24px;margin-bottom:6px;}
 .intro-title{font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:4px;}
@@ -233,7 +230,7 @@ body { display:flex; flex-direction:column; }
 @media(max-width:720px){
   .app-title .sub{display:none;}
   .main{padding:14px 12px 60px;}
-  .lots-row{grid-template-columns:repeat(2,1fr);}
+  .lots-row{grid-template-columns:1fr;}
   .lv-header,.lv-row{grid-template-columns:32px 70px 1fr;}
   .lv-h-kr,.lv-cell.lv-kr{display:none;}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
@@ -537,6 +534,8 @@ body { display:flex; flex-direction:column; }
   align-items: center;
   flex-shrink: 0;
   padding: 4px 0 8px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .full-map-wrap {
