@@ -638,13 +638,122 @@ body { display:flex; flex-direction:column; }
   text-orientation: mixed;
   font-size: 10px;
 }
-/* 자료 제공 드롭메뉴 */
-.report-menu-wrap { position: relative; }
+
+/* ====================================================
+   자료 제공 드롭메뉴
+   ==================================================== */
+.report-menu-wrap {
+  position: relative;
+}
+.report-tab {
+  white-space: nowrap;
+}
+#reportDropMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  z-index: 200;
+  min-width: 220px;
+  overflow: hidden;
+}
 .report-menu-item {
-  padding: 11px 18px;
+  padding: 12px 18px;
   font-size: 14px;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background .1s;
 }
-.report-menu-item:hover { background: var(--paper); }
+.report-menu-item:hover {
+  background: var(--paper);
+}
+
+/* 자료 제공 모달 */
+.report-modal {
+  max-width: 680px;
+  width: 95%;
+}
+
+/* ====================================================
+   규정 및 현황 뷰
+   ==================================================== */
+.report-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.report-view-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+}
+.report-section-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+}
+.report-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.report-num {
+  background: var(--ink);
+  color: white;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.report-title-input {
+  flex: 1;
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--paper);
+}
+.report-title-input:focus {
+  outline: 2px solid var(--slate);
+  outline-offset: -1px;
+}
+.report-content-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+  background: var(--paper);
+  resize: vertical;
+  box-sizing: border-box;
+}
+.report-content-input:focus {
+  outline: 2px solid var(--slate);
+  outline-offset: -1px;
+}
