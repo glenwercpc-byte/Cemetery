@@ -161,6 +161,7 @@ function render() {
   document.getElementById('viewMap').style.display   = STATE.view === 'map'     ? '' : 'none';
   document.getElementById('viewPdf').style.display   = STATE.view === 'pdfview' ? '' : 'none';
   document.getElementById('viewStats').style.display = STATE.view === 'stats'   ? '' : 'none';
+  document.getElementById('viewReport').style.display= STATE.view === 'report'  ? '' : 'none';
   document.getElementById('searchWrap').style.display = '';
 
   // Map View일 때만 줌 버튼 표시
@@ -171,6 +172,7 @@ function render() {
   if (STATE.view === 'map')     renderMap();
   if (STATE.view === 'pdfview') renderPdfView();
   if (STATE.view === 'stats')   renderStats();
+  if (STATE.view === 'report')  renderReportView();
 }
 
 function escHtml(s) {
