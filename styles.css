@@ -241,17 +241,13 @@ body { display:flex; flex-direction:column; }
   .lv-name-en{font-size:13px;}
   .lv-name-ko{font-size:11px;color:var(--ink-soft);}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
-  /* Map View 모바일 카드 */
-  .imap-mobile-cards{display:flex;flex-direction:column;gap:8px;padding:8px;}
-  .imap-mc-lot{background:var(--paper-raised);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
-  .imap-mc-lot-title{background:var(--paper);border-bottom:1px solid var(--line);padding:6px 12px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--danger);}
-  .imap-mc-rows{display:flex;flex-direction:column;}
-  .imap-mc-row{display:grid;grid-template-columns:44px 90px 1fr 1fr;align-items:center;padding:7px 12px;border-bottom:1px solid var(--line);gap:8px;font-size:13px;cursor:pointer;}
-  .imap-mc-row:last-child{border-bottom:none;}
-  .imap-mc-row:hover{background:var(--paper);}
-  .imap-mc-grave{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--ink-soft);}
-  .imap-mc-name{font-size:13px;}
-  .imap-mc-kr{font-size:12px;color:var(--ink-soft);}
+  /* Map View 모바일 — 가로 스크롤 그리드 */
+  .full-map-wrap { overflow: auto !important; }
+  .imap-grid { min-width: max-content; }
+  .imap-cell { min-width: 48px; min-height: 70px; }
+  .imap-grave-no { font-size: 10px; }
+  .imap-name { font-size: 12px; max-height: 58px; }
+  .imap-lot-label { font-size: 10px; }
 }
 
 /* ====================================================
