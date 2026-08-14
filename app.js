@@ -428,81 +428,12 @@ function findRecord(sec, lot, grave) {
   );
 }
 
-// ─── Map View 모바일 카드 모드 ──────────────────────
-function renderMapMobile(wrap, sec, layout) {
-  const q = STATE.search.trim().toLowerCase();
-  const seenLots = new Set();
-  let html = '<div class="imap-mobile-cards">';
-
-  // 상태 색상 배경 클래스 (List View와 동일)
-  const statusBg = { A:'status-bg-A', R:'status-bg-R', C:'status-bg-C', U:'' };
-
-  layout.lots.forEach(lotDef => {
-    if (lotDef.graves.length === 0 || seenLots.has(lotDef.lot)) return;
-    seenLots.add(lotDef.lot);
-
-    const rows = lotDef.graves.map(grave => {
-      const r = findRecord(sec, lotDef.lot, grave);
-      const status = r ? r.status : 'A';
-      const name = r ? r.name : '';
-      const nameKr = r ? (r.name_kr || toKoreanName(name)) : '';
-      const id = r ? r.id : `${sec}-${lotDef.lot}-${grave}`;
-      const bg = statusBg[status] || '';
-      const matched = q && (
-        lotDef.lot.toLowerCase().includes(q) ||
-        grave.toLowerCase().includes(q) ||
-        name.toLowerCase().includes(q) ||
-        nameKr.toLowerCase().includes(q)
-      );
-      return `<div class="imap-mc-row ${bg}${matched?' search-blink':''}"
-              data-id="${id}" data-sec="${sec}" data-lot="${lotDef.lot}" data-grave="${grave}">
-        <div class="imap-mc-grave">${grave}</div>
-        <span class="status-badge ${status}">${STATUS_LABELS[status]||status}</span>
-        <div class="imap-mc-name">${status==='A'?'<span class="avail-dash">—</span>':escHtml(name)}</div>
-        <div class="imap-mc-kr">${status==='A'?'':escHtml(nameKr)}</div>
-      </div>`;
-    }).join('');
-
-    html += `<div class="imap-mc-lot">
-      <div class="imap-mc-lot-title">Lot ${lotDef.lot}</div>
-      <div class="imap-mc-rows">${rows}</div>
-    </div>`;
-  });
-
-  html += '</div>';
-  wrap.innerHTML = html;
-
-  // 셀 클릭 → 수정 모달
-  wrap.querySelectorAll('.imap-mc-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const { sec: s, lot, grave } = row.dataset;
-      let r = findRecord(s, lot, grave);
-      if (!r) r = { id: row.dataset.id, section: s, lot, grave, status:'A', name:'', name_kr:'', dir:'' };
-      openEditModal(r);
-    });
-  });
-
-  // 검색 결과 스크롤
-  if (q) {
-    const first = wrap.querySelector('.search-blink');
-    if (first) setTimeout(() => first.scrollIntoView({ behavior:'smooth', block:'center' }), 100);
-  }
-}
-
 function renderMap() {
   const wrap = document.getElementById('mapImgWrap');
   if (!wrap) return;
   const sec = STATE.section;
   const layout = MAP_LAYOUTS[sec];
   if (!layout) return;
-
-  const isMobile = window.innerWidth <= 720;
-
-  // 모바일: 카드 모드 (lot별 세로 나열, 각 grave를 행으로)
-  if (isMobile) {
-    renderMapMobile(wrap, sec, layout);
-    return;
-  }
 
   let html = `<div class="imap-grid" style="grid-template-columns:repeat(${layout.gridCols},1fr);grid-template-rows:repeat(${layout.gridRows},auto);">`;
 
