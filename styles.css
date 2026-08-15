@@ -684,14 +684,12 @@ body { display:flex; flex-direction:column; }
    규정 및 현황 뷰
    ==================================================== */
 #viewReport {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* flex 중앙 제거 — padding 고려한 margin auto 방식 */
 }
 .report-view-inner {
-  width: 80%;
-  min-width: 600px;
-  max-width: 1300px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 .report-view-header {
   display: flex;
