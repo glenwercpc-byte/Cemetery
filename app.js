@@ -826,7 +826,7 @@ function initIntro() {
     if (prompt) prompt.style.opacity = '0';
     const mapEl = document.getElementById('introMap');
     mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '22% 72%';
+    mapEl.style.transformOrigin = '50% 75.5%';
     mapEl.style.transform = 'scale(2.2)';
     mapEl.style.opacity = '0';
     setTimeout(() => {
