@@ -42,8 +42,6 @@ function getSections() {
 // 통계처럼 한 화면에 렌더링 — 1~3 왼쪽, 4~6 오른쪽 2열 배치
 function renderReportView() {
   const title = YEAR + '년 장례 규정 및 현황';
-  document.getElementById('reportViewTitle').textContent = title;
-
   const secs = getSections();
   const left  = secs.slice(0, 3);   // 1,2,3
   const right = secs.slice(3, 6);   // 4,5,6
@@ -57,15 +55,24 @@ function renderReportView() {
           value="${s.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}">
       </div>
       <textarea class="report-content-input" id="rc${i}"
-        rows="${Math.max(3, s.content.split('\n').length + 1)}"
+        rows="${Math.max(5, s.content.split('\n').length + 2)}"
       >${s.content.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
     </div>`;
   }
 
   document.getElementById('reportBody').innerHTML = `
-    <div class="report-two-col">
-      <div class="report-col">${left.map((s,i) => cardHtml(s, i)).join('')}</div>
-      <div class="report-col">${right.map((s,i) => cardHtml(s, i + 3)).join('')}</div>
+    <div class="report-view-inner">
+      <div class="report-view-header">
+        <h2 id="reportViewTitle">${title}</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm" onclick="saveReport()">💾 저장</button>
+          <button class="btn btn-sm" onclick="printReport()">🖨️ 인쇄</button>
+        </div>
+      </div>
+      <div class="report-two-col">
+        <div class="report-col">${left.map((s,i) => cardHtml(s, i)).join('')}</div>
+        <div class="report-col">${right.map((s,i) => cardHtml(s, i + 3)).join('')}</div>
+      </div>
     </div>`;
 }
 
@@ -126,8 +133,7 @@ function printReport() {
       <div class="sc">${esc(s.content)}</div>
     `).join('')}</td>
   </tr>
-  <tr><td class="lb">비고</td><td style="height:60px;"></td></tr>
-</table>
+  </table>
 <div class="footer">
   시카고언약장로교회 (Chicago Covenant Presbyterian Church)
 </div>
