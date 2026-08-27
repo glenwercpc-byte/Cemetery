@@ -887,3 +887,35 @@ body { display:flex; flex-direction:column; }
   white-space: nowrap;
   min-width: 110px;
 }
+
+/* 시세 볼드 표시 + 클릭 편집 */
+.price-market-cell { text-align: right; }
+.price-market-display {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a365d;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.price-market-display:hover {
+  background: var(--slate-bg);
+  text-decoration: underline dotted;
+}
+/* Section 15/16 굵은 구분선 */
+.price-section-divider td {
+  padding: 0;
+  height: 3px;
+  background: #1a365d;
+  border: none;
+}
+/* 힌트 */
+.price-hint {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  text-align: right;
+  opacity: .7;
+}
