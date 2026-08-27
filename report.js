@@ -47,16 +47,37 @@ function calcPrice(market, pct) {
   return (market * pct / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+function editMarket(id) {
+  const display = document.getElementById(id + '-display');
+  const input   = document.getElementById(id);
+  if (!display || !input) return;
+  display.style.display = 'none';
+  input.style.display   = '';
+  input.focus();
+  input.select();
+}
+
+function doneEditMarket(id) {
+  const display = document.getElementById(id + '-display');
+  const input   = document.getElementById(id);
+  if (!display || !input) return;
+  const val = parseFloat(input.value) || 0;
+  display.textContent = '$' + Number(val).toLocaleString('en-US');
+  input.style.display   = 'none';
+  display.style.display = '';
+  updatePriceCalc();
+}
+
 function updatePriceCalc() {
-  const s15m  = parseFloat(document.getElementById('s15market')?.value || 0);
-  const s15p  = parseFloat(document.getElementById('s15pct')?.value || 0);
+  const s15m  = parseFloat(document.getElementById('s15market')?.value  || 0);
+  const s15p  = parseFloat(document.getElementById('s15pct')?.value     || 0);
   const s16sm = parseFloat(document.getElementById('s16smarket')?.value || 0);
-  const s16sp = parseFloat(document.getElementById('s16spct')?.value || 0);
+  const s16sp = parseFloat(document.getElementById('s16spct')?.value    || 0);
   const s16fm = parseFloat(document.getElementById('s16fmarket')?.value || 0);
-  const s16fp = parseFloat(document.getElementById('s16fpct')?.value || 0);
+  const s16fp = parseFloat(document.getElementById('s16fpct')?.value    || 0);
 
   if (document.getElementById('s15result'))
-    document.getElementById('s15result').textContent = '$' + calcPrice(s15m, s15p);
+    document.getElementById('s15result').textContent  = '$' + calcPrice(s15m,  s15p);
   if (document.getElementById('s16sresult'))
     document.getElementById('s16sresult').textContent = '$' + calcPrice(s16sm, s16sp);
   if (document.getElementById('s16fresult'))
@@ -65,6 +86,11 @@ function updatePriceCalc() {
 
 function priceCardHtml(sec, i) {
   const pd = getPriceData();
+
+  function fmtMarket(val) {
+    return '$' + Number(val).toLocaleString('en-US');
+  }
+
   return `
   <div class="report-section-card">
     <div class="report-section-header">
@@ -75,35 +101,58 @@ function priceCardHtml(sec, i) {
     <div class="price-calc-wrap">
       <table class="price-table">
         <thead><tr>
-          <th>구분</th><th>시세 ($)</th><th>비율 (%)</th><th>교회 가격</th>
+          <th>구분</th><th>시세</th><th>비율 (%)</th><th>교회 가격</th>
         </tr></thead>
         <tbody>
           <tr class="price-row">
             <td><strong>Section 15</strong><br><small>평석만 허용</small></td>
-            <td><input type="number" id="s15market" class="price-input" value="${pd.s15.market}"
-              oninput="updatePriceCalc()" step="1" min="0"></td>
-            <td><input type="number" id="s15pct" class="price-input pct" value="${pd.s15.pct}"
-              oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %</td>
+            <td class="price-market-cell">
+              <span class="price-market-display" id="s15market-display"
+                onclick="editMarket('s15market')" title="클릭하여 수정">${fmtMarket(pd.s15.market)}</span>
+              <input type="number" id="s15market" class="price-input" value="${pd.s15.market}"
+                oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
+                onblur="doneEditMarket('s15market')">
+            </td>
+            <td>
+              <input type="number" id="s15pct" class="price-input pct" value="${pd.s15.pct}"
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+            </td>
             <td class="price-result" id="s15result">$${calcPrice(pd.s15.market, pd.s15.pct)}</td>
           </tr>
+          <tr class="price-section-divider"><td colspan="4"></td></tr>
           <tr class="price-row">
             <td><strong>Section 16</strong><br><small>입석</small></td>
-            <td><input type="number" id="s16smarket" class="price-input" value="${pd.s16_standing.market}"
-              oninput="updatePriceCalc()" step="1" min="0"></td>
-            <td><input type="number" id="s16spct" class="price-input pct" value="${pd.s16_standing.pct}"
-              oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %</td>
+            <td class="price-market-cell">
+              <span class="price-market-display" id="s16smarket-display"
+                onclick="editMarket('s16smarket')" title="클릭하여 수정">${fmtMarket(pd.s16_standing.market)}</span>
+              <input type="number" id="s16smarket" class="price-input" value="${pd.s16_standing.market}"
+                oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
+                onblur="doneEditMarket('s16smarket')">
+            </td>
+            <td>
+              <input type="number" id="s16spct" class="price-input pct" value="${pd.s16_standing.pct}"
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+            </td>
             <td class="price-result" id="s16sresult">$${calcPrice(pd.s16_standing.market, pd.s16_standing.pct)}</td>
           </tr>
           <tr class="price-row">
             <td><strong>Section 16</strong><br><small>평석</small></td>
-            <td><input type="number" id="s16fmarket" class="price-input" value="${pd.s16_flat.market}"
-              oninput="updatePriceCalc()" step="1" min="0"></td>
-            <td><input type="number" id="s16fpct" class="price-input pct" value="${pd.s16_flat.pct}"
-              oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %</td>
+            <td class="price-market-cell">
+              <span class="price-market-display" id="s16fmarket-display"
+                onclick="editMarket('s16fmarket')" title="클릭하여 수정">${fmtMarket(pd.s16_flat.market)}</span>
+              <input type="number" id="s16fmarket" class="price-input" value="${pd.s16_flat.market}"
+                oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
+                onblur="doneEditMarket('s16fmarket')">
+            </td>
+            <td>
+              <input type="number" id="s16fpct" class="price-input pct" value="${pd.s16_flat.pct}"
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+            </td>
             <td class="price-result" id="s16fresult">$${calcPrice(pd.s16_flat.market, pd.s16_flat.pct)}</td>
           </tr>
         </tbody>
       </table>
+      <div class="price-hint">※ 시세를 클릭하면 수정할 수 있습니다</div>
     </div>
   </div>`;
 }
