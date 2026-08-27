@@ -43,8 +43,8 @@ function getSections() {
 function renderReportView() {
   const title = YEAR + '년 장례 규정 및 현황';
   const secs = getSections();
-  const left  = secs.slice(0, 3);   // 1,2,3
-  const right = secs.slice(3, 6);   // 4,5,6
+  const left  = secs.filter((_, i) => i % 2 === 0);  // 1,3,5 (index 0,2,4)
+  const right = secs.filter((_, i) => i % 2 === 1);  // 2,4,6 (index 1,3,5)
 
   function cardHtml(s, i) {
     return `
@@ -55,7 +55,9 @@ function renderReportView() {
           value="${s.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}">
       </div>
       <textarea class="report-content-input" id="rc${i}"
-        rows="${Math.max(5, s.content.split('\n').length + 2)}"
+        rows="${s.content.split('\n').length}"
+        style="overflow:hidden;"
+        oninput="this.rows=1;this.rows=this.value.split('\\n').length||1;"
       >${s.content.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
     </div>`;
   }
@@ -70,8 +72,8 @@ function renderReportView() {
         </div>
       </div>
       <div class="report-two-col">
-        <div class="report-col">${left.map((s,i) => cardHtml(s, i)).join('')}</div>
-        <div class="report-col">${right.map((s,i) => cardHtml(s, i + 3)).join('')}</div>
+        <div class="report-col">${left.map((s, i) => cardHtml(s, i * 2)).join('')}</div>
+        <div class="report-col">${right.map((s, i) => cardHtml(s, i * 2 + 1)).join('')}</div>
       </div>
     </div>`;
 }
