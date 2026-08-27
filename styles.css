@@ -784,3 +784,40 @@ body { display:flex; flex-direction:column; }
   outline: 2px solid var(--slate);
   outline-offset: -1px;
 }
+
+/* ====================================================
+   통계 Available 박스 — 클릭 가능 스타일
+   ==================================================== */
+.stats-cell-clickable {
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.stats-cell-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.stats-cell-hint {
+  font-size: 10px;
+  color: var(--sage);
+  margin-top: 4px;
+  opacity: .8;
+}
+
+/* Available 셀 빨간 깜빡임 (Map View) */
+@keyframes availableBlink {
+  0%, 100% {
+    outline: 2.5px solid #e63946;
+    outline-offset: -1px;
+    box-shadow: 0 0 6px rgba(230,57,70,.5);
+  }
+  50% {
+    outline: 2.5px solid transparent;
+    box-shadow: none;
+  }
+}
+.imap-cell.available-blink {
+  animation: availableBlink 0.8s ease-in-out infinite;
+  outline: 2.5px solid #e63946;
+  outline-offset: -1px;
+  z-index: 3;
+}
