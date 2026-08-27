@@ -829,3 +829,61 @@ body { display:flex; flex-direction:column; }
   outline-offset: -1px;
   z-index: 3;
 }
+
+/* ====================================================
+   가격 계산기 (5번 항목)
+   ==================================================== */
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.price-table th {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.price-row td {
+  border: 1px solid var(--line);
+  padding: 10px;
+  vertical-align: middle;
+}
+.price-row td:first-child {
+  background: var(--paper);
+  font-size: 13px;
+  min-width: 100px;
+}
+.price-row td small {
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.price-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-family: var(--font-mono);
+  text-align: right;
+  background: var(--paper-raised);
+}
+.price-input:focus {
+  outline: 2px solid var(--slate);
+  border-color: var(--slate);
+}
+.price-input.pct {
+  width: 64px;
+}
+.price-result {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a365d;
+  text-align: right;
+  white-space: nowrap;
+  min-width: 110px;
+}
