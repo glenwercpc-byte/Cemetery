@@ -456,7 +456,16 @@ function showAvailableOnMap(sec) {
     if (first) {
       setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 200);
     }
-    showToast(`Section ${sec} — Available ${document.querySelectorAll('.available-blink').length}개 표시 중`);
+    showToast(`Section ${sec} — Available ${document.querySelectorAll('.available-blink').length}개 표시 중 (클릭하면 정지)`);
+
+    // 아무데나 클릭하면 blink 정지 → 빨간 라인 유지
+    function stopBlink() {
+      document.querySelectorAll('.imap-cell.available-blink').forEach(cell => {
+        cell.classList.remove('available-blink');
+        cell.classList.add('available-stopped');
+      });
+    }
+    document.addEventListener('click', stopBlink, { once: true });
   }, 150);
 }
 
