@@ -816,7 +816,13 @@ body { display:flex; flex-direction:column; }
   }
 }
 .imap-cell.available-blink {
-  animation: availableBlink 0.8s ease-in-out infinite;
+  animation: availableBlink 3s ease-in-out infinite;
+  outline: 2.5px solid #e63946;
+  outline-offset: -1px;
+  z-index: 3;
+}
+/* 클릭 후 정지 — 빨간 라인 유지, 애니메이션 없음 */
+.imap-cell.available-stopped {
   outline: 2.5px solid #e63946;
   outline-offset: -1px;
   z-index: 3;
