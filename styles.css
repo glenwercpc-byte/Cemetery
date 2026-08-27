@@ -769,16 +769,18 @@ body { display:flex; flex-direction:column; }
 }
 .report-content-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 9px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   font-family: var(--font-body);
   font-size: 14px;
-  line-height: 1.8;
+  line-height: 1.7;
   color: var(--ink);
   background: var(--paper);
   resize: vertical;
   box-sizing: border-box;
+  overflow: hidden;
+  display: block;
 }
 .report-content-input:focus {
   outline: 2px solid var(--slate);
