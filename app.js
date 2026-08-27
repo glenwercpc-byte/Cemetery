@@ -169,7 +169,7 @@ function render() {
   if (zoomBtns) zoomBtns.style.display = STATE.view === 'map' ? 'flex' : 'none';
 
   if (STATE.view === 'list')    renderList();
-  if (STATE.view === 'map')     renderMap();
+  if (STATE.view === 'map')     renderMap();   // renderMap 내부에서 그리드를 재생성하므로 blink 자동 초기화
   if (STATE.view === 'pdfview') renderPdfView();
   if (STATE.view === 'stats')   renderStats();
   if (STATE.view === 'report')  renderReportView();
@@ -421,6 +421,44 @@ const MAP_LAYOUTS = {
     ]
   }
 };
+
+// 통계 Available 클릭 → 해당 섹션 Map View로 전환 + Available 셀 빨간 깜빡임
+function showAvailableOnMap(sec) {
+  // 섹션 전환
+  STATE.section = sec;
+  document.querySelectorAll('.chip[data-section]').forEach(c => {
+    c.classList.toggle('active', c.dataset.section === sec);
+  });
+
+  // Map View 탭 활성화
+  STATE.view = 'map';
+  document.querySelectorAll('.view-tab[data-view]').forEach(t => {
+    t.classList.toggle('active', t.dataset.view === 'map');
+  });
+
+  // 렌더링 후 Available 셀 강조
+  render();
+
+  setTimeout(() => {
+    const wrap = document.getElementById('mapImgWrap');
+    if (!wrap) return;
+    let first = null;
+    wrap.querySelectorAll('.imap-cell').forEach(cell => {
+      const { sec: csec, lot, grave } = cell.dataset;
+      const r = findRecord(csec, lot, grave);
+      const status = r ? r.status : 'A';
+      if (status === 'A') {
+        cell.classList.add('available-blink');
+        if (!first) first = cell;
+      }
+    });
+    // 첫 번째 Available 셀로 스크롤
+    if (first) {
+      setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 200);
+    }
+    showToast(`Section ${sec} — Available ${document.querySelectorAll('.available-blink').length}개 표시 중`);
+  }, 150);
+}
 
 function findRecord(sec, lot, grave) {
   // 모두 문자열로 변환해서 비교 (GAS에서 숫자로 올 수 있음)
@@ -750,7 +788,12 @@ function renderStats() {
         </div>
       </div>
       <div class="stats-grid">
-        <div class="stats-cell available"><div class="stats-cell-num">${d.available}</div><div class="stats-cell-lbl">Available</div><div class="stats-cell-pct">${d.total?Math.round(d.available/d.total*100):0}%</div></div>
+        <div class="stats-cell available stats-cell-clickable" onclick="showAvailableOnMap('${s}')" title="클릭 → Map View에서 Available 표시">
+          <div class="stats-cell-num">${d.available}</div>
+          <div class="stats-cell-lbl">Available</div>
+          <div class="stats-cell-pct">${d.total?Math.round(d.available/d.total*100):0}%</div>
+          <div class="stats-cell-hint">🗺 지도에서 보기</div>
+        </div>
         <div class="stats-cell used"><div class="stats-cell-num">${d.used}</div><div class="stats-cell-lbl">사용중</div><div class="stats-cell-pct">${d.total?Math.round(d.used/d.total*100):0}%</div></div>
         <div class="stats-cell reserved"><div class="stats-cell-num">${d.reserved}</div><div class="stats-cell-lbl">Reserved</div><div class="stats-cell-pct">${d.total?Math.round(d.reserved/d.total*100):0}%</div></div>
         <div class="stats-cell confirmed"><div class="stats-cell-num">${d.confirmed}</div><div class="stats-cell-lbl">확인 필요</div><div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div></div>
