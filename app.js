@@ -915,25 +915,40 @@ function toggleAdmin() {
 }
 
 // ─── 인트로 ────────────────────────────────────────
-function initIntro() {
+// 인트로 버튼에서 호출 — 조회/관리자 모드 선택
+function startApp(mode) {
   const overlay = document.getElementById('introOverlay');
-  if (!overlay) return;
-  overlay.addEventListener('click', () => {
-    if (overlay.dataset.animating) return;
-    overlay.dataset.animating = '1';
-    const prompt = document.getElementById('introClickPrompt');
-    if (prompt) prompt.style.opacity = '0';
-    const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '50% 75.5%';
-    mapEl.style.transform = 'scale(2.2)';
-    mapEl.style.opacity = '0';
-    setTimeout(() => {
-      overlay.style.transition = 'opacity 0.6s';
-      overlay.style.opacity = '0';
-      setTimeout(() => { overlay.style.display='none'; }, 600);
-    }, 6200);
-  });
+  if (!overlay || overlay.dataset.animating) return;
+  overlay.dataset.animating = '1';
+
+  // 관리자 모드 설정
+  if (mode === 'admin') {
+    STATE.isAdmin = true;
+    document.getElementById('adminBanner').style.display = 'flex';
+    document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
+  }
+
+  // 버튼 패널 페이드
+  const center = document.getElementById('introCenter');
+  if (center) center.style.opacity = '0';
+
+  // 지도 줌인 → 페이드아웃
+  const mapEl = document.getElementById('introMap');
+  mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
+  mapEl.style.transformOrigin = '50% 75.5%';
+  mapEl.style.transform = 'scale(2.2)';
+  mapEl.style.opacity = '0';
+
+  setTimeout(() => {
+    overlay.style.transition = 'opacity 0.6s';
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 600);
+  }, 6200);
+}
+
+function initIntro() {
+  // 버튼 방식으로 전환 — 클릭 이벤트 불필요
+  // startApp() 은 HTML onclick에서 직접 호출
 }
 
 // ─── 이벤트 바인딩 ──────────────────────────────────
