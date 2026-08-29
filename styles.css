@@ -211,18 +211,89 @@ body { display:flex; flex-direction:column; }
 .mono{font-family:var(--font-mono);}
 
 /* ====================================================
-   INTRO OVERLAY
+   INTRO OVERLAY — 3D 버튼 선택 방식
    ==================================================== */
-#introOverlay{position:fixed;inset:0;z-index:9999;background:#1a1812;cursor:pointer;overflow:hidden;}
-#introMap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:22% 72%;will-change:transform,opacity;}
+#introOverlay{position:fixed;inset:0;z-index:9999;background:#1a1812;overflow:hidden;}
+#introMap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:50% 75.5%;will-change:transform,opacity;}
 #introMapImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;animation:introFadeIn .8s ease-out forwards;}
 @keyframes introFadeIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
-#introClickPrompt{position:absolute;top:20px;right:20px;text-align:center;color:white;background:rgba(10,10,10,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 22px;transition:opacity .4s;animation:introFadeIn .8s ease-out .4s both;min-width:220px;}
-.intro-logo{font-size:24px;margin-bottom:6px;}
-.intro-title{font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:4px;}
-.intro-sub{font-size:10px;opacity:.65;margin-bottom:12px;}
-.intro-click{font-size:10.5px;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:5px 14px;display:inline-block;animation:clickBlink 2s ease-in-out infinite 1.2s;}
-@keyframes clickBlink{0%,100%{opacity:.9}50%{opacity:.35}}
+
+/* 중앙 패널 */
+#introCenter{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  animation:introFadeIn 1s ease-out .3s both;
+  background:rgba(10,10,10,.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;
+  padding:36px 48px 40px;
+  min-width:340px;
+  transition:opacity .4s;
+}
+.intro-logo{font-size:36px;margin-bottom:10px;}
+.intro-title{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:700;
+  color:white;letter-spacing:.04em;
+  margin-bottom:6px;
+}
+.intro-sub{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:32px;letter-spacing:.02em;}
+
+/* 3D 버튼 영역 */
+.intro-buttons{display:flex;gap:20px;justify-content:center;}
+
+.intro-btn{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:18px 28px;border:none;border-radius:14px;
+  cursor:pointer;
+  min-width:130px;
+  font-family:var(--font-body);
+  transition:transform .15s, box-shadow .15s;
+  position:relative;
+  outline:none;
+}
+
+/* 조회 모드 — 초록 계열 */
+.intro-btn-view{
+  background:linear-gradient(145deg,#2e7d52,#1b5e37);
+  color:white;
+  box-shadow:
+    0 6px 0 #0d3d20,
+    0 8px 16px rgba(0,0,0,.5);
+}
+.intro-btn-view:hover{
+  transform:translateY(-3px);
+  box-shadow:0 9px 0 #0d3d20, 0 12px 24px rgba(0,0,0,.5);
+}
+.intro-btn-view:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #0d3d20, 0 4px 8px rgba(0,0,0,.4);
+}
+
+/* 관리자 모드 — 네이비 계열 */
+.intro-btn-admin{
+  background:linear-gradient(145deg,#2b5da8,#1a3a6e);
+  color:white;
+  box-shadow:
+    0 6px 0 #0f2447,
+    0 8px 16px rgba(0,0,0,.5);
+}
+.intro-btn-admin:hover{
+  transform:translateY(-3px);
+  box-shadow:0 9px 0 #0f2447, 0 12px 24px rgba(0,0,0,.5);
+}
+.intro-btn-admin:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #0f2447, 0 4px 8px rgba(0,0,0,.4);
+}
+
+.intro-btn-icon{font-size:28px;line-height:1;}
+.intro-btn-label{font-size:15px;font-weight:700;letter-spacing:.02em;}
+.intro-btn-desc{font-size:10px;opacity:.75;letter-spacing:.02em;}
 
 /* ====================================================
    RESPONSIVE
