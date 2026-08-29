@@ -919,3 +919,31 @@ body { display:flex; flex-direction:column; }
   text-align: right;
   opacity: .7;
 }
+
+/* 확인 필요 셀 다크 브라운 깜빡임 */
+@keyframes confirmBlink {
+  0%, 100% {
+    outline: 2.5px solid #6b3a2a;
+    outline-offset: -1px;
+    box-shadow: 0 0 6px rgba(107,58,42,.5);
+  }
+  50% {
+    outline: 2.5px solid transparent;
+    box-shadow: none;
+  }
+}
+.imap-cell.confirm-blink {
+  animation: confirmBlink 3s ease-in-out infinite;
+  outline: 2.5px solid #6b3a2a;
+  outline-offset: -1px;
+  z-index: 3;
+}
+.imap-cell.confirm-stopped {
+  outline: 2.5px solid #6b3a2a;
+  outline-offset: -1px;
+  z-index: 3;
+}
+/* 통계 확인 필요 박스 힌트 색상 */
+.stats-cell.confirmed .stats-cell-hint {
+  color: #6b3a2a;
+}
