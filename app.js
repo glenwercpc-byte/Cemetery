@@ -928,28 +928,35 @@ function startApp(mode) {
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
   }
 
-  // 1단계: 타이틀 박스 먼저 슬며시 사라짐 (1.2초)
+  // 1단계: 타이틀 박스만 먼저 사라짐 (1.5초)
   const center = document.getElementById('introCenter');
   if (center) {
-    center.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+    center.style.transition = 'opacity 1.5s ease, transform 1.5s ease';
     center.style.opacity = '0';
-    center.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    center.style.transform = 'translate(-50%, -50%) scale(0.85)';
   }
 
-  // 2단계: 1.4초 후 맵 줌인 시작
+  // 2단계: 타이틀 완전히 사라진 후(2초) 맵 줌인 시작
   setTimeout(() => {
     const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '50% 75.5%';
-    mapEl.style.transform = 'scale(2.2)';
-    mapEl.style.opacity = '0';
+    // will-change 제거 후 transition 적용 (GPU 레이어 충돌 방지)
+    mapEl.style.willChange = 'auto';
+    // 한 프레임 후에 transition 설정 (브라우저 강제 리플로우)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
+        mapEl.style.transformOrigin = '50% 75.5%';
+        mapEl.style.transform = 'scale(2.2)';
+        mapEl.style.opacity = '0';
+      });
+    });
 
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
       setTimeout(() => { overlay.style.display = 'none'; }, 600);
-    }, 6200);
-  }, 1400);
+    }, 6400);
+  }, 2000);
 }
 
 function initIntro() {
