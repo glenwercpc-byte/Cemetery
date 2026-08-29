@@ -921,36 +921,28 @@ function startApp(mode) {
   if (!overlay || overlay.dataset.animating) return;
   overlay.dataset.animating = '1';
 
-  // 관리자 모드 설정
   if (mode === 'admin') {
     STATE.isAdmin = true;
     document.getElementById('adminBanner').style.display = 'flex';
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
   }
 
-  // 1단계: 타이틀 박스만 먼저 사라짐 (1.5초)
+  // 1단계: 타이틀 박스 페이드아웃 (CSS transition 이용, 맵과 완전 독립)
   const center = document.getElementById('introCenter');
   if (center) {
-    center.style.transition = 'opacity 1.5s ease, transform 1.5s ease';
     center.style.opacity = '0';
-    center.style.transform = 'translate(-50%, -50%) scale(0.85)';
+    center.style.transform = 'translate(-50%, -60%) scale(0.85)';
   }
 
-  // 2단계: 타이틀 완전히 사라진 후(2초) 맵 줌인 시작
+  // 2단계: 2초 후 맵 줌인 (타이틀 완전히 사라진 후)
   setTimeout(() => {
     const mapEl = document.getElementById('introMap');
-    // will-change 제거 후 transition 적용 (GPU 레이어 충돌 방지)
-    mapEl.style.willChange = 'auto';
-    // 한 프레임 후에 transition 설정 (브라우저 강제 리플로우)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-        mapEl.style.transformOrigin = '50% 75.5%';
-        mapEl.style.transform = 'scale(2.2)';
-        mapEl.style.opacity = '0';
-      });
-    });
+    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
+    mapEl.style.transformOrigin = '50% 75.5%';
+    mapEl.style.transform = 'scale(2.2)';
+    mapEl.style.opacity = '0';
 
+    // 3단계: 줌인 완료 후 오버레이 숨김
     setTimeout(() => {
       overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
