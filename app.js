@@ -927,28 +927,25 @@ function startApp(mode) {
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
   }
 
-  // 1단계: 타이틀 박스 페이드아웃 (CSS transition 이용, 맵과 완전 독립)
+  // 1단계: 타이틀 박스 페이드아웃 (CSS transition, 1.5초)
   const center = document.getElementById('introCenter');
   if (center) {
     center.style.opacity = '0';
     center.style.transform = 'translate(-50%, -60%) scale(0.85)';
   }
 
-  // 2단계: 2초 후 맵 줌인 (타이틀 완전히 사라진 후)
+  // 2단계: 1.8초 후 맵 CSS 애니메이션 클래스 추가 (JS transition 사용 안 함)
   setTimeout(() => {
     const mapEl = document.getElementById('introMap');
-    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-    mapEl.style.transformOrigin = '50% 75.5%';
-    mapEl.style.transform = 'scale(2.2)';
-    mapEl.style.opacity = '0';
+    mapEl.classList.add('map-zoom-out');
 
-    // 3단계: 줌인 완료 후 오버레이 숨김
+    // 3단계: 애니메이션 완료 후 오버레이 숨김
     setTimeout(() => {
-      overlay.style.transition = 'opacity 0.6s';
+      overlay.style.transition = 'opacity 0.5s';
       overlay.style.opacity = '0';
-      setTimeout(() => { overlay.style.display = 'none'; }, 600);
-    }, 6400);
-  }, 2000);
+      setTimeout(() => { overlay.style.display = 'none'; }, 500);
+    }, 5500);
+  }, 1800);
 }
 
 function initIntro() {
