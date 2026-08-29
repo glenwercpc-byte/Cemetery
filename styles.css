@@ -220,15 +220,15 @@ body { display:flex; flex-direction:column; }
 
 /* 타이틀 박스 — introMap 밖, introOverlay 기준 absolute */
 #introCenter{
-  position:absolute;
-  top:30%; left:33%;
+  position:fixed;
+  top:30%; left:40%;
   transform:translate(-50%,-50%);
   text-align:center;
   animation:introFadeIn 1s ease-out .3s both;
   background: transparent;
   padding:36px 48px 40px;
   min-width:340px;
-  z-index:10;
+  z-index:10001;
   transition: opacity 1.5s ease, transform 1.5s ease;
 }
 .intro-logo{font-size:36px;margin-bottom:10px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));}
