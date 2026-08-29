@@ -927,9 +927,13 @@ function startApp(mode) {
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
   }
 
-  // 1단계: 타이틀 박스 페이드아웃 (CSS transition, 1.5초)
+  // 1단계: 타이틀 박스 페이드아웃
+  // animation이 opacity를 제어하므로 먼저 animation을 끊고 설정
   const center = document.getElementById('introCenter');
   if (center) {
+    center.style.animation = 'none';  // animation 중단
+    center.style.opacity = '1';       // 현재 상태 고정 (강제 reflow)
+    center.offsetHeight;              // reflow 트리거
     center.style.opacity = '0';
     center.style.transform = 'translate(-50%, -60%) scale(0.85)';
   }
