@@ -928,22 +928,28 @@ function startApp(mode) {
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
   }
 
-  // 버튼 패널 페이드
+  // 1단계: 타이틀 박스 먼저 슬며시 사라짐 (1.2초)
   const center = document.getElementById('introCenter');
-  if (center) center.style.opacity = '0';
+  if (center) {
+    center.style.transition = 'opacity 1.2s ease, transform 1.2s ease';
+    center.style.opacity = '0';
+    center.style.transform = 'translate(-50%, -50%) scale(0.9)';
+  }
 
-  // 지도 줌인 → 페이드아웃
-  const mapEl = document.getElementById('introMap');
-  mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
-  mapEl.style.transformOrigin = '50% 75.5%';
-  mapEl.style.transform = 'scale(2.2)';
-  mapEl.style.opacity = '0';
-
+  // 2단계: 1.4초 후 맵 줌인 시작
   setTimeout(() => {
-    overlay.style.transition = 'opacity 0.6s';
-    overlay.style.opacity = '0';
-    setTimeout(() => { overlay.style.display = 'none'; }, 600);
-  }, 6200);
+    const mapEl = document.getElementById('introMap');
+    mapEl.style.transition = 'transform 5.0s cubic-bezier(0.4,0,0.2,1), opacity 2.0s ease 4.0s';
+    mapEl.style.transformOrigin = '50% 75.5%';
+    mapEl.style.transform = 'scale(2.2)';
+    mapEl.style.opacity = '0';
+
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.6s';
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 600);
+    }, 6200);
+  }, 1400);
 }
 
 function initIntro() {
