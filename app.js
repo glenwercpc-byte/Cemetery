@@ -162,7 +162,8 @@ function render() {
   document.getElementById('viewPdf').style.display   = STATE.view === 'pdfview' ? '' : 'none';
   document.getElementById('viewStats').style.display = STATE.view === 'stats'   ? '' : 'none';
   document.getElementById('viewReport').style.display= STATE.view === 'report'  ? '' : 'none';
-  document.getElementById('searchWrap').style.display = '';
+  document.getElementById('searchWrap').style.display =
+    (STATE.view === 'list' || STATE.view === 'map') ? '' : 'none';
 
   // Map View일 때만 줌 버튼 표시
   const zoomBtns = document.getElementById('mapZoomBtns');
@@ -466,6 +467,47 @@ function showAvailableOnMap(sec) {
       });
     }
     document.addEventListener('click', stopBlink, { once: true });
+  }, 150);
+}
+
+// 통계 확인 필요 클릭 → 해당 섹션 Map View + 다크 브라운 깜빡임
+function showConfirmOnMap(sec) {
+  STATE.section = sec;
+  document.querySelectorAll('.chip[data-section]').forEach(c => {
+    c.classList.toggle('active', c.dataset.section === sec);
+  });
+  STATE.view = 'map';
+  document.querySelectorAll('.view-tab[data-view]').forEach(t => {
+    t.classList.toggle('active', t.dataset.view === 'map');
+  });
+  render();
+
+  setTimeout(() => {
+    const wrap = document.getElementById('mapImgWrap');
+    if (!wrap) return;
+    let first = null;
+    wrap.querySelectorAll('.imap-cell').forEach(cell => {
+      const { sec: csec, lot, grave } = cell.dataset;
+      const r = findRecord(csec, lot, grave);
+      const status = r ? r.status : 'A';
+      if (status === 'C') {
+        cell.classList.add('confirm-blink');
+        if (!first) first = cell;
+      }
+    });
+    if (first) {
+      setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 200);
+    }
+    const cnt = document.querySelectorAll('.confirm-blink').length;
+    showToast(`Section ${sec} — 확인 필요 ${cnt}개 표시 중 (클릭하면 정지)`);
+
+    function stopConfirmBlink() {
+      document.querySelectorAll('.imap-cell.confirm-blink').forEach(cell => {
+        cell.classList.remove('confirm-blink');
+        cell.classList.add('confirm-stopped');
+      });
+    }
+    document.addEventListener('click', stopConfirmBlink, { once: true });
   }, 150);
 }
 
@@ -805,7 +847,12 @@ function renderStats() {
         </div>
         <div class="stats-cell used"><div class="stats-cell-num">${d.used}</div><div class="stats-cell-lbl">사용중</div><div class="stats-cell-pct">${d.total?Math.round(d.used/d.total*100):0}%</div></div>
         <div class="stats-cell reserved"><div class="stats-cell-num">${d.reserved}</div><div class="stats-cell-lbl">Reserved</div><div class="stats-cell-pct">${d.total?Math.round(d.reserved/d.total*100):0}%</div></div>
-        <div class="stats-cell confirmed"><div class="stats-cell-num">${d.confirmed}</div><div class="stats-cell-lbl">확인 필요</div><div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div></div>
+        <div class="stats-cell confirmed stats-cell-clickable" onclick="showConfirmOnMap('${s}')" title="클릭 → Map View에서 확인 필요 표시">
+          <div class="stats-cell-num">${d.confirmed}</div>
+          <div class="stats-cell-lbl">확인 필요</div>
+          <div class="stats-cell-pct">${d.total?Math.round(d.confirmed/d.total*100):0}%</div>
+          <div class="stats-cell-hint">🗺 지도에서 보기</div>
+        </div>
       </div>
     </div>`;
   }).join('');
