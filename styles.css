@@ -221,7 +221,7 @@ body { display:flex; flex-direction:column; }
 /* 타이틀 박스 — introMap 밖, introOverlay 기준 absolute */
 #introCenter{
   position:absolute;
-  top:30%; left:58%;
+  top:30%; left:33%;
   transform:translate(-50%,-50%);
   text-align:center;
   animation:introFadeIn 1s ease-out .3s both;
@@ -229,7 +229,6 @@ body { display:flex; flex-direction:column; }
   padding:36px 48px 40px;
   min-width:340px;
   z-index:10;
-  /* 페이드 아웃 transition — 맵과 완전히 독립 */
   transition: opacity 1.5s ease, transform 1.5s ease;
 }
 .intro-logo{font-size:36px;margin-bottom:10px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));}
@@ -1017,4 +1016,14 @@ body { display:flex; flex-direction:column; }
 /* 통계 확인 필요 박스 힌트 색상 */
 .stats-cell.confirmed .stats-cell-hint {
   color: #6b3a2a;
+}
+
+/* 인트로 맵 줌인 애니메이션 — 클래스로 제어 */
+#introMap.map-zoom-out {
+  animation: mapZoomOut 5.5s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes mapZoomOut {
+  0%   { transform: scale(1);   opacity: 1; }
+  80%  { transform: scale(2.2); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
 }
