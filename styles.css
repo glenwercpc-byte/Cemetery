@@ -214,34 +214,32 @@ body { display:flex; flex-direction:column; }
    INTRO OVERLAY — 3D 버튼 선택 방식
    ==================================================== */
 #introOverlay{position:fixed;inset:0;z-index:9999;background:#1a1812;overflow:hidden;}
-#introMap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:50% 75.5%;will-change:transform,opacity;}
+#introMap{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-origin:50% 75.5%;will-change:transform,opacity;}
 #introMapImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;animation:introFadeIn .8s ease-out forwards;}
 @keyframes introFadeIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:scale(1)}}
 
-/* 중앙 패널 */
+/* 중앙 패널 — introOverlay 기준 정 중앙 */
 #introCenter{
-  position:absolute;
-  top:50%;left:50%;
+  position:fixed;
+  top:45%; left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
   animation:introFadeIn 1s ease-out .3s both;
-  background:rgba(10,10,10,.72);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:20px;
+  background: transparent;
   padding:36px 48px 40px;
   min-width:340px;
-  transition:opacity .4s;
+  z-index:10;
 }
-.intro-logo{font-size:36px;margin-bottom:10px;}
+.intro-logo{font-size:36px;margin-bottom:10px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));}
 .intro-title{
   font-family:var(--font-display);
-  font-size:22px;font-weight:700;
+  font-size:26px;font-weight:700;
   color:white;letter-spacing:.04em;
   margin-bottom:6px;
+  text-shadow:0 2px 12px rgba(0,0,0,.9), 0 0 30px rgba(0,0,0,.6);
 }
-.intro-sub{font-size:11px;color:rgba(255,255,255,.55);margin-bottom:32px;letter-spacing:.02em;}
+.intro-sub{font-size:12px;color:rgba(255,255,255,.85);margin-bottom:36px;letter-spacing:.02em;
+  text-shadow:0 1px 6px rgba(0,0,0,.9);}
 
 /* 3D 버튼 영역 */
 .intro-buttons{display:flex;gap:20px;justify-content:center;}
