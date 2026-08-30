@@ -1049,9 +1049,7 @@ function bindEvents() {
 
   const btnSync = document.getElementById('btnSync');
   if (btnSync) btnSync.addEventListener('click', loadData);
-  const btnAdminToggle = document.getElementById('btnAdminToggle');
-  if (btnAdminToggle) btnAdminToggle.addEventListener('click', toggleAdmin);
-  // btnAdminOff — HTML에서 제거됨, 안전하게 skip
+  // btnAdminToggle — 클릭 불가 텍스트, 이벤트 없음
   document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalOverlay').style.display='none');
   document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') e.target.style.display='none'; });
   document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modalOverlay').style.display='none'; });
