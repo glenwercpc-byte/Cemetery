@@ -931,11 +931,10 @@ function startApp(mode) {
   // animation이 opacity를 제어하므로 먼저 animation을 끊고 설정
   const center = document.getElementById('introCenter');
   if (center) {
-    center.style.animation = 'none';  // animation 중단
-    center.style.opacity = '1';       // 현재 상태 고정 (강제 reflow)
-    center.offsetHeight;              // reflow 트리거
+    center.style.animation = 'none';
+    center.style.opacity = '1';
+    center.offsetHeight;
     center.style.opacity = '0';
-    center.style.transform = 'translate(-50%, -60%) scale(0.85)';
   }
 
   // 2단계: 1.8초 후 맵 CSS 애니메이션 클래스 추가 (JS transition 사용 안 함)
