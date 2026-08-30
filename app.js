@@ -296,6 +296,7 @@ function renderList() {
   container.querySelectorAll('.kr-name-cell').forEach(cell => {
     cell.addEventListener('click', e => {
       e.stopPropagation();
+      if (!STATE.isAdmin) return; // 조회 모드 — 수정 불가
       if (cell.querySelector('input')) return;
       const r = STATE.data.find(d => d.id === cell.dataset.id);
       if (!r || r.status === 'A') return;
@@ -630,10 +631,10 @@ function renderMap() {
   // 셀 클릭 → 수정 모달
   wrap.querySelectorAll('.imap-cell').forEach(cell => {
     cell.addEventListener('click', () => {
+      if (!STATE.isAdmin) return; // 조회 모드 — 수정 불가
       const { sec, lot, grave } = cell.dataset;
       let r = findRecord(sec, lot, grave);
       if (!r) {
-        // 아직 데이터 없으면 임시 생성
         r = { id: cell.dataset.id, section: sec, lot, grave, status: 'A', name: '', name_kr: '', dir: '' };
       }
       openEditModal(r);
@@ -925,6 +926,15 @@ function startApp(mode) {
     STATE.isAdmin = true;
     document.getElementById('adminBanner').style.display = 'flex';
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
+    // 관리자 모드: 새로고침 + 관리자 버튼 표시
+    document.getElementById('btnSync').style.display = '';
+    document.getElementById('btnAdminToggle').style.display = '';
+    document.getElementById('btnViewMode').style.display = 'none';
+  } else {
+    // 조회 모드: 새로고침 숨김, 관리자 버튼 → "조회 모드" 표시
+    document.getElementById('btnSync').style.display = 'none';
+    document.getElementById('btnAdminToggle').style.display = 'none';
+    document.getElementById('btnViewMode').style.display = '';
   }
 
   // 1단계: 타이틀 박스 페이드아웃
