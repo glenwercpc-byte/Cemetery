@@ -48,6 +48,7 @@ function calcPrice(market, pct) {
 }
 
 function editMarket(id) {
+  if (typeof STATE !== 'undefined' && !STATE.isAdmin) return; // 조회 모드 차단
   const display = document.getElementById(id + '-display');
   const input   = document.getElementById(id);
   if (!display || !input) return;
@@ -110,7 +111,8 @@ function priceCardHtml(sec, i) {
             <td><strong>Section 15</strong><br><small>평석만 허용</small></td>
             <td class="price-market-cell">
               <span class="price-market-display" id="s15market-display"
-                onclick="editMarket('s15market')" title="클릭하여 수정">${fmtMarket(pd.s15.market)}</span>
+                ${isAdmin ? 'onclick="editMarket(\'s15market\')" title="클릭하여 수정" style="cursor:pointer;"' : 'style="cursor:default;"'}
+              >${fmtMarket(pd.s15.market)}</span>
               <input type="number" id="s15market" class="price-input" value="${pd.s15.market}"
                 oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
                 onblur="doneEditMarket('s15market')">
@@ -126,7 +128,8 @@ function priceCardHtml(sec, i) {
             <td><strong>Section 16</strong><br><small>입석</small></td>
             <td class="price-market-cell">
               <span class="price-market-display" id="s16smarket-display"
-                onclick="editMarket('s16smarket')" title="클릭하여 수정">${fmtMarket(pd.s16_standing.market)}</span>
+                ${isAdmin ? 'onclick="editMarket(\'s16smarket\')" title="클릭하여 수정" style="cursor:pointer;"' : 'style="cursor:default;"'}
+              >${fmtMarket(pd.s16_standing.market)}</span>
               <input type="number" id="s16smarket" class="price-input" value="${pd.s16_standing.market}"
                 oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
                 onblur="doneEditMarket('s16smarket')">
@@ -141,7 +144,8 @@ function priceCardHtml(sec, i) {
             <td><strong>Section 16</strong><br><small>평석</small></td>
             <td class="price-market-cell">
               <span class="price-market-display" id="s16fmarket-display"
-                onclick="editMarket('s16fmarket')" title="클릭하여 수정">${fmtMarket(pd.s16_flat.market)}</span>
+                ${isAdmin ? 'onclick="editMarket(\'s16fmarket\')" title="클릭하여 수정" style="cursor:pointer;"' : 'style="cursor:default;"'}
+              >${fmtMarket(pd.s16_flat.market)}</span>
               <input type="number" id="s16fmarket" class="price-input" value="${pd.s16_flat.market}"
                 oninput="updatePriceCalc()" style="display:none;" step="1" min="0"
                 onblur="doneEditMarket('s16fmarket')">
@@ -154,7 +158,7 @@ function priceCardHtml(sec, i) {
           </tr>
         </tbody>
       </table>
-      <div class="price-hint">※ 시세를 클릭하면 수정할 수 있습니다</div>
+      ${isAdmin ? '<div class="price-hint">※ 시세를 클릭하면 수정할 수 있습니다</div>' : ''}
     </div>
   </div>`;
 }
