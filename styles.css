@@ -229,7 +229,7 @@ body { display:flex; flex-direction:column; }
   padding:36px 48px 40px;
   min-width:340px;
   z-index:10001;
-  transition: opacity 1.5s ease, transform 1.5s ease;
+  transition: opacity 1.5s ease;
 }
 .intro-logo{font-size:36px;margin-bottom:10px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.8));}
 .intro-title{
