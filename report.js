@@ -98,7 +98,7 @@ function priceCardHtml(sec, i) {
   <div class="report-section-card">
     <div class="report-section-header">
       <span class="report-num">${i + 1}</span>
-      <input class="report-title-input" id="rt${i}"
+      <input class="report-title-input" id="rt${i}" ${ro}
         value="${sec.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">
     </div>
     <div class="price-calc-wrap">
