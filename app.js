@@ -931,9 +931,13 @@ function startApp(mode) {
   // animation이 opacity를 제어하므로 먼저 animation을 끊고 설정
   const center = document.getElementById('introCenter');
   if (center) {
+    // 현재 계산된 transform 값을 먼저 읽어서 고정
+    const computed = window.getComputedStyle(center);
+    const currentTransform = computed.transform;
     center.style.animation = 'none';
-    center.style.opacity = '1';
-    center.offsetHeight;
+    center.style.transform = currentTransform;
+    center.style.opacity = computed.opacity;
+    center.offsetHeight; // reflow
     center.style.opacity = '0';
   }
 
