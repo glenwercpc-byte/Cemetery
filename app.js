@@ -1047,9 +1047,11 @@ function bindEvents() {
     render();
   }
 
-  document.getElementById('btnSync').addEventListener('click', loadData);
-  document.getElementById('btnAdminToggle').addEventListener('click', toggleAdmin);
-  document.getElementById('btnAdminOff').addEventListener('click', () => { STATE.isAdmin=false; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; });
+  const btnSync = document.getElementById('btnSync');
+  if (btnSync) btnSync.addEventListener('click', loadData);
+  const btnAdminToggle = document.getElementById('btnAdminToggle');
+  if (btnAdminToggle) btnAdminToggle.addEventListener('click', toggleAdmin);
+  // btnAdminOff — HTML에서 제거됨, 안전하게 skip
   document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalOverlay').style.display='none');
   document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') e.target.style.display='none'; });
   document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modalOverlay').style.display='none'; });
