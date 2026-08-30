@@ -911,7 +911,7 @@ function toggleAdmin() {
   if (pin !== '0000') { showToast('PIN이 틀렸습니다', true); return; }
   STATE.isAdmin = true;
   
-  document.getElementById('btnAdminToggle').textContent='🔓 관리자 (켜짐)';
+  document.getElementById('btnAdminToggle').textContent='🔓 관리자 모드';
   showToast('관리자 모드');
 }
 
@@ -925,7 +925,7 @@ function startApp(mode) {
   if (mode === 'admin') {
     STATE.isAdmin = true;
     
-    document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
+    document.getElementById('btnAdminToggle').textContent = '🔓 관리자 모드';
     // 관리자 모드: 새로고침 + 관리자 버튼 표시
     document.getElementById('btnSync').style.display = '';
     document.getElementById('btnAdminToggle').style.display = '';
