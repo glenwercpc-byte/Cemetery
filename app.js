@@ -941,7 +941,7 @@ function startApp(mode) {
     center.style.opacity = '0';
   }
 
-  // 2단계: 1.8초 후 맵 CSS 애니메이션 클래스 추가 (JS transition 사용 안 함)
+  // 타이틀 페이드와 동시에 맵 줌인 시작
   setTimeout(() => {
     const mapEl = document.getElementById('introMap');
     mapEl.classList.add('map-zoom-out');
@@ -952,7 +952,7 @@ function startApp(mode) {
       overlay.style.opacity = '0';
       setTimeout(() => { overlay.style.display = 'none'; }, 500);
     }, 5500);
-  }, 1800);
+  }, 0);
 }
 
 function initIntro() {
