@@ -905,12 +905,12 @@ function toKoreanName(n) {
 
 // ─── 관리자 모드 ────────────────────────────────────
 function toggleAdmin() {
-  if (STATE.isAdmin) { STATE.isAdmin=false; document.getElementById('adminBanner').style.display='none'; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; showToast('관리자 모드 해제'); return; }
+  if (STATE.isAdmin) { STATE.isAdmin=false; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; showToast('관리자 모드 해제'); return; }
   const pin = prompt('관리자 PIN:');
   if (pin === null) return;
   if (pin !== '0000') { showToast('PIN이 틀렸습니다', true); return; }
   STATE.isAdmin = true;
-  document.getElementById('adminBanner').style.display='flex';
+  
   document.getElementById('btnAdminToggle').textContent='🔓 관리자 (켜짐)';
   showToast('관리자 모드');
 }
@@ -924,7 +924,7 @@ function startApp(mode) {
 
   if (mode === 'admin') {
     STATE.isAdmin = true;
-    document.getElementById('adminBanner').style.display = 'flex';
+    
     document.getElementById('btnAdminToggle').textContent = '🔓 관리자 (켜짐)';
     // 관리자 모드: 새로고침 + 관리자 버튼 표시
     document.getElementById('btnSync').style.display = '';
@@ -1049,7 +1049,7 @@ function bindEvents() {
 
   document.getElementById('btnSync').addEventListener('click', loadData);
   document.getElementById('btnAdminToggle').addEventListener('click', toggleAdmin);
-  document.getElementById('btnAdminOff').addEventListener('click', () => { STATE.isAdmin=false; document.getElementById('adminBanner').style.display='none'; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; });
+  document.getElementById('btnAdminOff').addEventListener('click', () => { STATE.isAdmin=false; document.getElementById('btnAdminToggle').textContent='⚙ 관리자 모드'; });
   document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalOverlay').style.display='none');
   document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') e.target.style.display='none'; });
   document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modalOverlay').style.display='none'; });
