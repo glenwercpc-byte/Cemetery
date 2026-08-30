@@ -85,6 +85,8 @@ function updatePriceCalc() {
 }
 
 function priceCardHtml(sec, i) {
+  const isAdmin = (typeof STATE !== 'undefined' && STATE.isAdmin);
+  const ro = isAdmin ? '' : 'readonly style="pointer-events:none;background:var(--paper);"';
   const pd = getPriceData();
 
   function fmtMarket(val) {
@@ -115,7 +117,7 @@ function priceCardHtml(sec, i) {
             </td>
             <td>
               <input type="number" id="s15pct" class="price-input pct" value="${pd.s15.pct}"
-                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100" ${ro}> %
             </td>
             <td class="price-result" id="s15result">$${calcPrice(pd.s15.market, pd.s15.pct)}</td>
           </tr>
@@ -131,7 +133,7 @@ function priceCardHtml(sec, i) {
             </td>
             <td>
               <input type="number" id="s16spct" class="price-input pct" value="${pd.s16_standing.pct}"
-                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100" ${ro}> %
             </td>
             <td class="price-result" id="s16sresult">$${calcPrice(pd.s16_standing.market, pd.s16_standing.pct)}</td>
           </tr>
@@ -146,7 +148,7 @@ function priceCardHtml(sec, i) {
             </td>
             <td>
               <input type="number" id="s16fpct" class="price-input pct" value="${pd.s16_flat.pct}"
-                oninput="updatePriceCalc()" step="0.1" min="0" max="100"> %
+                oninput="updatePriceCalc()" step="0.1" min="0" max="100" ${ro}> %
             </td>
             <td class="price-result" id="s16fresult">$${calcPrice(pd.s16_flat.market, pd.s16_flat.pct)}</td>
           </tr>
@@ -158,18 +160,21 @@ function priceCardHtml(sec, i) {
 }
 
 function cardHtml(s, i) {
-  if (i === 4) return priceCardHtml(s, i); // 5번 — 가격 계산기
+  const isAdmin = (typeof STATE !== 'undefined' && STATE.isAdmin);
+  const ro = isAdmin ? '' : 'readonly style="pointer-events:none;background:var(--paper);"';
+  if (i === 4) return priceCardHtml(s, i);
   return `
   <div class="report-section-card">
     <div class="report-section-header">
       <span class="report-num">${i + 1}</span>
-      <input class="report-title-input" id="rt${i}"
+      <input class="report-title-input" id="rt${i}" ${ro}
         value="${s.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}">
     </div>
     <textarea class="report-content-input" id="rc${i}"
       rows="${s.content.split('\n').length}"
-      style="overflow:hidden;"
-      oninput="this.rows=1;this.rows=this.value.split('\\n').length||1;"
+      style="overflow:hidden;${isAdmin?'':'pointer-events:none;background:var(--paper);'}"
+      oninput="${isAdmin?"this.rows=1;this.rows=this.value.split('\\\\n').length||1;":''}"
+      ${isAdmin?'':'readonly'}
     >${s.content.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea>
   </div>`;
 }
@@ -185,7 +190,7 @@ function renderReportView() {
       <div class="report-view-header">
         <h2>${title}</h2>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-sm" onclick="saveReport()">💾 저장</button>
+          ${(typeof STATE !== 'undefined' && STATE.isAdmin) ? '<button class="btn btn-sm" onclick="saveReport()">💾 저장</button>' : ''}
           <button class="btn btn-sm" onclick="printReport()">🖨️ 인쇄</button>
         </div>
       </div>
