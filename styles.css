@@ -221,7 +221,7 @@ body { display:flex; flex-direction:column; }
 /* 타이틀 박스 — introMap 밖, introOverlay 기준 absolute */
 #introCenter{
   position:fixed;
-  top:30%; left:40%;
+  top:50%; left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
   animation:introFadeIn 1s ease-out .3s both;
@@ -1026,4 +1026,27 @@ body { display:flex; flex-direction:column; }
   0%   { transform: scale(1);   opacity: 1; }
   80%  { transform: scale(2.2); opacity: 1; }
   100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* 인트로 모바일 최적화 */
+@media(max-width:720px) {
+  #introMapImg { display: none; } /* 모바일: 지도 숨김 */
+  #introOverlay { background: #1e1c18; }
+  #introCenter {
+    min-width: unset !important;
+    width: 88vw;
+    max-width: 340px;
+    box-sizing: border-box;
+    padding: 28px 24px 32px;
+    top: 50%;
+    left: 50%;
+  }
+  .intro-logo { font-size: 32px; }
+  .intro-title { font-size: 20px; }
+  .intro-sub { font-size: 11px; margin-bottom: 28px; }
+  .intro-buttons { gap: 14px; }
+  .intro-btn { min-width: 120px; padding: 16px 18px; }
+  .intro-btn-icon { font-size: 26px; }
+  .intro-btn-label { font-size: 14px; }
+  .intro-btn-desc { font-size: 10px; }
 }
