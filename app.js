@@ -951,23 +951,45 @@ function startApp(mode) {
     center.style.opacity = '0';
   }
 
-  // 타이틀 페이드와 동시에 맵 줌인 시작
+  // 타이틀 페이드와 동시에 맵 처리
   setTimeout(() => {
     const mapEl = document.getElementById('introMap');
-    mapEl.classList.add('map-zoom-out');
-
-    // 3단계: 애니메이션 완료 후 오버레이 숨김
-    setTimeout(() => {
-      overlay.style.transition = 'opacity 0.5s';
+    const isMobile = window.innerWidth <= 720;
+    if (isMobile) {
+      // 모바일: 줌인 스킵, 바로 페이드아웃
+      overlay.style.transition = 'opacity 0.6s';
       overlay.style.opacity = '0';
-      setTimeout(() => { overlay.style.display = 'none'; }, 500);
-    }, 5500);
+      setTimeout(() => { overlay.style.display = 'none'; }, 600);
+    } else {
+      // 데스크탑: 맵 줌인 애니메이션
+      mapEl.classList.add('map-zoom-out');
+      setTimeout(() => {
+        overlay.style.transition = 'opacity 0.5s';
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 500);
+      }, 5500);
+    }
   }, 0);
 }
 
 function initIntro() {
-  // 버튼 방식으로 전환 — 클릭 이벤트 불필요
-  // startApp() 은 HTML onclick에서 직접 호출
+  // 모바일에서 animation이 transform을 덮어써서 translate(-50%,-50%) 무효화
+  // JS로 중앙 정렬 보정
+  if (window.innerWidth <= 720) {
+    const center = document.getElementById('introCenter');
+    if (center) {
+      // 애니메이션 완료 후 위치 보정
+      setTimeout(() => {
+        const w = center.offsetWidth;
+        const h = center.offsetHeight;
+        center.style.left = '50%';
+        center.style.top = '50%';
+        center.style.marginLeft = (-w/2) + 'px';
+        center.style.marginTop = (-h/2) + 'px';
+        center.style.transform = 'none';
+      }, 400);
+    }
+  }
 }
 
 // ─── 이벤트 바인딩 ──────────────────────────────────
