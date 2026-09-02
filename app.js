@@ -45,6 +45,34 @@ async function gasCall(action, params={}) {
   });
 }
 
+// ─── 설정 동기화 (백그라운드, 렌더 차단 안 함) ────
+async function syncSettings() {
+  try {
+    const settingsRes = await gasCall('getsettings', {});
+    if (!settingsRes.ok || !settingsRes.settings) return;
+    const s = settingsRes.settings;
+
+    // 가격 동기화
+    if (s.price && s.price.value) {
+      localStorage.setItem('ccpc_price_calc', s.price.value);
+    }
+
+    // 규정 텍스트 동기화
+    const existing = JSON.parse(localStorage.getItem('ccpc_report_2026') || 'null');
+    const merged = existing ? [...existing] : Array(6).fill(null);
+    let anyReport = false;
+    for (let i = 0; i <= 5; i++) {
+      const key = `report_${i}`;
+      if (s[key] && s[key].value) {
+        try { merged[i] = JSON.parse(s[key].value); anyReport = true; } catch(e) {}
+      }
+    }
+    if (anyReport) localStorage.setItem('ccpc_report_2026', JSON.stringify(merged));
+  } catch(e) {
+    console.warn('설정 동기화 실패 (무시):', e.message);
+  }
+}
+
 // ─── Data Load ─────────────────────────────────────
 async function loadData() {
   setSync('로딩 중...');
@@ -63,33 +91,10 @@ async function loadData() {
       if (lots15.length > 0 || lots16.length > 0) {
         STATE.data = [...lots15, ...lots16].map(normalize);
         setSync('Google Sheets 연결됨');
+        render(); // 먼저 렌더링
 
-        // GAS에서 가격 + 규정 설정 동기화
-        try {
-          const settingsRes = await gasCall('getsettings', {});
-          if (settingsRes.ok && settingsRes.settings) {
-            const s = settingsRes.settings;
-            // 가격 동기화
-            if (s.price && s.price.value) {
-              localStorage.setItem('ccpc_price_calc', s.price.value);
-            }
-            // 규정 텍스트 동기화 — report_0 ~ report_5
-            const secArr = JSON.parse(localStorage.getItem('ccpc_report_2026') || 'null') || null;
-            const merged = secArr ? [...secArr] : Array(6).fill(null);
-            let anyReport = false;
-            for (let i = 0; i <= 5; i++) {
-              const key = `report_${i}`;
-              if (s[key] && s[key].value) {
-                try { merged[i] = JSON.parse(s[key].value); anyReport = true; } catch(e) {}
-              }
-            }
-            if (anyReport) {
-              localStorage.setItem('ccpc_report_2026', JSON.stringify(merged));
-            }
-          }
-        } catch(e) { console.warn('설정 동기화 실패:', e.message); }
-
-        render();
+        // 설정 동기화는 백그라운드에서 별도로 (렌더 차단 안 함)
+        syncSettings();
         return;
       }
     } catch(e) { console.warn('GAS 연결 실패:', e.message); }
