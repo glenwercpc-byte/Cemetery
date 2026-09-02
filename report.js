@@ -186,8 +186,18 @@ function cardHtml(s, i) {
 function renderReportView() {
   const title = YEAR + '년 장례 규정 및 현황';
   const secs = getSections();
+  const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 720;
   const left  = secs.filter((_, i) => i % 2 === 0);
   const right = secs.filter((_, i) => i % 2 === 1);
+
+  const twoCol = isMobileView
+    ? `<div class="report-two-col">
+        <div class="report-col">${secs.map((s, i) => cardHtml(s, i)).join('')}</div>
+       </div>`
+    : `<div class="report-two-col">
+        <div class="report-col">${left.map((s,i) => cardHtml(s, i*2)).join('')}</div>
+        <div class="report-col">${right.map((s,i) => cardHtml(s, i*2+1)).join('')}</div>
+       </div>`;
 
   document.getElementById('reportBody').innerHTML = `
     <div class="report-view-inner">
@@ -198,10 +208,7 @@ function renderReportView() {
           <button class="btn btn-sm" onclick="printReport()">🖨️ 인쇄</button>
         </div>
       </div>
-      <div class="report-two-col">
-        <div class="report-col">${left.map((s,i) => cardHtml(s, i*2)).join('')}</div>
-        <div class="report-col">${right.map((s,i) => cardHtml(s, i*2+1)).join('')}</div>
-      </div>
+      ${twoCol}
     </div>`;
 }
 
@@ -231,6 +238,13 @@ function saveReport() {
   try {
     localStorage.setItem(REPORT_KEY, JSON.stringify(secs));
     localStorage.setItem(PRICE_KEY, JSON.stringify(pd));
+    // GAS Google Sheets에도 저장
+    if (typeof gasCall === 'function') {
+      gasCall('savesettings', { key: 'price', value: JSON.stringify(pd) })
+        .catch(e => console.warn('GAS 가격 저장 실패:', e));
+      gasCall('savesettings', { key: 'report', value: JSON.stringify(secs) })
+        .catch(e => console.warn('GAS 규정 저장 실패:', e));
+    }
     if (typeof showToast === 'function') showToast('저장됐습니다.');
     else alert('저장됐습니다.');
   } catch(e) {
