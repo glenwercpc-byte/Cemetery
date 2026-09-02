@@ -226,10 +226,7 @@ body { display:flex; flex-direction:column; }
   transform:none;
   text-align:center;
   animation:centerFadeIn 0.8s ease-out 0.1s both;
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 16px;
+  background: transparent;
   padding:36px 48px 40px;
   min-width:340px;
   z-index:10001;
