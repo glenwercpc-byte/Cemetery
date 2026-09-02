@@ -247,12 +247,12 @@ function saveReport() {
   try {
     localStorage.setItem(REPORT_KEY, JSON.stringify(secs));
     localStorage.setItem(PRICE_KEY, JSON.stringify(pd));
-    // GAS Google Sheets에도 저장
+    // GAS Google Sheets에도 저장 (key-value 형식)
     if (typeof gasCall === 'function') {
-      gasCall('savesettings', { key: 'price', value: JSON.stringify(pd) })
-        .catch(e => console.warn('GAS 가격 저장 실패:', e));
-      gasCall('savesettings', { key: 'report', value: JSON.stringify(secs) })
-        .catch(e => console.warn('GAS 규정 저장 실패:', e));
+      gasCall('savesettings', { payload: JSON.stringify({
+        price:  { value: JSON.stringify(pd) },
+        report: { value: JSON.stringify(secs) }
+      }) }).catch(e => console.warn('GAS 저장 실패:', e));
     }
     if (typeof showToast === 'function') showToast('저장됐습니다.');
     else alert('저장됐습니다.');
