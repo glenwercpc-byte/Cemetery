@@ -225,7 +225,10 @@ body { display:flex; flex-direction:column; }
   transform:translate(-50%,-50%);
   text-align:center;
   animation:introFadeIn 1s ease-out .3s both;
-  background: transparent;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 16px;
   padding:36px 48px 40px;
   min-width:340px;
   z-index:10001;
@@ -836,6 +839,7 @@ body { display:flex; flex-direction:column; }
 }
 @media(max-width:720px) {
   .report-two-col { grid-template-columns: 1fr; }
+  .report-content-input { overflow-y: auto !important; min-height: 80px; }
 }
 .report-content-input {
   width: 100%;
