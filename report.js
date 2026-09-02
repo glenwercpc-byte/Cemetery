@@ -247,12 +247,19 @@ function saveReport() {
   try {
     localStorage.setItem(REPORT_KEY, JSON.stringify(secs));
     localStorage.setItem(PRICE_KEY, JSON.stringify(pd));
-    // GAS Google Sheets에 가격 저장 (공유 설정 — 모바일/데스크탑 동기화)
+    // GAS Google Sheets에 저장 (가격 + 규정 모두)
     if (typeof gasCall === 'function') {
+      // 가격 저장
       const pricePayload = JSON.stringify({ price: { value: JSON.stringify(pd) } });
       gasCall('savesettings', { payload: pricePayload })
         .then(res => console.log('GAS 가격 저장:', res))
         .catch(e => console.warn('GAS 가격 저장 실패:', e));
+      // 규정 텍스트 저장 (각 섹션 개별 저장으로 URL 길이 분산)
+      secs.forEach((sec, i) => {
+        if (i === 4) return; // 5번 가격은 위에서 처리
+        const p = JSON.stringify({ [`report_${i}`]: { value: JSON.stringify(sec) } });
+        gasCall('savesettings', { payload: p }).catch(() => {});
+      });
     }
     if (typeof showToast === 'function') showToast('저장됐습니다.');
     else alert('저장됐습니다.');
