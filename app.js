@@ -58,16 +58,27 @@ async function syncSettings() {
     }
 
     // 규정 텍스트 동기화
-    const existing = JSON.parse(localStorage.getItem('ccpc_report_2026') || 'null');
-    const merged = existing ? [...existing] : Array(6).fill(null);
+    const existing = (() => {
+      try { return JSON.parse(localStorage.getItem('ccpc_report_2026') || 'null'); }
+      catch(e) { return null; }
+    })();
+    const merged = (Array.isArray(existing) && existing.length === 6) ? [...existing] : Array(6).fill(null);
     let anyReport = false;
     for (let i = 0; i <= 5; i++) {
       const key = `report_${i}`;
       if (s[key] && s[key].value) {
-        try { merged[i] = JSON.parse(s[key].value); anyReport = true; } catch(e) {}
+        try {
+          const item = JSON.parse(s[key].value);
+          if (item && typeof item.title === 'string') {
+            merged[i] = item;
+            anyReport = true;
+          }
+        } catch(e) {}
       }
     }
-    if (anyReport) localStorage.setItem('ccpc_report_2026', JSON.stringify(merged));
+    if (anyReport && merged.every(m => m !== null)) {
+      localStorage.setItem('ccpc_report_2026', JSON.stringify(merged));
+    }
   } catch(e) {
     console.warn('설정 동기화 실패 (무시):', e.message);
   }
