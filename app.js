@@ -973,21 +973,25 @@ function startApp(mode) {
 }
 
 function initIntro() {
-  // 모든 화면에서 JS로 중앙 정렬 (animation이 transform을 덮어쓰는 문제 해결)
-  function centerIntro() {
-    const center = document.getElementById('introCenter');
-    if (!center) return;
+  const center = document.getElementById('introCenter');
+  if (!center) return;
+
+  function centerBox() {
     const w = center.offsetWidth;
     const h = center.offsetHeight;
-    center.style.left = '50%';
-    center.style.top = '50%';
     center.style.transform = 'none';
+    center.style.left = '50%';
+    center.style.top  = '50%';
     center.style.marginLeft = (-w / 2) + 'px';
     center.style.marginTop  = (-h / 2) + 'px';
   }
-  // 애니메이션 완료 후 보정
-  setTimeout(centerIntro, 500);
-  window.addEventListener('resize', centerIntro);
+
+  // DOM 렌더 직후 즉시 위치 설정 (점프 방지)
+  centerBox();
+  // 폰트 로드 후 재보정
+  setTimeout(centerBox, 100);
+  setTimeout(centerBox, 400);
+  window.addEventListener('resize', centerBox);
 }
 
 // ─── 이벤트 바인딩 ──────────────────────────────────
