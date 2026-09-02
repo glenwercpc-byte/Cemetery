@@ -30,16 +30,34 @@ const PRICE_KEY = 'ccpc_price_calc';
 function getSections() {
   try {
     const s = localStorage.getItem(REPORT_KEY);
-    if (s) return JSON.parse(s);
-  } catch(e) {}
+    if (s) {
+      const parsed = JSON.parse(s);
+      // 배열이고 6개 항목이어야 유효
+      if (Array.isArray(parsed) && parsed.length === 6 &&
+          parsed.every(item => item && typeof item.title === 'string')) {
+        return parsed;
+      }
+    }
+  } catch(e) {
+    console.warn('report 데이터 파싱 실패, 기본값 사용:', e.message);
+    localStorage.removeItem(REPORT_KEY); // 손상된 데이터 제거
+  }
   return REPORT_DEFAULTS.map(d => ({...d}));
 }
 
 function getPriceData() {
   try {
     const s = localStorage.getItem(PRICE_KEY);
-    if (s) return JSON.parse(s);
-  } catch(e) {}
+    if (s) {
+      const parsed = JSON.parse(s);
+      if (parsed && parsed.s15 && parsed.s16_standing && parsed.s16_flat) {
+        return parsed;
+      }
+    }
+  } catch(e) {
+    console.warn('price 데이터 파싱 실패, 기본값 사용:', e.message);
+    localStorage.removeItem(PRICE_KEY);
+  }
   return REPORT_DEFAULTS[4].price;
 }
 
