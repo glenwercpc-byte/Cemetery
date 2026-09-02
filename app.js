@@ -64,14 +64,27 @@ async function loadData() {
         STATE.data = [...lots15, ...lots16].map(normalize);
         setSync('Google Sheets 연결됨');
 
-        // GAS에서 가격 설정 동기화 (모바일/데스크탑 공유)
+        // GAS에서 가격 + 규정 설정 동기화
         try {
           const settingsRes = await gasCall('getsettings', {});
           if (settingsRes.ok && settingsRes.settings) {
             const s = settingsRes.settings;
+            // 가격 동기화
             if (s.price && s.price.value) {
               localStorage.setItem('ccpc_price_calc', s.price.value);
-              console.log('가격 동기화 완료:', s.price.value);
+            }
+            // 규정 텍스트 동기화 — report_0 ~ report_5
+            const secArr = JSON.parse(localStorage.getItem('ccpc_report_2026') || 'null') || null;
+            const merged = secArr ? [...secArr] : Array(6).fill(null);
+            let anyReport = false;
+            for (let i = 0; i <= 5; i++) {
+              const key = `report_${i}`;
+              if (s[key] && s[key].value) {
+                try { merged[i] = JSON.parse(s[key].value); anyReport = true; } catch(e) {}
+              }
+            }
+            if (anyReport) {
+              localStorage.setItem('ccpc_report_2026', JSON.stringify(merged));
             }
           }
         } catch(e) { console.warn('설정 동기화 실패:', e.message); }
