@@ -63,6 +63,17 @@ async function loadData() {
       if (lots15.length > 0 || lots16.length > 0) {
         STATE.data = [...lots15, ...lots16].map(normalize);
         setSync('Google Sheets 연결됨');
+
+        // GAS에서 가격/규정 설정 동기화
+        try {
+          const settingsRes = await gasCall('getsettings', {});
+          if (settingsRes.ok && settingsRes.settings) {
+            const s = settingsRes.settings;
+            if (s.price?.value)  localStorage.setItem('ccpc_price_calc',   s.price.value);
+            if (s.report?.value) localStorage.setItem('ccpc_report_2026',  s.report.value);
+          }
+        } catch(e) { console.warn('설정 동기화 실패:', e.message); }
+
         render();
         return;
       }
