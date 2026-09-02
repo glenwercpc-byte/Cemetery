@@ -175,7 +175,7 @@ function cardHtml(s, i) {
         value="${s.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}">
     </div>
     <textarea class="report-content-input" id="rc${i}"
-      rows="${s.content.split('\n').length}"
+      rows="${Math.max(4, s.content.split('\n').length + 1)}"
       style="overflow:hidden;${isAdmin?'':'pointer-events:none;background:var(--paper);'}"
       oninput="${isAdmin?"this.rows=1;this.rows=this.value.split('\\\\n').length||1;":''}"
       ${isAdmin?'':'readonly'}
@@ -210,6 +210,15 @@ function renderReportView() {
       </div>
       ${twoCol}
     </div>`;
+
+  // 모든 textarea를 내용에 맞게 자동 높이 조절 (잘림 방지)
+  setTimeout(() => {
+    document.querySelectorAll('.report-content-input').forEach(ta => {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+      ta.style.overflow = 'hidden';
+    });
+  }, 50);
 }
 
 function saveReport() {
