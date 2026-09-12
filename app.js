@@ -959,6 +959,57 @@ function toggleAdmin() {
 
 // ─── 인트로 ────────────────────────────────────────
 // 인트로 버튼에서 호출 — 조회/관리자 모드 선택
+// 관리자 비밀번호 확인
+function checkAdminPassword() {
+  const overlay = document.getElementById('introOverlay');
+  if (!overlay || overlay.dataset.animating) return;
+
+  // 인트로 위에 비밀번호 입력 레이어 생성
+  let pwLayer = document.getElementById('pwLayer');
+  if (pwLayer) { pwLayer.remove(); }
+
+  pwLayer = document.createElement('div');
+  pwLayer.id = 'pwLayer';
+  pwLayer.style.cssText = `
+    position:fixed; inset:0; z-index:20000;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.6);
+  `;
+  pwLayer.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:32px 36px;text-align:center;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.3);">
+      <div style="font-size:28px;margin-bottom:10px;">🔑</div>
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:700;margin-bottom:4px;">관리자 모드</div>
+      <div style="font-size:12px;color:#888;margin-bottom:20px;">장례 위원장 전용</div>
+      <input id="pwInput" type="password" maxlength="10"
+        placeholder="비밀번호 입력"
+        style="width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:8px;font-size:18px;text-align:center;letter-spacing:6px;outline:none;box-sizing:border-box;font-family:monospace;"
+        onkeydown="if(event.key==='Enter')submitPw();">
+      <div id="pwError" style="color:#e63946;font-size:12px;margin-top:8px;min-height:18px;"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button onclick="document.getElementById('pwLayer').remove()"
+          style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:14px;">취소</button>
+        <button onclick="submitPw()"
+          style="flex:1;padding:10px;border:none;border-radius:8px;background:#1a365d;color:white;cursor:pointer;font-size:14px;font-weight:700;">확인</button>
+      </div>
+    </div>`;
+  document.body.appendChild(pwLayer);
+  setTimeout(() => document.getElementById('pwInput')?.focus(), 100);
+}
+
+function submitPw() {
+  const input = document.getElementById('pwInput');
+  const errEl = document.getElementById('pwError');
+  if (!input) return;
+  if (input.value === '1424') {
+    document.getElementById('pwLayer').remove();
+    startApp('admin');
+  } else {
+    errEl.textContent = '비밀번호가 올바르지 않습니다.';
+    input.value = '';
+    input.focus();
+  }
+}
+
 function startApp(mode) {
   const overlay = document.getElementById('introOverlay');
   if (!overlay || overlay.dataset.animating) return;
