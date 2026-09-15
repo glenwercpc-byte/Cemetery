@@ -60,7 +60,7 @@
       <button class="view-tab" data-view="list">📋 List View</button>
       <button class="view-tab" data-view="map">🗺 Map View</button>
       <button class="view-tab" data-view="pdfview">📄 PDF View</button>
-      <a class="view-tab" href="cemetery_map_viewer.html" target="_blank" style="text-decoration:none;">🗾 구역도</a>
+      <button class="view-tab" onclick="openMapViewer(STATE.section,null)">🗾 구역도</button>
     </div>
     <div class="search-box" id="searchWrap">
       <span class="icon">🔎</span>
@@ -130,6 +130,26 @@
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- 구역도 팝업 모달 -->
+<div class="overlay" id="mapviewerOverlay" style="display:none;">
+  <div class="modal" style="max-width:92vw;width:92vw;max-height:90vh;">
+    <div class="modal-header">
+      <h3 id="mapviewerTitle">⛪ CCPC 묘지 구역도</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-sm" onclick="mapviewerZoom(1.25)">＋</button>
+        <button class="btn btn-sm" onclick="mapviewerZoom(0.8)">－</button>
+        <button class="btn btn-sm" onclick="mapviewerReset()">⊡</button>
+        <button class="close-x" onclick="document.getElementById('mapviewerOverlay').style.display='none'">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="mapviewerBody"
+      style="overflow:auto;padding:0;cursor:grab;max-height:calc(90vh - 60px);">
+      <img id="mapviewerImg" src="sections_joined.jpg" alt="Section 15 & 16"
+        style="display:block;width:100%;transform-origin:top left;user-select:none;-webkit-user-drag:none;">
+    </div>
   </div>
 </div>
 
