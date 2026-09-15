@@ -554,6 +554,36 @@ function showConfirmOnMap(sec) {
   }, 150);
 }
 
+// ─── 구역도 팝업 ────────────────────────────────────
+let _mvScale = 1;
+function openMapViewer(sec, lotNo) {
+  _mvScale = 1;
+  const img = document.getElementById('mapviewerImg');
+  img.style.transform = 'scale(1)';
+  const title = lotNo
+    ? `⛪ 구역도 — Section ${sec} · Lot ${lotNo}`
+    : '⛪ CCPC 묘지 구역도 (Section 15 & 16)';
+  document.getElementById('mapviewerTitle').textContent = title;
+  document.getElementById('mapviewerOverlay').style.display = 'flex';
+
+  // 드래그
+  const body = document.getElementById('mapviewerBody');
+  let drag=false, sx, sy, sl, st;
+  body.onmousedown = e => { drag=true; sx=e.pageX; sy=e.pageY; sl=body.scrollLeft; st=body.scrollTop; body.style.cursor='grabbing'; };
+  body.onmouseleave = body.onmouseup = () => { drag=false; body.style.cursor='grab'; };
+  body.onmousemove = e => { if(!drag) return; body.scrollLeft=sl-(e.pageX-sx); body.scrollTop=st-(e.pageY-sy); };
+}
+function mapviewerZoom(f) {
+  _mvScale = Math.min(Math.max(_mvScale*f, 0.5), 5);
+  document.getElementById('mapviewerImg').style.transform = `scale(${_mvScale})`;
+}
+function mapviewerReset() {
+  _mvScale = 1;
+  document.getElementById('mapviewerImg').style.transform = 'scale(1)';
+  const body = document.getElementById('mapviewerBody');
+  body.scrollLeft = 0; body.scrollTop = 0;
+}
+
 function findRecord(sec, lot, grave) {
   // 모두 문자열로 변환해서 비교 (GAS에서 숫자로 올 수 있음)
   const s = String(sec), l = String(lot), g = String(grave);
@@ -709,6 +739,7 @@ function openEditModal(r) {
     </div>
   `;
   document.getElementById('modalFooter').innerHTML = `
+    <button class="btn" onclick="openMapViewer('${r.section}','${r.lot}')">🗾 구역도</button>
     <button class="btn" id="btnCancelEdit">취소</button>
     <button class="btn btn-primary" id="btnSaveEdit">저장</button>
   `;
@@ -911,7 +942,10 @@ function openDetailModal(r) {
     <div class="detail-row"><span class="k">이름</span><span class="v">${escHtml(krVal)||'—'}</span></div>
     ${r.dir ? `<div class="detail-row"><span class="k">방향</span><span class="v">${escHtml(r.dir)}</span></div>` : ''}
   `;
-  document.getElementById('modalFooter').innerHTML = `<button class="btn" onclick="document.getElementById('modalOverlay').style.display='none'">닫기</button>`;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn" onclick="openMapViewer('${r.section}','${r.lot}')">🗾 구역도</button>
+    <button class="btn" onclick="document.getElementById('modalOverlay').style.display='none'">닫기</button>
+  `;
   document.getElementById('modalOverlay').style.display = 'flex';
 }
 
