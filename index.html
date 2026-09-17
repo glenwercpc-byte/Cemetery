@@ -135,20 +135,22 @@
 
 <!-- 구역도 팝업 모달 -->
 <div class="overlay" id="mapviewerOverlay" style="display:none;">
-  <div class="modal" style="max-width:92vw;width:92vw;max-height:90vh;">
-    <div class="modal-header">
+  <div class="modal" style="max-width:92vw;width:92vw;max-height:92vh;display:flex;flex-direction:column;">
+    <div class="modal-header" style="flex-shrink:0;">
       <h3 id="mapviewerTitle">⛪ CCPC 묘지 구역도</h3>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn btn-sm" onclick="mapviewerZoom(1.25)">＋</button>
-        <button class="btn btn-sm" onclick="mapviewerZoom(0.8)">－</button>
+        <button class="btn btn-sm" onclick="mapviewerZoom(1.3)">＋</button>
+        <button class="btn btn-sm" onclick="mapviewerZoom(0.77)">－</button>
         <button class="btn btn-sm" onclick="mapviewerReset()">⊡</button>
-        <button class="close-x" onclick="document.getElementById('mapviewerOverlay').style.display='none'">&times;</button>
+        <button class="close-x" onclick="document.getElementById('mapviewerOverlay').style.display='none';if(_mvBlinkTimer){clearInterval(_mvBlinkTimer);_mvBlinkTimer=null;}">&times;</button>
       </div>
     </div>
-    <div class="modal-body" id="mapviewerBody"
-      style="overflow:auto;padding:0;cursor:grab;max-height:calc(90vh - 60px);">
-      <img id="mapviewerImg" src="sections_joined.jpg" alt="Section 15 & 16"
+    <div id="mapviewerBody"
+      style="flex:1;overflow:auto;cursor:grab;position:relative;background:#f5f3ee;min-height:0;">
+      <img id="mapviewerImg" src="sections_joined.jpg" alt="Section 15 &amp; 16"
         style="display:block;width:100%;transform-origin:top left;user-select:none;-webkit-user-drag:none;">
+      <!-- 검색 결과 강조 오버레이 -->
+      <div id="mvHighlight" style="display:none;position:absolute;pointer-events:none;z-index:10;"></div>
     </div>
   </div>
 </div>
