@@ -59,6 +59,7 @@
       <button class="view-tab" data-view="report">📋 규정 및 현황</button>
       <button class="view-tab" data-view="list">📋 List View</button>
       <button class="view-tab" data-view="map">🗺 Map View</button>
+      <button class="view-tab" onclick="openLotView(null,null)">🗾 Lot View</button>
       <button class="view-tab" data-view="pdfview">📄 PDF View</button>
     </div>
     <div class="search-box" id="searchWrap">
@@ -132,10 +133,38 @@
   </div>
 </div>
 
+<!-- Lot View 팝업 -->
+<div class="overlay" id="lotViewOverlay" style="display:none;">
+  <div class="modal" style="max-width:96vw;width:96vw;max-height:95vh;display:flex;flex-direction:column;padding:0;">
+    <div class="modal-header" style="flex-shrink:0;padding:10px 16px;border-bottom:1px solid var(--line);">
+      <h3 id="lotViewTitle" style="font-size:15px;">🗾 Section 15 &amp; 16 구역도</h3>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn btn-sm" onclick="lvZoom(1.3)">＋</button>
+        <button class="btn btn-sm" onclick="lvZoom(0.77)">－</button>
+        <button class="btn btn-sm" onclick="lvReset()">⊡</button>
+        <button class="close-x" onclick="closeLotView()">&times;</button>
+      </div>
+    </div>
+    <div id="lotViewBody" style="flex:1;overflow:auto;cursor:grab;position:relative;min-height:0;background:#f5f3ee;">
+      <div id="lotViewInner" style="position:relative;display:inline-block;transform-origin:top left;">
+        <img id="lotViewImg" src="lot_map_clean.jpg" alt="Lot Map"
+          style="display:block;max-width:none;user-select:none;-webkit-user-drag:none;">
+        <!-- 블링크 박스 -->
+        <div id="lotBlink" style="display:none;position:absolute;pointer-events:none;z-index:10;
+          border:3px solid #e63946;border-radius:3px;box-shadow:0 0 10px rgba(230,57,70,.7);"></div>
+      </div>
+    </div>
+    <div style="flex-shrink:0;padding:6px 14px;font-size:11px;color:#888;border-top:1px solid var(--line);">
+      S15: Lot 1~466 &nbsp;|&nbsp; S16: Lot 1~458 &nbsp;|&nbsp; 스크롤/드래그 탐색, +- 줌
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="layout.js"></script>
 <script src="app.js"></script>
 <script src="report.js"></script>
+<script src="lotview.js"></script>
 </body>
 </html>
