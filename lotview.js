@@ -1,11 +1,11 @@
-// ─── Lot View — 구역도 팝업 기능 ──────────────────────
-// lot_map_clean.jpg (1600x1304, 15도 회전) 기준 좌표
+// ─── Lot View ─────────────────────────────────────────
+// lot_map_clean.jpg (1600×1304, 15도 회전) 기준 lot 좌표
 const LV_COORDS = {
   '15': {
-    '1':{x:1045,y:1396},'2':{x:1037,y:1393},'3':{x:1028,y:1391},'4':{x:1020,y:1389},'5':{x:1011,y:1387},'6':{x:1003,y:1384},
-    '7':{x:995,y:1382},'8':{x:986,y:1380},'9':{x:973,y:1376},'10':{x:961,y:1373},'11':{x:953,y:1371},'12':{x:945,y:1369},
-    '13':{x:936,y:1366},'14':{x:926,y:1364},'15':{x:918,y:1362},'16':{x:906,y:1358},'17':{x:893,y:1355},'18':{x:881,y:1352},
-    '19':{x:872,y:1349},'20':{x:670,y:1017},'21':{x:679,y:1020},'22':{x:687,y:1022},'23':{x:697,y:1024},'24':{x:705,y:1027},
+    '1':{x:1045,y:1304},'2':{x:1037,y:1304},'3':{x:1028,y:1304},'4':{x:1020,y:1304},'5':{x:1011,y:1304},'6':{x:1003,y:1304},
+    '7':{x:995,y:1304},'8':{x:986,y:1304},'9':{x:973,y:1304},'10':{x:961,y:1304},'11':{x:953,y:1304},'12':{x:945,y:1304},
+    '13':{x:936,y:1304},'14':{x:926,y:1304},'15':{x:918,y:1304},'16':{x:906,y:1304},'17':{x:893,y:1304},'18':{x:881,y:1304},
+    '19':{x:872,y:1304},'20':{x:670,y:1017},'21':{x:679,y:1020},'22':{x:687,y:1022},'23':{x:697,y:1024},'24':{x:705,y:1027},
     '25':{x:713,y:1029},'26':{x:722,y:1031},'27':{x:730,y:1033},'28':{x:739,y:1036},'29':{x:752,y:1039},'30':{x:764,y:1043},
     '31':{x:772,y:1045},'32':{x:781,y:1047},'33':{x:789,y:1049},'34':{x:798,y:1052},'35':{x:806,y:1054},'36':{x:814,y:1056},
     '37':{x:823,y:1058},'38':{x:831,y:1060},'39':{x:840,y:1063},'40':{x:847,y:1065},'41':{x:855,y:1067},'42':{x:865,y:1069},
@@ -91,18 +91,19 @@ const LV_COORDS = {
     '204':{x:819,y:356},'205':{x:851,y:364},'206':{x:874,y:371},'230':{x:374,y:20},'231':{x:351,y:13},'232':{x:327,y:7}
   }
 };
-const LV_CELL = { w: 14, h: 14 };
+
+// 이미지 원본 크기
+const LV_IMG_W = 1600, LV_IMG_H = 1304;
+// lot 셀 크기 (이미지 픽셀 단위, 회전 고려)
+const LV_CELL_W = 9, LV_CELL_H = 9;
 
 let _lvScale = 1;
 let _lvBlinkTimer = null;
+let _lvActiveLot = null;  // {sec, lotNo, coord}
 
 function openLotView(sec, lotNo) {
   if (_lvBlinkTimer) { clearInterval(_lvBlinkTimer); _lvBlinkTimer = null; }
-  document.getElementById('lotBlink').style.display = 'none';
-  _lvScale = 1;
-  const inner = document.getElementById('lotViewInner');
-  inner.style.transform = 'scale(1)';
-  inner.style.transformOrigin = 'top left';
+  _lvActiveLot = null;
 
   const title = (sec && lotNo)
     ? `🗾 구역도 — Section ${sec} · Lot ${lotNo}`
@@ -110,18 +111,18 @@ function openLotView(sec, lotNo) {
   document.getElementById('lotViewTitle').textContent = title;
   document.getElementById('lotViewOverlay').style.display = 'flex';
 
-  // 드래그
+  // 드래그 이벤트
   const body = document.getElementById('lotViewBody');
-  if (body._dragClean) body._dragClean();
+  if (body._lv_clean) body._lv_clean();
   let drag=false, sx,sy,sl,st;
-  const onDown = e => { drag=true; sx=e.pageX; sy=e.pageY; sl=body.scrollLeft; st=body.scrollTop; body.style.cursor='grabbing'; };
+  const onDown = e => { if(e.target.closest('#lotBlink')) return; drag=true; sx=e.pageX; sy=e.pageY; sl=body.scrollLeft; st=body.scrollTop; body.style.cursor='grabbing'; };
   const onUp   = () => { drag=false; body.style.cursor='grab'; };
   const onMove = e => { if(!drag) return; body.scrollLeft=sl-(e.pageX-sx); body.scrollTop=st-(e.pageY-sy); };
   body.addEventListener('mousedown', onDown);
   body.addEventListener('mouseleave', onUp);
   body.addEventListener('mouseup', onUp);
   body.addEventListener('mousemove', onMove);
-  body._dragClean = () => {
+  body._lv_clean = () => {
     body.removeEventListener('mousedown', onDown);
     body.removeEventListener('mouseleave', onUp);
     body.removeEventListener('mouseup', onUp);
@@ -129,75 +130,110 @@ function openLotView(sec, lotNo) {
   };
   // 터치
   let tx,ty,tl,tt;
-  body.addEventListener('touchstart', e => { if(e.touches.length===1){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; tl=body.scrollLeft; tt=body.scrollTop; } }, {passive:true});
-  body.addEventListener('touchmove',  e => { if(e.touches.length===1){ body.scrollLeft=tl-(e.touches[0].clientX-tx); body.scrollTop=tt-(e.touches[0].clientY-ty); } }, {passive:true});
+  body.addEventListener('touchstart', e=>{if(e.touches.length===1){tx=e.touches[0].clientX;ty=e.touches[0].clientY;tl=body.scrollLeft;tt=body.scrollTop;}},{passive:true});
+  body.addEventListener('touchmove', e=>{if(e.touches.length===1){body.scrollLeft=tl-(e.touches[0].clientX-tx);body.scrollTop=tt-(e.touches[0].clientY-ty);}},{passive:true});
 
-  // 이미지 전체가 화면에 맞도록 자동 스케일
   setTimeout(() => {
-    const img = document.getElementById('lotViewImg');
+    // 전체 이미지가 화면에 맞도록 초기 스케일 계산
     const bw = body.clientWidth, bh = body.clientHeight;
-    const iw = img.naturalWidth || 1600, ih = img.naturalHeight || 1304;
-    const fitScale = Math.min(bw/iw, bh/ih, 1);
-    _lvScale = fitScale;
-    inner.style.transform = `scale(${fitScale})`;
-    inner.style.transformOrigin = 'top left';
-    // 이미지 중앙 정렬
-    const sw = iw*fitScale, sh = ih*fitScale;
-    body.scrollLeft = Math.max(0, (sw-bw)/2);
-    body.scrollTop  = Math.max(0, (sh-bh)/2);
-    // lot 블링크
-    if (sec && lotNo) _lvShowBlink(sec, lotNo);
+    const fitScale = Math.min(bw/LV_IMG_W, bh/LV_IMG_H, 1);
+    _lvSetScale(fitScale);
+
+    // 중앙 정렬
+    const sw = LV_IMG_W*_lvScale, sh = LV_IMG_H*_lvScale;
+    body.scrollLeft = Math.max(0,(sw-bw)/2);
+    body.scrollTop  = Math.max(0,(sh-bh)/2);
+
+    // lot이 지정된 경우 블링크 표시
+    if (sec && lotNo) {
+      const coord = (LV_COORDS[String(sec)]||{})[String(lotNo)];
+      if (coord) {
+        _lvActiveLot = {sec, lotNo, coord};
+        _lvStartBlink();
+        // lot 위치로 스크롤
+        _lvScrollToLot(coord);
+      }
+    }
   }, 150);
 }
 
-function _lvShowBlink(sec, lotNo) {
-  const coord = (LV_COORDS[String(sec)] || {})[String(lotNo)];
+function _lvSetScale(s) {
+  _lvScale = s;
+  const inner = document.getElementById('lotViewInner');
+  // transform-origin을 top left로 고정 — 블링크는 JS로 위치 계산
+  inner.style.transformOrigin = 'top left';
+  inner.style.transform = `scale(${s})`;
+  // 이미지 크기도 명시
+  document.getElementById('lotViewImg').style.width = LV_IMG_W + 'px';
+  document.getElementById('lotViewImg').style.height = LV_IMG_H + 'px';
+  // 블링크 박스 위치 갱신
+  _lvUpdateBlink();
+}
+
+function _lvUpdateBlink() {
   const blink = document.getElementById('lotBlink');
-  if (!coord) { blink.style.display='none'; return; }
+  if (!_lvActiveLot) { blink.style.display='none'; return; }
+  const {coord} = _lvActiveLot;
   const s = _lvScale;
-  const cw = LV_CELL.w * s * 1.8;
-  const ch = LV_CELL.h * s * 1.8;
-  blink.style.left   = (coord.x*s - cw/2) + 'px';
-  blink.style.top    = (coord.y*s - ch/2) + 'px';
+  // 블링크는 lotViewInner 안에 있으므로 이미지 픽셀 좌표 그대로 사용
+  // (scale은 inner에 적용되므로 inner 안에서는 원본 좌표 사용)
+  const cw = LV_CELL_W * 2.2, ch = LV_CELL_H * 2.2;
+  blink.style.left   = (coord.x - cw/2) + 'px';
+  blink.style.top    = (coord.y - ch/2) + 'px';
   blink.style.width  = cw + 'px';
   blink.style.height = ch + 'px';
   blink.style.display = 'block';
-  // 해당 lot으로 스크롤
-  const body = document.getElementById('lotViewBody');
-  body.scrollLeft = Math.max(0, coord.x*s - body.clientWidth/2);
-  body.scrollTop  = Math.max(0, coord.y*s - body.clientHeight/2);
-  // 블링크
+}
+
+function _lvStartBlink() {
+  _lvUpdateBlink();
+  const blink = document.getElementById('lotBlink');
   let vis=true; blink.style.opacity='1';
   if (_lvBlinkTimer) clearInterval(_lvBlinkTimer);
   _lvBlinkTimer = setInterval(() => { vis=!vis; blink.style.opacity=vis?'1':'0'; }, 500);
-  showToast(`Section ${sec} · Lot ${lotNo} 위치 표시 중`);
+  if (_lvActiveLot) showToast(`Section ${_lvActiveLot.sec} · Lot ${_lvActiveLot.lotNo} 위치 표시 중`);
+}
+
+function _lvScrollToLot(coord) {
+  const body = document.getElementById('lotViewBody');
+  const s = _lvScale;
+  // inner는 scale(s)이므로 화면 픽셀 = 이미지 픽셀 * s
+  const px = coord.x * s, py = coord.y * s;
+  body.scrollLeft = Math.max(0, px - body.clientWidth/2);
+  body.scrollTop  = Math.max(0, py - body.clientHeight/2);
 }
 
 function closeLotView() {
   document.getElementById('lotViewOverlay').style.display = 'none';
   if (_lvBlinkTimer) { clearInterval(_lvBlinkTimer); _lvBlinkTimer = null; }
   document.getElementById('lotBlink').style.display = 'none';
+  _lvActiveLot = null;
 }
 
 function lvZoom(f) {
-  _lvScale = Math.min(Math.max(_lvScale*f, 0.3), 5);
-  const inner = document.getElementById('lotViewInner');
-  inner.style.transform = `scale(${_lvScale})`;
-  inner.style.transformOrigin = 'top left';
-  const title = document.getElementById('lotViewTitle').textContent;
-  const m = title.match(/Section (\d+) · Lot (\d+)/);
-  if (m) _lvShowBlink(m[1], m[2]);
+  const body = document.getElementById('lotViewBody');
+  // 현재 뷰포트 중심 (lot이 있으면 lot 중심, 없으면 화면 중심)
+  let pivotImgX, pivotImgY;
+  if (_lvActiveLot) {
+    pivotImgX = _lvActiveLot.coord.x;
+    pivotImgY = _lvActiveLot.coord.y;
+  } else {
+    pivotImgX = (body.scrollLeft + body.clientWidth/2) / _lvScale;
+    pivotImgY = (body.scrollTop  + body.clientHeight/2) / _lvScale;
+  }
+  // 새 스케일
+  const newScale = Math.min(Math.max(_lvScale*f, 0.3), 6);
+  _lvSetScale(newScale);
+  // pivot 기준으로 스크롤 조정 (pivot이 화면 중앙에 오도록)
+  body.scrollLeft = pivotImgX * newScale - body.clientWidth/2;
+  body.scrollTop  = pivotImgY * newScale - body.clientHeight/2;
 }
 
 function lvReset() {
-  const img = document.getElementById('lotViewImg');
   const body = document.getElementById('lotViewBody');
-  const iw = img.naturalWidth||1600, ih = img.naturalHeight||1304;
-  const fitScale = Math.min(body.clientWidth/iw, body.clientHeight/ih, 1);
-  _lvScale = fitScale;
-  document.getElementById('lotViewInner').style.transform = `scale(${fitScale})`;
-  document.getElementById('lotViewInner').style.transformOrigin = 'top left';
-  const sw=iw*fitScale, sh=ih*fitScale;
+  const fitScale = Math.min(body.clientWidth/LV_IMG_W, body.clientHeight/LV_IMG_H, 1);
+  _lvSetScale(fitScale);
+  const sw=LV_IMG_W*_lvScale, sh=LV_IMG_H*_lvScale;
   body.scrollLeft = Math.max(0,(sw-body.clientWidth)/2);
   body.scrollTop  = Math.max(0,(sh-body.clientHeight)/2);
 }
