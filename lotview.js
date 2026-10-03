@@ -1,524 +1,682 @@
-/* Lot View — Circle 하이라이트 */
-const LV_IMG_W=1600, LV_IMG_H=1304;
-const LV_S15={"1":{x:1435,y:628},"2":{x:1435,y:656},"3":{x:1392,y:628},"4":{x:1392,y:656},"5":{x:1392,y:685},"6":{x:1392,y:713},"7":{x:1392,y:741},"8":{x:1392,y:770},"9":{x:1392,y:798},"10":{x:1392,y:826},"11":{x:1392,y:854},"12":{x:1392,y:882},"13":{x:1392,y:910},"14":{x:1392,y:938},"15":{x:1392,y:964},"16":{x:1435,y:798},"17":{x:1435,y:826},"18":{x:1435,y:854},"19":{x:1435,y:882},"20":{x:1435,y:910},"21":{x:1435,y:938},"22":{x:1435,y:964},"23":{x:1225,y:1064},"24":{x:1225,y:1038},"25":{x:1225,y:1012},"26":{x:1225,y:985},"27":{x:1225,y:959},"28":{x:1239,y:923},"29":{x:1262,y:865},"30":{x:1283,y:811},"31":{x:1297,y:776},"32":{x:1311,y:740},"33":{x:1325,y:704},"34":{x:1341,y:664},"35":{x:1355,y:628},"36":{x:1355,y:656},"37":{x:1355,y:685},"38":{x:1355,y:713},"39":{x:1355,y:741},"40":{x:1355,y:770},"41":{x:1355,y:798},"42":{x:1355,y:826},"43":{x:1355,y:854},"44":{x:1355,y:882},"45":{x:1355,y:910},"46":{x:1355,y:938},"47":{x:1355,y:964},"48":{x:1292,y:950},"49":{x:1292,y:976},"50":{x:1301,y:812},"51":{x:1312,y:628},"52":{x:1312,y:656},"53":{x:1312,y:685},"54":{x:1312,y:713},"55":{x:1312,y:741},"56":{x:1312,y:770},"57":{x:1312,y:798},"58":{x:1312,y:826},"59":{x:1312,y:854},"60":{x:1312,y:882},"61":{x:1312,y:910},"62":{x:1312,y:938},"63":{x:1312,y:964},"64":{x:1303,y:885},"65":{x:1293,y:806},"66":{x:1284,y:728},"67":{x:1274,y:639},"68":{x:1274,y:658},"69":{x:1274,y:676},"70":{x:1285,y:768},"71":{x:1294,y:837},"72":{x:1302,y:898},"73":{x:1310,y:959},"74":{x:1310,y:985},"75":{x:1310,y:1012},"76":{x:1310,y:1038},"77":{x:1310,y:1064},"78":{x:1310,y:1090},"79":{x:1182,y:1143},"80":{x:1182,y:1116},"81":{x:1182,y:1090},"82":{x:1182,y:1064},"83":{x:1182,y:1038},"84":{x:1182,y:1012},"85":{x:1272,y:964},"86":{x:1272,y:938},"87":{x:1272,y:910},"88":{x:1272,y:882},"89":{x:1272,y:854},"90":{x:1272,y:826},"91":{x:1272,y:798},"92":{x:1272,y:770},"93":{x:1272,y:741},"94":{x:1272,y:713},"95":{x:1272,y:685},"96":{x:1272,y:656},"97":{x:1272,y:628},"98":{x:1276,y:638},"99":{x:1280,y:649},"100":{x:1285,y:663},"101":{x:1285,y:638},"102":{x:1285,y:613},"103":{x:1240,y:536},"104":{x:1240,y:504},"105":{x:1240,y:472},"106":{x:1240,y:440},"107":{x:1240,y:409},"108":{x:1240,y:378},"109":{x:1240,y:345},"110":{x:1240,y:316},"111":{x:1244,y:688},"112":{x:1244,y:663},"113":{x:1244,y:638},"114":{x:1244,y:613},"115":{x:1244,y:588},"116":{x:1244,y:563},"117":{x:1244,y:538},"118":{x:1244,y:513},"119":{x:1242,y:536},"120":{x:1240,y:556},"121":{x:1237,y:578},"122":{x:1235,y:598},"123":{x:1232,y:628},"124":{x:1232,y:656},"125":{x:1232,y:685},"126":{x:1232,y:713},"127":{x:1232,y:741},"128":{x:1232,y:770},"129":{x:1232,y:798},"130":{x:1232,y:826},"131":{x:1232,y:854},"132":{x:1232,y:882},"133":{x:1232,y:910},"134":{x:1232,y:938},"135":{x:1234,y:940},"136":{x:1235,y:942},"137":{x:1237,y:944},"138":{x:1239,y:946},"139":{x:1240,y:948},"140":{x:1243,y:952},"141":{x:1243,y:984},"142":{x:1243,y:1009},"143":{x:1243,y:1035},"144":{x:1359,y:993},"145":{x:1435,y:941},"146":{x:1435,y:916},"147":{x:1435,y:964},"148":{x:1435,y:938},"149":{x:1435,y:910},"150":{x:1370,y:821},"151":{x:1326,y:892},"152":{x:1277,y:973},"153":{x:1233,y:1044},"154":{x:1189,y:1116},"155":{x:1140,y:1196},"156":{x:1140,y:1169},"157":{x:1140,y:1143},"158":{x:1140,y:1116},"159":{x:1140,y:1090},"160":{x:1140,y:1064},"161":{x:1140,y:1038},"162":{x:1140,y:1012},"163":{x:1140,y:985},"164":{x:1140,y:959},"165":{x:1192,y:965},"166":{x:1192,y:928},"167":{x:1192,y:883},"168":{x:1192,y:833},"169":{x:1192,y:792},"170":{x:1192,y:759},"171":{x:1192,y:726},"172":{x:1192,y:693},"173":{x:1192,y:656},"174":{x:1192,y:628},"175":{x:1192,y:685},"176":{x:1192,y:713},"177":{x:1192,y:741},"178":{x:1192,y:770},"179":{x:1192,y:798},"180":{x:1192,y:826},"181":{x:1192,y:854},"182":{x:1192,y:882},"183":{x:1192,y:910},"184":{x:1192,y:938},"185":{x:1194,y:894},"186":{x:1195,y:845},"187":{x:1198,y:780},"188":{x:1200,y:714},"189":{x:1200,y:689},"190":{x:1200,y:664},"191":{x:1200,y:638},"192":{x:1200,y:613},"193":{x:1200,y:588},"194":{x:1200,y:563},"195":{x:1200,y:538},"196":{x:1200,y:513},"197":{x:1188,y:536},"198":{x:1175,y:561},"199":{x:1164,y:583},"200":{x:1152,y:606},"201":{x:1152,y:628},"202":{x:1152,y:656},"203":{x:1152,y:685},"204":{x:1152,y:713},"205":{x:1152,y:741},"206":{x:1152,y:770},"207":{x:1152,y:798},"208":{x:1152,y:826},"209":{x:1152,y:854},"210":{x:1152,y:882},"211":{x:1152,y:910},"212":{x:1152,y:938},"213":{x:1152,y:964},"214":{x:1154,y:934},"215":{x:1155,y:910},"216":{x:1156,y:883},"217":{x:1158,y:853},"218":{x:1159,y:826},"219":{x:1161,y:795},"220":{x:1163,y:765},"221":{x:1165,y:724},"222":{x:1167,y:684},"223":{x:1169,y:657},"224":{x:1170,y:626},"225":{x:1172,y:599},"226":{x:1173,y:572},"227":{x:1183,y:558},"228":{x:1140,y:1064},"229":{x:1140,y:1038},"230":{x:1123,y:1007},"231":{x:1140,y:1038},"232":{x:1115,y:1001},"233":{x:1098,y:959},"234":{x:1098,y:959},"235":{x:1098,y:959},"236":{x:1098,y:985},"237":{x:1098,y:1012},"238":{x:1098,y:1038},"239":{x:1098,y:1064},"240":{x:1110,y:964},"241":{x:1110,y:938},"242":{x:1110,y:910},"243":{x:1110,y:882},"244":{x:1110,y:854},"245":{x:1110,y:826},"246":{x:1110,y:798},"247":{x:1110,y:770},"248":{x:1110,y:741},"249":{x:1110,y:713},"250":{x:1110,y:685},"251":{x:1110,y:656},"252":{x:1110,y:628},"253":{x:1110,y:606},"254":{x:1160,y:614},"255":{x:1160,y:589},"256":{x:1160,y:565},"257":{x:1153,y:602},"258":{x:1143,y:650},"259":{x:1133,y:699},"260":{x:1127,y:732},"261":{x:1120,y:764},"262":{x:1120,y:739},"263":{x:1120,y:712},"264":{x:1120,y:686},"265":{x:1120,y:661},"266":{x:1120,y:635},"267":{x:1120,y:610},"268":{x:1068,y:606},"269":{x:1068,y:628},"270":{x:1068,y:656},"271":{x:1068,y:685},"272":{x:1068,y:713},"273":{x:1068,y:741},"274":{x:1068,y:770},"275":{x:1068,y:798},"276":{x:1068,y:826},"277":{x:1068,y:854},"278":{x:1068,y:882},"279":{x:1068,y:910},"280":{x:1068,y:938},"281":{x:1068,y:964},"282":{x:1064,y:963},"283":{x:1060,y:962},"284":{x:1056,y:960},"285":{x:1052,y:959},"286":{x:1052,y:985},"287":{x:1052,y:1012},"288":{x:1052,y:1038},"289":{x:1052,y:1064},"290":{x:1052,y:1090},"291":{x:1052,y:1116},"292":{x:1052,y:1143},"293":{x:1052,y:1169},"294":{x:1052,y:1196},"295":{x:1052,y:1222},"296":{x:1063,y:1149},"297":{x:1075,y:1067},"298":{x:1086,y:1010},"299":{x:1005,y:1169},"300":{x:1043,y:1089},"301":{x:1043,y:1114},"302":{x:1005,y:1169},"303":{x:1034,y:1118},"304":{x:1035,y:1134},"305":{x:1038,y:1087},"306":{x:1038,y:1097},"307":{x:1038,y:1106},"308":{x:1038,y:1115},"309":{x:1038,y:1087},"310":{x:1042,y:1039},"311":{x:1047,y:984},"312":{x:1053,y:911},"313":{x:1059,y:838},"314":{x:1063,y:789},"315":{x:1068,y:735},"316":{x:1072,y:686},"317":{x:1072,y:661},"318":{x:1072,y:636},"319":{x:1072,y:612},"320":{x:1072,y:586},"321":{x:1072,y:560},"322":{x:1072,y:534},"323":{x:1072,y:508},"324":{x:1045,y:532},"325":{x:1016,y:558},"326":{x:986,y:585},"327":{x:959,y:609},"328":{x:1024,y:628},"329":{x:1024,y:656},"330":{x:1024,y:685},"331":{x:1024,y:713},"332":{x:1024,y:741},"333":{x:1024,y:770},"334":{x:1024,y:798},"335":{x:1024,y:826},"336":{x:1024,y:854},"337":{x:1024,y:882},"338":{x:1024,y:910},"339":{x:1024,y:938},"340":{x:1024,y:964},"341":{x:1024,y:992},"342":{x:1018,y:982},"343":{x:1011,y:970},"344":{x:1005,y:959},"345":{x:1005,y:985},"346":{x:1005,y:1012},"347":{x:1005,y:1038},"348":{x:1005,y:1064},"349":{x:1005,y:1116},"350":{x:1005,y:1143},"351":{x:1005,y:1169},"352":{x:1005,y:1196},"353":{x:1005,y:1222},"354":{x:1005,y:1248},"355":{x:1008,y:1196},"356":{x:1010,y:1144},"357":{x:1005,y:1248},"358":{x:979,y:1140},"359":{x:979,y:1163},"360":{x:979,y:1149},"361":{x:981,y:1077},"362":{x:982,y:1004},"363":{x:982,y:956},"364":{x:983,y:902},"365":{x:984,y:854},"366":{x:984,y:882},"367":{x:984,y:910},"368":{x:984,y:938},"369":{x:984,y:964},"370":{x:984,y:628},"371":{x:984,y:656},"372":{x:984,y:685},"373":{x:984,y:713},"374":{x:984,y:741},"375":{x:984,y:770},"376":{x:984,y:798},"377":{x:984,y:826},"378":{x:968,y:748},"379":{x:955,y:682},"380":{x:944,y:628},"381":{x:944,y:656},"382":{x:944,y:685},"383":{x:944,y:713},"384":{x:944,y:741},"385":{x:944,y:770},"386":{x:944,y:798},"387":{x:944,y:826},"388":{x:944,y:854},"389":{x:944,y:882},"390":{x:949,y:908},"391":{x:953,y:930},"392":{x:959,y:959},"393":{x:959,y:985},"394":{x:959,y:1012},"395":{x:959,y:1038},"396":{x:959,y:1064},"397":{x:959,y:1090},"398":{x:959,y:1116},"399":{x:959,y:1143},"400":{x:959,y:1169},"401":{x:959,y:1196},"402":{x:956,y:1171},"403":{x:953,y:1145},"404":{x:950,y:1120},"405":{x:948,y:1094},"406":{x:944,y:1066},"407":{x:940,y:1028},"408":{x:936,y:990},"409":{x:933,y:964},"410":{x:930,y:939},"411":{x:927,y:910},"412":{x:924,y:882},"413":{x:921,y:856},"414":{x:917,y:818},"415":{x:912,y:777},"416":{x:908,y:742},"417":{x:908,y:712},"418":{x:908,y:770},"419":{x:908,y:800},"420":{x:908,y:828},"421":{x:908,y:855},"422":{x:908,y:882},"423":{x:908,y:910},"424":{x:908,y:938},"425":{x:908,y:964},"426":{x:908,y:992},"427":{x:921,y:976},"428":{x:933,y:962},"429":{x:948,y:945},"430":{x:961,y:929},"431":{x:975,y:913},"432":{x:959,y:1196},"433":{x:959,y:1196},"434":{x:959,y:1196},"435":{x:959,y:1196},"436":{x:959,y:1196},"437":{x:984,y:656},"438":{x:984,y:685},"439":{x:984,y:713},"440":{x:908,y:742},"441":{x:908,y:742},"442":{x:908,y:742},"443":{x:908,y:742},"444":{x:908,y:742},"445":{x:1024,y:572},"446":{x:1024,y:597},"447":{x:1021,y:577},"448":{x:959,y:1196},"449":{x:959,y:1196},"450":{x:908,y:742},"451":{x:908,y:742},"452":{x:908,y:742},"453":{x:908,y:742},"454":{x:908,y:742},"455":{x:908,y:742},"456":{x:908,y:742},"457":{x:1055,y:311},"458":{x:1055,y:311},"459":{x:1055,y:311},"460":{x:1055,y:311},"461":{x:1055,y:311},"462":{x:1055,y:311},"463":{x:1055,y:311},"464":{x:1055,y:311},"465":{x:1055,y:311},"466":{x:1055,y:311}};
-const LV_S16={"1":{x:781,y:236},"11":{x:784,y:253},"12":{x:758,y:246},"32":{x:751,y:244},"35":{x:735,y:208},"139":{x:378,y:672},"140":{x:409,y:680},"141":{x:441,y:689},"142":{x:473,y:697},"143":{x:504,y:706},"144":{x:536,y:714},"150":{x:656,y:187},"165":{x:590,y:512},"166":{x:559,y:503},"167":{x:527,y:495},"168":{x:495,y:486},"169":{x:464,y:478},"170":{x:432,y:469},"186":{x:273,y:209},"187":{x:296,y:216},"188":{x:328,y:224},"189":{x:360,y:233},"190":{x:391,y:241},"191":{x:423,y:250},"192":{x:455,y:258},"193":{x:486,y:267},"194":{x:518,y:275},"195":{x:550,y:284},"196":{x:581,y:292},"197":{x:613,y:301},"198":{x:645,y:309},"199":{x:668,y:316},"200":{x:692,y:322},"201":{x:724,y:330},"202":{x:756,y:339},"203":{x:787,y:347},"204":{x:819,y:356},"205":{x:851,y:364},"206":{x:874,y:371},"230":{x:374,y:20},"231":{x:351,y:13},"232":{x:327,y:7}};
-const LV_SVG=`<circle data-lot="1" data-sec="15" cx="1435" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="2" data-sec="15" cx="1435" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="3" data-sec="15" cx="1392" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="4" data-sec="15" cx="1392" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="5" data-sec="15" cx="1392" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="6" data-sec="15" cx="1392" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="7" data-sec="15" cx="1392" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="8" data-sec="15" cx="1392" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="9" data-sec="15" cx="1392" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="10" data-sec="15" cx="1392" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="11" data-sec="15" cx="1392" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="12" data-sec="15" cx="1392" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="13" data-sec="15" cx="1392" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="14" data-sec="15" cx="1392" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="15" data-sec="15" cx="1392" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="16" data-sec="15" cx="1435" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="17" data-sec="15" cx="1435" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="18" data-sec="15" cx="1435" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="19" data-sec="15" cx="1435" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="20" data-sec="15" cx="1435" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="21" data-sec="15" cx="1435" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="22" data-sec="15" cx="1435" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="23" data-sec="15" cx="1225" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="24" data-sec="15" cx="1225" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="25" data-sec="15" cx="1225" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="26" data-sec="15" cx="1225" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="27" data-sec="15" cx="1225" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="28" data-sec="15" cx="1239" cy="923" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="29" data-sec="15" cx="1262" cy="865" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="30" data-sec="15" cx="1283" cy="811" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="31" data-sec="15" cx="1297" cy="776" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="32" data-sec="15" cx="1311" cy="740" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="33" data-sec="15" cx="1325" cy="704" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="34" data-sec="15" cx="1341" cy="664" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="35" data-sec="15" cx="1355" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="36" data-sec="15" cx="1355" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="37" data-sec="15" cx="1355" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="38" data-sec="15" cx="1355" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="39" data-sec="15" cx="1355" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="40" data-sec="15" cx="1355" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="41" data-sec="15" cx="1355" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="42" data-sec="15" cx="1355" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="43" data-sec="15" cx="1355" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="44" data-sec="15" cx="1355" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="45" data-sec="15" cx="1355" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="46" data-sec="15" cx="1355" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="47" data-sec="15" cx="1355" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="48" data-sec="15" cx="1292" cy="950" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="49" data-sec="15" cx="1292" cy="976" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="50" data-sec="15" cx="1301" cy="812" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="51" data-sec="15" cx="1312" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="52" data-sec="15" cx="1312" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="53" data-sec="15" cx="1312" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="54" data-sec="15" cx="1312" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="55" data-sec="15" cx="1312" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="56" data-sec="15" cx="1312" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="57" data-sec="15" cx="1312" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="58" data-sec="15" cx="1312" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="59" data-sec="15" cx="1312" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="60" data-sec="15" cx="1312" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="61" data-sec="15" cx="1312" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="62" data-sec="15" cx="1312" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="63" data-sec="15" cx="1312" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="64" data-sec="15" cx="1303" cy="885" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="65" data-sec="15" cx="1293" cy="806" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="66" data-sec="15" cx="1284" cy="728" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="67" data-sec="15" cx="1274" cy="639" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="68" data-sec="15" cx="1274" cy="658" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="69" data-sec="15" cx="1274" cy="676" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="70" data-sec="15" cx="1285" cy="768" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="71" data-sec="15" cx="1294" cy="837" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="72" data-sec="15" cx="1302" cy="898" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="73" data-sec="15" cx="1310" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="74" data-sec="15" cx="1310" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="75" data-sec="15" cx="1310" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="76" data-sec="15" cx="1310" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="77" data-sec="15" cx="1310" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="78" data-sec="15" cx="1310" cy="1090" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="79" data-sec="15" cx="1182" cy="1143" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="80" data-sec="15" cx="1182" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="81" data-sec="15" cx="1182" cy="1090" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="82" data-sec="15" cx="1182" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="83" data-sec="15" cx="1182" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="84" data-sec="15" cx="1182" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="85" data-sec="15" cx="1272" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="86" data-sec="15" cx="1272" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="87" data-sec="15" cx="1272" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="88" data-sec="15" cx="1272" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="89" data-sec="15" cx="1272" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="90" data-sec="15" cx="1272" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="91" data-sec="15" cx="1272" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="92" data-sec="15" cx="1272" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="93" data-sec="15" cx="1272" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="94" data-sec="15" cx="1272" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="95" data-sec="15" cx="1272" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="96" data-sec="15" cx="1272" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="97" data-sec="15" cx="1272" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="98" data-sec="15" cx="1276" cy="638" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="99" data-sec="15" cx="1280" cy="649" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="100" data-sec="15" cx="1285" cy="663" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="101" data-sec="15" cx="1285" cy="638" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="102" data-sec="15" cx="1285" cy="613" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="103" data-sec="15" cx="1240" cy="536" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="104" data-sec="15" cx="1240" cy="504" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="105" data-sec="15" cx="1240" cy="472" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="106" data-sec="15" cx="1240" cy="440" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="107" data-sec="15" cx="1240" cy="409" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="108" data-sec="15" cx="1240" cy="378" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="109" data-sec="15" cx="1240" cy="345" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="110" data-sec="15" cx="1240" cy="316" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="111" data-sec="15" cx="1244" cy="688" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="112" data-sec="15" cx="1244" cy="663" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="113" data-sec="15" cx="1244" cy="638" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="114" data-sec="15" cx="1244" cy="613" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="115" data-sec="15" cx="1244" cy="588" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="116" data-sec="15" cx="1244" cy="563" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="117" data-sec="15" cx="1244" cy="538" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="118" data-sec="15" cx="1244" cy="513" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="119" data-sec="15" cx="1242" cy="536" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="120" data-sec="15" cx="1240" cy="556" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="121" data-sec="15" cx="1237" cy="578" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="122" data-sec="15" cx="1235" cy="598" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="123" data-sec="15" cx="1232" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="124" data-sec="15" cx="1232" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="125" data-sec="15" cx="1232" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="126" data-sec="15" cx="1232" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="127" data-sec="15" cx="1232" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="128" data-sec="15" cx="1232" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="129" data-sec="15" cx="1232" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="130" data-sec="15" cx="1232" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="131" data-sec="15" cx="1232" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="132" data-sec="15" cx="1232" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="133" data-sec="15" cx="1232" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="134" data-sec="15" cx="1232" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="135" data-sec="15" cx="1234" cy="940" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="136" data-sec="15" cx="1235" cy="942" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="137" data-sec="15" cx="1237" cy="944" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="138" data-sec="15" cx="1239" cy="946" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="139" data-sec="15" cx="1240" cy="948" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="140" data-sec="15" cx="1243" cy="952" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="141" data-sec="15" cx="1243" cy="984" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="142" data-sec="15" cx="1243" cy="1009" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="143" data-sec="15" cx="1243" cy="1035" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="144" data-sec="15" cx="1359" cy="993" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="145" data-sec="15" cx="1435" cy="941" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="146" data-sec="15" cx="1435" cy="916" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="147" data-sec="15" cx="1435" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="148" data-sec="15" cx="1435" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="149" data-sec="15" cx="1435" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="150" data-sec="15" cx="1370" cy="821" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="151" data-sec="15" cx="1326" cy="892" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="152" data-sec="15" cx="1277" cy="973" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="153" data-sec="15" cx="1233" cy="1044" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="154" data-sec="15" cx="1189" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="155" data-sec="15" cx="1140" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="156" data-sec="15" cx="1140" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="157" data-sec="15" cx="1140" cy="1143" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="158" data-sec="15" cx="1140" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="159" data-sec="15" cx="1140" cy="1090" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="160" data-sec="15" cx="1140" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="161" data-sec="15" cx="1140" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="162" data-sec="15" cx="1140" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="163" data-sec="15" cx="1140" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="164" data-sec="15" cx="1140" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="165" data-sec="15" cx="1192" cy="965" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="166" data-sec="15" cx="1192" cy="928" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="167" data-sec="15" cx="1192" cy="883" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="168" data-sec="15" cx="1192" cy="833" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="169" data-sec="15" cx="1192" cy="792" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="170" data-sec="15" cx="1192" cy="759" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="171" data-sec="15" cx="1192" cy="726" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="172" data-sec="15" cx="1192" cy="693" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="173" data-sec="15" cx="1192" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="174" data-sec="15" cx="1192" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="175" data-sec="15" cx="1192" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="176" data-sec="15" cx="1192" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="177" data-sec="15" cx="1192" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="178" data-sec="15" cx="1192" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="179" data-sec="15" cx="1192" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="180" data-sec="15" cx="1192" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="181" data-sec="15" cx="1192" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="182" data-sec="15" cx="1192" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="183" data-sec="15" cx="1192" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="184" data-sec="15" cx="1192" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="185" data-sec="15" cx="1194" cy="894" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="186" data-sec="15" cx="1195" cy="845" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="187" data-sec="15" cx="1198" cy="780" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="188" data-sec="15" cx="1200" cy="714" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="189" data-sec="15" cx="1200" cy="689" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="190" data-sec="15" cx="1200" cy="664" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="191" data-sec="15" cx="1200" cy="638" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="192" data-sec="15" cx="1200" cy="613" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="193" data-sec="15" cx="1200" cy="588" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="194" data-sec="15" cx="1200" cy="563" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="195" data-sec="15" cx="1200" cy="538" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="196" data-sec="15" cx="1200" cy="513" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="197" data-sec="15" cx="1188" cy="536" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="198" data-sec="15" cx="1175" cy="561" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="199" data-sec="15" cx="1164" cy="583" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="200" data-sec="15" cx="1152" cy="606" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="201" data-sec="15" cx="1152" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="202" data-sec="15" cx="1152" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="203" data-sec="15" cx="1152" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="204" data-sec="15" cx="1152" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="205" data-sec="15" cx="1152" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="206" data-sec="15" cx="1152" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="207" data-sec="15" cx="1152" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="208" data-sec="15" cx="1152" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="209" data-sec="15" cx="1152" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="210" data-sec="15" cx="1152" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="211" data-sec="15" cx="1152" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="212" data-sec="15" cx="1152" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="213" data-sec="15" cx="1152" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="214" data-sec="15" cx="1154" cy="934" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="215" data-sec="15" cx="1155" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="216" data-sec="15" cx="1156" cy="883" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="217" data-sec="15" cx="1158" cy="853" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="218" data-sec="15" cx="1159" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="219" data-sec="15" cx="1161" cy="795" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="220" data-sec="15" cx="1163" cy="765" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="221" data-sec="15" cx="1165" cy="724" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="222" data-sec="15" cx="1167" cy="684" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="223" data-sec="15" cx="1169" cy="657" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="224" data-sec="15" cx="1170" cy="626" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="225" data-sec="15" cx="1172" cy="599" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="226" data-sec="15" cx="1173" cy="572" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="227" data-sec="15" cx="1183" cy="558" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="228" data-sec="15" cx="1140" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="229" data-sec="15" cx="1140" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="230" data-sec="15" cx="1123" cy="1007" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="231" data-sec="15" cx="1140" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="232" data-sec="15" cx="1115" cy="1001" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="233" data-sec="15" cx="1098" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="234" data-sec="15" cx="1098" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="235" data-sec="15" cx="1098" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="236" data-sec="15" cx="1098" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="237" data-sec="15" cx="1098" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="238" data-sec="15" cx="1098" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="239" data-sec="15" cx="1098" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="240" data-sec="15" cx="1110" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="241" data-sec="15" cx="1110" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="242" data-sec="15" cx="1110" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="243" data-sec="15" cx="1110" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="244" data-sec="15" cx="1110" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="245" data-sec="15" cx="1110" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="246" data-sec="15" cx="1110" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="247" data-sec="15" cx="1110" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="248" data-sec="15" cx="1110" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="249" data-sec="15" cx="1110" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="250" data-sec="15" cx="1110" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="251" data-sec="15" cx="1110" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="252" data-sec="15" cx="1110" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="253" data-sec="15" cx="1110" cy="606" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="254" data-sec="15" cx="1160" cy="614" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="255" data-sec="15" cx="1160" cy="589" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="256" data-sec="15" cx="1160" cy="565" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="257" data-sec="15" cx="1153" cy="602" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="258" data-sec="15" cx="1143" cy="650" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="259" data-sec="15" cx="1133" cy="699" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="260" data-sec="15" cx="1127" cy="732" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="261" data-sec="15" cx="1120" cy="764" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="262" data-sec="15" cx="1120" cy="739" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="263" data-sec="15" cx="1120" cy="712" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="264" data-sec="15" cx="1120" cy="686" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="265" data-sec="15" cx="1120" cy="661" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="266" data-sec="15" cx="1120" cy="635" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="267" data-sec="15" cx="1120" cy="610" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="268" data-sec="15" cx="1068" cy="606" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="269" data-sec="15" cx="1068" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="270" data-sec="15" cx="1068" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="271" data-sec="15" cx="1068" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="272" data-sec="15" cx="1068" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="273" data-sec="15" cx="1068" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="274" data-sec="15" cx="1068" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="275" data-sec="15" cx="1068" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="276" data-sec="15" cx="1068" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="277" data-sec="15" cx="1068" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="278" data-sec="15" cx="1068" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="279" data-sec="15" cx="1068" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="280" data-sec="15" cx="1068" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="281" data-sec="15" cx="1068" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="282" data-sec="15" cx="1064" cy="963" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="283" data-sec="15" cx="1060" cy="962" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="284" data-sec="15" cx="1056" cy="960" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="285" data-sec="15" cx="1052" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="286" data-sec="15" cx="1052" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="287" data-sec="15" cx="1052" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="288" data-sec="15" cx="1052" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="289" data-sec="15" cx="1052" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="290" data-sec="15" cx="1052" cy="1090" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="291" data-sec="15" cx="1052" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="292" data-sec="15" cx="1052" cy="1143" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="293" data-sec="15" cx="1052" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="294" data-sec="15" cx="1052" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="295" data-sec="15" cx="1052" cy="1222" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="296" data-sec="15" cx="1063" cy="1149" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="297" data-sec="15" cx="1075" cy="1067" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="298" data-sec="15" cx="1086" cy="1010" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="299" data-sec="15" cx="1005" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="300" data-sec="15" cx="1043" cy="1089" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="301" data-sec="15" cx="1043" cy="1114" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="302" data-sec="15" cx="1005" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="303" data-sec="15" cx="1034" cy="1118" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="304" data-sec="15" cx="1035" cy="1134" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="305" data-sec="15" cx="1038" cy="1087" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="306" data-sec="15" cx="1038" cy="1097" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="307" data-sec="15" cx="1038" cy="1106" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="308" data-sec="15" cx="1038" cy="1115" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="309" data-sec="15" cx="1038" cy="1087" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="310" data-sec="15" cx="1042" cy="1039" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="311" data-sec="15" cx="1047" cy="984" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="312" data-sec="15" cx="1053" cy="911" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="313" data-sec="15" cx="1059" cy="838" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="314" data-sec="15" cx="1063" cy="789" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="315" data-sec="15" cx="1068" cy="735" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="316" data-sec="15" cx="1072" cy="686" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="317" data-sec="15" cx="1072" cy="661" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="318" data-sec="15" cx="1072" cy="636" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="319" data-sec="15" cx="1072" cy="612" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="320" data-sec="15" cx="1072" cy="586" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="321" data-sec="15" cx="1072" cy="560" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="322" data-sec="15" cx="1072" cy="534" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="323" data-sec="15" cx="1072" cy="508" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="324" data-sec="15" cx="1045" cy="532" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="325" data-sec="15" cx="1016" cy="558" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="326" data-sec="15" cx="986" cy="585" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="327" data-sec="15" cx="959" cy="609" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="328" data-sec="15" cx="1024" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="329" data-sec="15" cx="1024" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="330" data-sec="15" cx="1024" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="331" data-sec="15" cx="1024" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="332" data-sec="15" cx="1024" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="333" data-sec="15" cx="1024" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="334" data-sec="15" cx="1024" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="335" data-sec="15" cx="1024" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="336" data-sec="15" cx="1024" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="337" data-sec="15" cx="1024" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="338" data-sec="15" cx="1024" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="339" data-sec="15" cx="1024" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="340" data-sec="15" cx="1024" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="341" data-sec="15" cx="1024" cy="992" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="342" data-sec="15" cx="1018" cy="982" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="343" data-sec="15" cx="1011" cy="970" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="344" data-sec="15" cx="1005" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="345" data-sec="15" cx="1005" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="346" data-sec="15" cx="1005" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="347" data-sec="15" cx="1005" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="348" data-sec="15" cx="1005" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="349" data-sec="15" cx="1005" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="350" data-sec="15" cx="1005" cy="1143" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="351" data-sec="15" cx="1005" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="352" data-sec="15" cx="1005" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="353" data-sec="15" cx="1005" cy="1222" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="354" data-sec="15" cx="1005" cy="1248" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="355" data-sec="15" cx="1008" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="356" data-sec="15" cx="1010" cy="1144" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="357" data-sec="15" cx="1005" cy="1248" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="358" data-sec="15" cx="979" cy="1140" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="359" data-sec="15" cx="979" cy="1163" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="360" data-sec="15" cx="979" cy="1149" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="361" data-sec="15" cx="981" cy="1077" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="362" data-sec="15" cx="982" cy="1004" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="363" data-sec="15" cx="982" cy="956" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="364" data-sec="15" cx="983" cy="902" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="365" data-sec="15" cx="984" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="366" data-sec="15" cx="984" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="367" data-sec="15" cx="984" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="368" data-sec="15" cx="984" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="369" data-sec="15" cx="984" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="370" data-sec="15" cx="984" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="371" data-sec="15" cx="984" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="372" data-sec="15" cx="984" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="373" data-sec="15" cx="984" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="374" data-sec="15" cx="984" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="375" data-sec="15" cx="984" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="376" data-sec="15" cx="984" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="377" data-sec="15" cx="984" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="378" data-sec="15" cx="968" cy="748" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="379" data-sec="15" cx="955" cy="682" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="380" data-sec="15" cx="944" cy="628" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="381" data-sec="15" cx="944" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="382" data-sec="15" cx="944" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="383" data-sec="15" cx="944" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="384" data-sec="15" cx="944" cy="741" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="385" data-sec="15" cx="944" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="386" data-sec="15" cx="944" cy="798" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="387" data-sec="15" cx="944" cy="826" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="388" data-sec="15" cx="944" cy="854" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="389" data-sec="15" cx="944" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="390" data-sec="15" cx="949" cy="908" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="391" data-sec="15" cx="953" cy="930" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="392" data-sec="15" cx="959" cy="959" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="393" data-sec="15" cx="959" cy="985" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="394" data-sec="15" cx="959" cy="1012" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="395" data-sec="15" cx="959" cy="1038" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="396" data-sec="15" cx="959" cy="1064" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="397" data-sec="15" cx="959" cy="1090" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="398" data-sec="15" cx="959" cy="1116" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="399" data-sec="15" cx="959" cy="1143" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="400" data-sec="15" cx="959" cy="1169" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="401" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="402" data-sec="15" cx="956" cy="1171" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="403" data-sec="15" cx="953" cy="1145" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="404" data-sec="15" cx="950" cy="1120" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="405" data-sec="15" cx="948" cy="1094" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="406" data-sec="15" cx="944" cy="1066" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="407" data-sec="15" cx="940" cy="1028" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="408" data-sec="15" cx="936" cy="990" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="409" data-sec="15" cx="933" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="410" data-sec="15" cx="930" cy="939" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="411" data-sec="15" cx="927" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="412" data-sec="15" cx="924" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="413" data-sec="15" cx="921" cy="856" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="414" data-sec="15" cx="917" cy="818" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="415" data-sec="15" cx="912" cy="777" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="416" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="417" data-sec="15" cx="908" cy="712" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="418" data-sec="15" cx="908" cy="770" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="419" data-sec="15" cx="908" cy="800" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="420" data-sec="15" cx="908" cy="828" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="421" data-sec="15" cx="908" cy="855" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="422" data-sec="15" cx="908" cy="882" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="423" data-sec="15" cx="908" cy="910" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="424" data-sec="15" cx="908" cy="938" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="425" data-sec="15" cx="908" cy="964" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="426" data-sec="15" cx="908" cy="992" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="427" data-sec="15" cx="921" cy="976" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="428" data-sec="15" cx="933" cy="962" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="429" data-sec="15" cx="948" cy="945" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="430" data-sec="15" cx="961" cy="929" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="431" data-sec="15" cx="975" cy="913" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="432" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="433" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="434" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="435" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="436" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="437" data-sec="15" cx="984" cy="656" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="438" data-sec="15" cx="984" cy="685" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="439" data-sec="15" cx="984" cy="713" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="440" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="441" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="442" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="443" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="444" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="445" data-sec="15" cx="1024" cy="572" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="446" data-sec="15" cx="1024" cy="597" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="447" data-sec="15" cx="1021" cy="577" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="448" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="449" data-sec="15" cx="959" cy="1196" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="450" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="451" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="452" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="453" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="454" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="455" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="456" data-sec="15" cx="908" cy="742" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="457" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="458" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="459" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="460" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="461" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="462" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="463" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="464" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="465" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="466" data-sec="15" cx="1055" cy="311" r="12" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="1" data-sec="16" cx="781" cy="236" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="11" data-sec="16" cx="784" cy="253" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="12" data-sec="16" cx="758" cy="246" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="32" data-sec="16" cx="751" cy="244" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="35" data-sec="16" cx="735" cy="208" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="139" data-sec="16" cx="378" cy="672" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="140" data-sec="16" cx="409" cy="680" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="141" data-sec="16" cx="441" cy="689" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="142" data-sec="16" cx="473" cy="697" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="143" data-sec="16" cx="504" cy="706" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="144" data-sec="16" cx="536" cy="714" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="150" data-sec="16" cx="656" cy="187" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="165" data-sec="16" cx="590" cy="512" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="166" data-sec="16" cx="559" cy="503" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="167" data-sec="16" cx="527" cy="495" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="168" data-sec="16" cx="495" cy="486" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="169" data-sec="16" cx="464" cy="478" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="170" data-sec="16" cx="432" cy="469" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="186" data-sec="16" cx="273" cy="209" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="187" data-sec="16" cx="296" cy="216" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="188" data-sec="16" cx="328" cy="224" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="189" data-sec="16" cx="360" cy="233" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="190" data-sec="16" cx="391" cy="241" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="191" data-sec="16" cx="423" cy="250" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="192" data-sec="16" cx="455" cy="258" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="193" data-sec="16" cx="486" cy="267" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="194" data-sec="16" cx="518" cy="275" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="195" data-sec="16" cx="550" cy="284" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="196" data-sec="16" cx="581" cy="292" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="197" data-sec="16" cx="613" cy="301" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="198" data-sec="16" cx="645" cy="309" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="199" data-sec="16" cx="668" cy="316" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="200" data-sec="16" cx="692" cy="322" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="201" data-sec="16" cx="724" cy="330" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="202" data-sec="16" cx="756" cy="339" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="203" data-sec="16" cx="787" cy="347" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="204" data-sec="16" cx="819" cy="356" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="205" data-sec="16" cx="851" cy="364" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="206" data-sec="16" cx="874" cy="371" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="230" data-sec="16" cx="374" cy="20" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="231" data-sec="16" cx="351" cy="13" r="14" fill="none" stroke="none" style="cursor:pointer"/>
-    <circle data-lot="232" data-sec="16" cx="327" cy="7" r="14" fill="none" stroke="none" style="cursor:pointer"/>`;
+/* Lot View — OCR 기반 정확 좌표 */
+const LV_IMG_W=1588, LV_IMG_H=1605;
+const LV_ROT=-15;          // CSS rotate 각도
+const LV_S15={"1":{x:1110,y:308},"2":{x:1470,y:1108},"3":{x:968,y:608},"4":{x:1325,y:1492},"5":{x:1323,y:1476},"6":{x:1322,y:1459},"7":{x:1320,y:1443},"8":{x:1310,y:1131},"9":{x:1296,y:716},"10":{x:1253,y:658},"11":{x:1224,y:620},"12":{x:1196,y:581},"13":{x:1164,y:538},"14":{x:1132,y:494},"15":{x:1103,y:456},"16":{x:1060,y:398},"17":{x:1058,y:426},"18":{x:1058,y:453},"19":{x:1056,y:480},"20":{x:1200,y:1352},"21":{x:1172,y:1409},"22":{x:1148,y:1460},"23":{x:1150,y:1187},"24":{x:1084,y:832},"25":{x:1017,y:478},"26":{x:1018,y:451},"27":{x:1020,y:424},"28":{x:1022,y:397},"29":{x:1424,y:1021},"30":{x:1424,y:992},"31":{x:1424,y:965},"32":{x:1424,y:937},"33":{x:1424,y:910},"34":{x:1425,y:881},"35":{x:1425,y:855},"36":{x:1427,y:828},"37":{x:1336,y:854},"38":{x:1427,y:774},"39":{x:1426,y:746},"40":{x:1428,y:720},"41":{x:1153,y:817},"42":{x:844,y:926},"43":{x:909,y:911},"44":{x:982,y:894},"45":{x:1054,y:877},"46":{x:1151,y:855},"47":{x:1248,y:833},"48":{x:1313,y:818},"49":{x:1386,y:801},"50":{x:1386,y:828},"51":{x:1386,y:852},"52":{x:1386,y:882},"53":{x:1385,y:914},"54":{x:1384,y:944},"55":{x:1384,y:964},"56":{x:1384,y:991},"57":{x:1360,y:904},"58":{x:1338,y:826},"59":{x:1343,y:878},"60":{x:1351,y:956},"61":{x:1359,y:1033},"62":{x:1364,y:1092},"63":{x:1370,y:1143},"64":{x:1375,y:1195},"65":{x:1380,y:1247},"66":{x:1380,y:1273},"67":{x:1380,y:1302},"68":{x:1380,y:1324},"69":{x:1380,y:1356},"70":{x:1281,y:990},"71":{x:1207,y:716},"72":{x:884,y:392},"73":{x:883,y:419},"74":{x:882,y:446},"75":{x:880,y:476},"76":{x:879,y:502},"77":{x:878,y:529},"78":{x:877,y:556},"79":{x:878,y:557},"80":{x:879,y:557},"81":{x:880,y:558},"82":{x:881,y:558},"83":{x:869,y:586},"84":{x:856,y:615},"85":{x:847,y:634},"86":{x:833,y:666},"87":{x:834,y:640},"88":{x:836,y:603},"89":{x:837,y:580},"90":{x:838,y:552},"91":{x:838,y:525},"92":{x:840,y:498},"93":{x:842,y:470},"94":{x:842,y:444},"95":{x:844,y:416},"96":{x:932,y:502},"97":{x:1020,y:587},"98":{x:1107,y:673},"99":{x:1206,y:769},"100":{x:1256,y:942},"101":{x:1307,y:1115},"102":{x:1341,y:1230},"103":{x:1344,y:1215},"104":{x:1375,y:1268},"105":{x:1371,y:1226},"106":{x:1366,y:1174},"107":{x:1361,y:1122},"108":{x:1355,y:1064},"109":{x:1347,y:986},"110":{x:1339,y:909},"111":{x:1339,y:833},"112":{x:1361,y:911},"113":{x:1365,y:951},"114":{x:1356,y:920},"115":{x:1356,y:899},"116":{x:1357,y:869},"117":{x:1357,y:842},"118":{x:1357,y:817},"119":{x:1357,y:798},"120":{x:1355,y:778},"121":{x:1333,y:846},"122":{x:1313,y:905},"123":{x:1284,y:995},"124":{x:1254,y:1085},"125":{x:1232,y:1152},"126":{x:1210,y:1220},"127":{x:1190,y:1280},"128":{x:1168,y:1347},"129":{x:1148,y:1407},"130":{x:1149,y:1379},"131":{x:1125,y:1328},"132":{x:1103,y:1282},"133":{x:1081,y:1237},"134":{x:1059,y:1192},"135":{x:1038,y:1146},"136":{x:1013,y:1095},"137":{x:992,y:1050},"138":{x:970,y:1004},"139":{x:948,y:959},"140":{x:916,y:891},"141":{x:880,y:817},"142":{x:859,y:771},"143":{x:837,y:726},"144":{x:1000,y:933},"145":{x:1145,y:1116},"146":{x:1290,y:1300},"147":{x:1290,y:1300},"148":{x:1148,y:1460},"149":{x:1200,y:1352},"150":{x:1176,y:1325},"151":{x:1198,y:1238},"152":{x:1179,y:1270},"153":{x:1165,y:1202},"154":{x:1126,y:894},"155":{x:1069,y:582},"156":{x:1071,y:557},"157":{x:1073,y:530},"158":{x:1068,y:372},"159":{x:1068,y:372},"160":{x:1068,y:372},"161":{x:1068,y:372},"162":{x:1099,y:704},"163":{x:1100,y:684},"164":{x:1091,y:712},"165":{x:1076,y:775},"166":{x:1065,y:819},"167":{x:1052,y:873},"168":{x:1041,y:909},"169":{x:1042,y:883},"170":{x:1043,y:855},"171":{x:1043,y:826},"172":{x:1044,y:798},"173":{x:1046,y:768},"174":{x:1054,y:747},"175":{x:1094,y:751},"176":{x:1134,y:754},"177":{x:1178,y:758},"178":{x:1238,y:763},"179":{x:1297,y:769},"180":{x:1337,y:772},"181":{x:1320,y:760},"182":{x:1306,y:749},"183":{x:1291,y:738},"184":{x:1276,y:727},"185":{x:1262,y:716},"186":{x:1245,y:704},"187":{x:1230,y:728},"188":{x:1228,y:819},"189":{x:1227,y:880},"190":{x:1225,y:941},"191":{x:1224,y:1010},"192":{x:1222,y:1078},"193":{x:1221,y:1139},"194":{x:1218,y:1231},"195":{x:1216,y:1330},"196":{x:1060,y:1323},"197":{x:1060,y:1323},"198":{x:1095,y:1326},"199":{x:1117,y:1239},"200":{x:1139,y:1152},"201":{x:1163,y:1054},"202":{x:1184,y:967},"203":{x:1206,y:880},"204":{x:1206,y:908},"205":{x:1206,y:934},"206":{x:1204,y:960},"207":{x:1204,y:988},"208":{x:1204,y:1016},"209":{x:1204,y:1044},"210":{x:1189,y:1030},"211":{x:1174,y:1016},"212":{x:1159,y:1002},"213":{x:1144,y:987},"214":{x:1127,y:971},"215":{x:1114,y:959},"216":{x:1114,y:1041},"217":{x:1124,y:1091},"218":{x:1133,y:1135},"219":{x:1143,y:1185},"220":{x:1153,y:1235},"221":{x:1166,y:1301},"222":{x:1179,y:1368},"223":{x:1188,y:1412},"224":{x:1198,y:1462},"225":{x:1197,y:1490},"226":{x:1199,y:1421},"227":{x:1201,y:1338},"228":{x:1150,y:1242},"229":{x:1150,y:1242},"230":{x:1150,y:1242},"231":{x:1150,y:1242},"232":{x:1150,y:1242},"233":{x:1150,y:1242},"234":{x:1150,y:1242},"235":{x:1150,y:1242},"236":{x:1151,y:1210},"237":{x:1151,y:1187},"238":{x:1152,y:1160},"239":{x:1153,y:1129},"240":{x:1153,y:1104},"241":{x:1154,y:1075},"242":{x:1154,y:1047},"243":{x:1155,y:1018},"244":{x:1156,y:986},"245":{x:1156,y:960},"246":{x:1156,y:934},"247":{x:1156,y:907},"248":{x:1156,y:878},"249":{x:1156,y:850},"250":{x:1156,y:822},"251":{x:1156,y:796},"252":{x:1157,y:767},"253":{x:1157,y:741},"254":{x:1158,y:695},"255":{x:1158,y:650},"256":{x:1159,y:604},"257":{x:1156,y:617},"258":{x:1152,y:635},"259":{x:1148,y:653},"260":{x:1145,y:665},"261":{x:1143,y:677},"262":{x:1140,y:691},"263":{x:1136,y:704},"264":{x:1134,y:716},"265":{x:1130,y:734},"266":{x:1125,y:753},"267":{x:1122,y:770},"268":{x:1119,y:783},"269":{x:1116,y:795},"270":{x:1116,y:822},"271":{x:1116,y:860},"272":{x:1115,y:918},"273":{x:1114,y:975},"274":{x:1114,y:1018},"275":{x:1113,y:1061},"276":{x:1112,y:1100},"277":{x:1112,y:1143},"278":{x:1111,y:1181},"279":{x:1111,y:1215},"280":{x:1110,y:1258},"281":{x:1110,y:1296},"282":{x:1157,y:768},"283":{x:1112,y:1186},"284":{x:1158,y:713},"285":{x:1112,y:1240},"286":{x:1113,y:1104},"287":{x:1112,y:1214},"288":{x:1110,y:1323},"289":{x:1110,y:1350},"290":{x:1109,y:1378},"291":{x:1107,y:1406},"292":{x:1108,y:1434},"293":{x:1109,y:1452},"294":{x:1060,y:1423},"295":{x:1058,y:1404},"296":{x:1058,y:1378},"297":{x:1059,y:1349},"298":{x:1060,y:1323},"299":{x:1060,y:1296},"300":{x:1068,y:1229},"301":{x:1074,y:1173},"302":{x:1062,y:1212},"303":{x:1061,y:1184},"304":{x:1061,y:1158},"305":{x:1061,y:1132},"306":{x:1062,y:1105},"307":{x:1062,y:1076},"308":{x:1064,y:1040},"309":{x:1064,y:1013},"310":{x:1062,y:986},"311":{x:1058,y:965},"312":{x:1053,y:936},"313":{x:1048,y:908},"314":{x:1044,y:889},"315":{x:1040,y:868},"316":{x:1037,y:849},"317":{x:1033,y:830},"318":{x:1030,y:811},"319":{x:1026,y:792},"320":{x:1068,y:712},"321":{x:1069,y:683},"322":{x:1070,y:654},"323":{x:1070,y:634},"324":{x:1050,y:658},"325":{x:1028,y:686},"326":{x:1028,y:711},"327":{x:1028,y:732},"328":{x:1028,y:765},"329":{x:1027,y:795},"330":{x:1027,y:820},"331":{x:1027,y:848},"332":{x:1026,y:874},"333":{x:1026,y:902},"334":{x:1026,y:929},"335":{x:1024,y:958},"336":{x:1024,y:984},"337":{x:1023,y:1012},"338":{x:1022,y:1038},"339":{x:1022,y:1073},"340":{x:1024,y:1101},"341":{x:1022,y:1128},"342":{x:1022,y:1152},"343":{x:1021,y:1182},"344":{x:1021,y:1210},"345":{x:1021,y:1237},"346":{x:1020,y:1264},"347":{x:1020,y:1291},"348":{x:1020,y:1322},"349":{x:1019,y:1349},"350":{x:1019,y:1376},"351":{x:1019,y:1397},"352":{x:996,y:1373},"353":{x:970,y:1347},"354":{x:970,y:1321},"355":{x:970,y:1294},"356":{x:970,y:1266},"357":{x:970,y:1239},"358":{x:970,y:1212},"359":{x:970,y:1184},"360":{x:970,y:1156},"361":{x:971,y:1119},"362":{x:972,y:1082},"363":{x:972,y:1058},"364":{x:973,y:1030},"365":{x:973,y:1005},"366":{x:974,y:981},"367":{x:974,y:956},"368":{x:975,y:931},"369":{x:976,y:902},"370":{x:961,y:909},"371":{x:946,y:917},"372":{x:936,y:922},"373":{x:924,y:945},"374":{x:924,y:953},"375":{x:926,y:937},"376":{x:927,y:923},"377":{x:929,y:903},"378":{x:932,y:880},"379":{x:933,y:861},"380":{x:935,y:846},"381":{x:935,y:872},"382":{x:934,y:902},"383":{x:934,y:930},"384":{x:952,y:1112},"385":{x:970,y:1294},"386":{x:933,y:1010},"387":{x:933,y:1041},"388":{x:932,y:1069},"389":{x:932,y:1100},"390":{x:931,y:1127},"391":{x:931,y:1151},"392":{x:930,y:1182},"393":{x:930,y:1210},"394":{x:930,y:1155},"395":{x:930,y:1265},"396":{x:930,y:1294},"397":{x:928,y:1320},"398":{x:930,y:1340},"399":{x:921,y:1303},"400":{x:914,y:1279},"401":{x:907,y:1252},"402":{x:901,y:1227},"403":{x:895,y:1203},"404":{x:888,y:1178},"405":{x:882,y:1154},"406":{x:882,y:1126},"407":{x:882,y:1100},"408":{x:882,y:1062},"409":{x:882,y:1037},"410":{x:887,y:1023},"411":{x:892,y:1008},"412":{x:898,y:992},"413":{x:903,y:978},"414":{x:907,y:964},"415":{x:899,y:973},"416":{x:893,y:980},"417":{x:887,y:986},"418":{x:883,y:991},"419":{x:877,y:997},"420":{x:873,y:1003},"421":{x:865,y:1011},"422":{x:858,y:1019},"423":{x:853,y:1025},"424":{x:848,y:1031},"425":{x:843,y:1036},"426":{x:842,y:1071},"427":{x:841,y:1100},"428":{x:843,y:1126},"429":{x:842,y:1156},"430":{x:841,y:1182},"431":{x:841,y:1182},"432":{x:840,y:1262},"433":{x:840,y:1262},"434":{x:840,y:1262},"435":{x:840,y:1262},"436":{x:840,y:1262},"437":{x:840,y:1262},"438":{x:840,y:1262},"439":{x:840,y:1262},"440":{x:882,y:1037},"441":{x:882,y:1037},"442":{x:882,y:1037},"443":{x:882,y:1037},"444":{x:882,y:1037},"445":{x:935,y:846},"446":{x:935,y:846},"447":{x:935,y:846},"448":{x:840,y:1262},"449":{x:840,y:1262},"450":{x:840,y:1262},"451":{x:840,y:1262},"452":{x:840,y:1262},"453":{x:840,y:1262},"454":{x:840,y:1262},"455":{x:840,y:1262},"456":{x:882,y:1037},"457":{x:882,y:1037},"458":{x:935,y:846},"459":{x:843,y:1036},"460":{x:843,y:1036},"461":{x:843,y:1036},"462":{x:843,y:1036},"463":{x:843,y:1036},"464":{x:843,y:1036},"465":{x:843,y:1036},"466":{x:843,y:1036}};
+const LV_S16={"2":{x:192,y:155},"3":{x:648,y:149},"9":{x:786,y:630},"12":{x:799,y:388},"16":{x:502,y:171},"18":{x:632,y:177},"19":{x:398,y:596},"22":{x:178,y:239},"27":{x:148,y:308},"34":{x:274,y:614},"44":{x:503,y:124},"77":{x:692,y:796},"86":{x:833,y:666},"88":{x:836,y:603},"90":{x:838,y:552},"113":{x:798,y:415},"116":{x:794,y:496},"117":{x:792,y:522},"118":{x:791,y:550},"122":{x:786,y:664},"123":{x:784,y:692},"127":{x:772,y:798},"130":{x:744,y:802},"132":{x:744,y:744},"133":{x:744,y:717},"134":{x:746,y:690},"135":{x:748,y:662},"136":{x:750,y:636},"137":{x:748,y:602},"138":{x:750,y:576},"143":{x:756,y:440},"144":{x:758,y:414},"145":{x:758,y:386},"148":{x:764,y:297},"150":{x:766,y:244},"157":{x:718,y:241},"158":{x:717,y:269},"159":{x:716,y:296},"162":{x:711,y:384},"164":{x:710,y:438},"168":{x:704,y:547},"169":{x:702,y:574},"172":{x:698,y:660},"173":{x:697,y:687},"174":{x:696,y:715},"175":{x:695,y:741},"184":{x:648,y:848},"185":{x:650,y:821},"186":{x:651,y:794},"189":{x:656,y:712},"190":{x:658,y:685},"192":{x:660,y:633},"193":{x:660,y:597},"194":{x:660,y:573},"198":{x:666,y:464},"199":{x:666,y:436},"202":{x:673,y:356},"204":{x:674,y:294},"205":{x:676,y:266},"206":{x:676,y:240},"208":{x:675,y:186},"212":{x:630,y:211},"213":{x:628,y:239},"214":{x:626,y:265},"219":{x:620,y:406},"220":{x:619,y:434},"226":{x:612,y:598},"227":{x:612,y:632},"228":{x:612,y:656},"229":{x:610,y:684},"230":{x:608,y:712},"231":{x:606,y:739},"232":{x:606,y:766},"233":{x:605,y:792},"234":{x:604,y:820},"235":{x:603,y:846},"236":{x:600,y:871},"244":{x:563,y:908},"247":{x:566,y:818},"248":{x:568,y:791},"249":{x:569,y:764},"250":{x:570,y:738},"251":{x:571,y:710},"274":{x:543,y:208},"275":{x:541,y:234},"276":{x:540,y:260},"277":{x:538,y:288},"280":{x:534,y:376},"282":{x:532,y:430},"283":{x:532,y:458},"284":{x:530,y:484},"285":{x:530,y:511},"287":{x:525,y:566},"289":{x:522,y:628},"290":{x:522,y:654},"291":{x:521,y:682},"292":{x:520,y:708},"293":{x:520,y:736},"294":{x:520,y:762},"295":{x:517,y:790},"296":{x:516,y:818},"298":{x:516,y:867},"306":{x:475,y:814},"307":{x:478,y:786},"308":{x:478,y:760},"310":{x:480,y:707},"312":{x:483,y:652},"313":{x:484,y:626},"319":{x:490,y:456},"322":{x:494,y:374},"323":{x:496,y:349},"324":{x:497,y:312},"325":{x:497,y:287},"326":{x:500,y:260},"327":{x:500,y:233},"328":{x:502,y:206},"329":{x:505,y:182},"334":{x:456,y:230},"335":{x:456,y:257},"336":{x:454,y:284},"338":{x:448,y:348},"339":{x:450,y:372},"340":{x:448,y:398},"342":{x:446,y:454},"343":{x:445,y:481},"346":{x:441,y:563},"349":{x:434,y:648},"350":{x:431,y:675},"351":{x:430,y:702},"353":{x:970,y:1347},"354":{x:970,y:1321},"356":{x:970,y:1266},"357":{x:970,y:1239},"358":{x:971,y:1210},"359":{x:970,y:1184},"362":{x:394,y:672},"363":{x:395,y:647},"366":{x:399,y:562},"368":{x:401,y:506},"369":{x:402,y:480},"370":{x:404,y:454},"371":{x:404,y:426},"372":{x:406,y:398},"373":{x:408,y:372},"376":{x:411,y:284},"377":{x:412,y:257},"378":{x:414,y:229},"379":{x:418,y:203},"383":{x:365,y:228},"384":{x:364,y:254},"385":{x:362,y:281},"386":{x:932,y:1073},"387":{x:357,y:344},"388":{x:358,y:369},"389":{x:356,y:396},"390":{x:356,y:423},"391":{x:354,y:452},"392":{x:354,y:478},"393":{x:354,y:506},"394":{x:352,y:533},"395":{x:930,y:1265},"396":{x:930,y:1294},"397":{x:348,y:620},"398":{x:350,y:645},"399":{x:886,y:1311},"400":{x:338,y:702},"403":{x:308,y:642},"405":{x:882,y:1154},"406":{x:310,y:558},"407":{x:310,y:531},"408":{x:883,y:1072},"409":{x:313,y:476},"410":{x:314,y:450},"412":{x:316,y:396},"413":{x:320,y:368},"416":{x:322,y:280},"417":{x:324,y:253},"420":{x:278,y:220},"421":{x:277,y:252},"422":{x:276,y:278},"423":{x:274,y:306},"424":{x:271,y:340},"425":{x:270,y:366},"426":{x:842,y:1071},"427":{x:268,y:420},"428":{x:267,y:448},"429":{x:268,y:472},"430":{x:841,y:1182},"431":{x:265,y:529},"433":{x:264,y:580},"437":{x:789,y:1180},"438":{x:790,y:1152},"439":{x:790,y:1124},"445":{x:240,y:250},"446":{x:241,y:224},"450":{x:791,y:1098},"452":{x:750,y:1070},"465":{x:657,y:1094}};
+const LV_SVG=`<circle data-lot="1" data-sec="15" cx="1110" cy="308" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="2" data-sec="15" cx="1470" cy="1108" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="3" data-sec="15" cx="968" cy="608" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="4" data-sec="15" cx="1325" cy="1492" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="5" data-sec="15" cx="1323" cy="1476" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="6" data-sec="15" cx="1322" cy="1459" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="7" data-sec="15" cx="1320" cy="1443" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="8" data-sec="15" cx="1310" cy="1131" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="9" data-sec="15" cx="1296" cy="716" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="10" data-sec="15" cx="1253" cy="658" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="11" data-sec="15" cx="1224" cy="620" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="12" data-sec="15" cx="1196" cy="581" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="13" data-sec="15" cx="1164" cy="538" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="14" data-sec="15" cx="1132" cy="494" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="15" data-sec="15" cx="1103" cy="456" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="16" data-sec="15" cx="1060" cy="398" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="17" data-sec="15" cx="1058" cy="426" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="18" data-sec="15" cx="1058" cy="453" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="19" data-sec="15" cx="1056" cy="480" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="20" data-sec="15" cx="1200" cy="1352" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="21" data-sec="15" cx="1172" cy="1409" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="22" data-sec="15" cx="1148" cy="1460" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="23" data-sec="15" cx="1150" cy="1187" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="24" data-sec="15" cx="1084" cy="832" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="25" data-sec="15" cx="1017" cy="478" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="26" data-sec="15" cx="1018" cy="451" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="27" data-sec="15" cx="1020" cy="424" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="28" data-sec="15" cx="1022" cy="397" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="29" data-sec="15" cx="1424" cy="1021" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="30" data-sec="15" cx="1424" cy="992" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="31" data-sec="15" cx="1424" cy="965" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="32" data-sec="15" cx="1424" cy="937" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="33" data-sec="15" cx="1424" cy="910" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="34" data-sec="15" cx="1425" cy="881" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="35" data-sec="15" cx="1425" cy="855" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="36" data-sec="15" cx="1427" cy="828" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="37" data-sec="15" cx="1336" cy="854" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="38" data-sec="15" cx="1427" cy="774" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="39" data-sec="15" cx="1426" cy="746" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="40" data-sec="15" cx="1428" cy="720" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="41" data-sec="15" cx="1153" cy="817" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="42" data-sec="15" cx="844" cy="926" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="43" data-sec="15" cx="909" cy="911" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="44" data-sec="15" cx="982" cy="894" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="45" data-sec="15" cx="1054" cy="877" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="46" data-sec="15" cx="1151" cy="855" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="47" data-sec="15" cx="1248" cy="833" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="48" data-sec="15" cx="1313" cy="818" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="49" data-sec="15" cx="1386" cy="801" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="50" data-sec="15" cx="1386" cy="828" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="51" data-sec="15" cx="1386" cy="852" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="52" data-sec="15" cx="1386" cy="882" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="53" data-sec="15" cx="1385" cy="914" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="54" data-sec="15" cx="1384" cy="944" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="55" data-sec="15" cx="1384" cy="964" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="56" data-sec="15" cx="1384" cy="991" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="57" data-sec="15" cx="1360" cy="904" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="58" data-sec="15" cx="1338" cy="826" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="59" data-sec="15" cx="1343" cy="878" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="60" data-sec="15" cx="1351" cy="956" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="61" data-sec="15" cx="1359" cy="1033" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="62" data-sec="15" cx="1364" cy="1092" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="63" data-sec="15" cx="1370" cy="1143" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="64" data-sec="15" cx="1375" cy="1195" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="65" data-sec="15" cx="1380" cy="1247" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="66" data-sec="15" cx="1380" cy="1273" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="67" data-sec="15" cx="1380" cy="1302" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="68" data-sec="15" cx="1380" cy="1324" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="69" data-sec="15" cx="1380" cy="1356" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="70" data-sec="15" cx="1281" cy="990" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="71" data-sec="15" cx="1207" cy="716" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="72" data-sec="15" cx="884" cy="392" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="73" data-sec="15" cx="883" cy="419" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="74" data-sec="15" cx="882" cy="446" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="75" data-sec="15" cx="880" cy="476" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="76" data-sec="15" cx="879" cy="502" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="77" data-sec="15" cx="878" cy="529" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="78" data-sec="15" cx="877" cy="556" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="79" data-sec="15" cx="878" cy="557" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="80" data-sec="15" cx="879" cy="557" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="81" data-sec="15" cx="880" cy="558" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="82" data-sec="15" cx="881" cy="558" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="83" data-sec="15" cx="869" cy="586" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="84" data-sec="15" cx="856" cy="615" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="85" data-sec="15" cx="847" cy="634" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="86" data-sec="15" cx="833" cy="666" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="87" data-sec="15" cx="834" cy="640" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="88" data-sec="15" cx="836" cy="603" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="89" data-sec="15" cx="837" cy="580" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="90" data-sec="15" cx="838" cy="552" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="91" data-sec="15" cx="838" cy="525" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="92" data-sec="15" cx="840" cy="498" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="93" data-sec="15" cx="842" cy="470" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="94" data-sec="15" cx="842" cy="444" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="95" data-sec="15" cx="844" cy="416" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="96" data-sec="15" cx="932" cy="502" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="97" data-sec="15" cx="1020" cy="587" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="98" data-sec="15" cx="1107" cy="673" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="99" data-sec="15" cx="1206" cy="769" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="100" data-sec="15" cx="1256" cy="942" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="101" data-sec="15" cx="1307" cy="1115" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="102" data-sec="15" cx="1341" cy="1230" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="103" data-sec="15" cx="1344" cy="1215" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="104" data-sec="15" cx="1375" cy="1268" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="105" data-sec="15" cx="1371" cy="1226" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="106" data-sec="15" cx="1366" cy="1174" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="107" data-sec="15" cx="1361" cy="1122" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="108" data-sec="15" cx="1355" cy="1064" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="109" data-sec="15" cx="1347" cy="986" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="110" data-sec="15" cx="1339" cy="909" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="111" data-sec="15" cx="1339" cy="833" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="112" data-sec="15" cx="1361" cy="911" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="113" data-sec="15" cx="1365" cy="951" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="114" data-sec="15" cx="1356" cy="920" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="115" data-sec="15" cx="1356" cy="899" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="116" data-sec="15" cx="1357" cy="869" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="117" data-sec="15" cx="1357" cy="842" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="118" data-sec="15" cx="1357" cy="817" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="119" data-sec="15" cx="1357" cy="798" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="120" data-sec="15" cx="1355" cy="778" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="121" data-sec="15" cx="1333" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="122" data-sec="15" cx="1313" cy="905" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="123" data-sec="15" cx="1284" cy="995" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="124" data-sec="15" cx="1254" cy="1085" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="125" data-sec="15" cx="1232" cy="1152" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="126" data-sec="15" cx="1210" cy="1220" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="127" data-sec="15" cx="1190" cy="1280" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="128" data-sec="15" cx="1168" cy="1347" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="129" data-sec="15" cx="1148" cy="1407" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="130" data-sec="15" cx="1149" cy="1379" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="131" data-sec="15" cx="1125" cy="1328" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="132" data-sec="15" cx="1103" cy="1282" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="133" data-sec="15" cx="1081" cy="1237" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="134" data-sec="15" cx="1059" cy="1192" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="135" data-sec="15" cx="1038" cy="1146" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="136" data-sec="15" cx="1013" cy="1095" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="137" data-sec="15" cx="992" cy="1050" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="138" data-sec="15" cx="970" cy="1004" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="139" data-sec="15" cx="948" cy="959" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="140" data-sec="15" cx="916" cy="891" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="141" data-sec="15" cx="880" cy="817" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="142" data-sec="15" cx="859" cy="771" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="143" data-sec="15" cx="837" cy="726" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="144" data-sec="15" cx="1000" cy="933" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="145" data-sec="15" cx="1145" cy="1116" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="146" data-sec="15" cx="1290" cy="1300" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="147" data-sec="15" cx="1290" cy="1300" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="148" data-sec="15" cx="1148" cy="1460" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="149" data-sec="15" cx="1200" cy="1352" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="150" data-sec="15" cx="1176" cy="1325" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="151" data-sec="15" cx="1198" cy="1238" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="152" data-sec="15" cx="1179" cy="1270" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="153" data-sec="15" cx="1165" cy="1202" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="154" data-sec="15" cx="1126" cy="894" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="155" data-sec="15" cx="1069" cy="582" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="156" data-sec="15" cx="1071" cy="557" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="157" data-sec="15" cx="1073" cy="530" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="158" data-sec="15" cx="1068" cy="372" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="159" data-sec="15" cx="1068" cy="372" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="160" data-sec="15" cx="1068" cy="372" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="161" data-sec="15" cx="1068" cy="372" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="162" data-sec="15" cx="1099" cy="704" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="163" data-sec="15" cx="1100" cy="684" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="164" data-sec="15" cx="1091" cy="712" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="165" data-sec="15" cx="1076" cy="775" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="166" data-sec="15" cx="1065" cy="819" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="167" data-sec="15" cx="1052" cy="873" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="168" data-sec="15" cx="1041" cy="909" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="169" data-sec="15" cx="1042" cy="883" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="170" data-sec="15" cx="1043" cy="855" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="171" data-sec="15" cx="1043" cy="826" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="172" data-sec="15" cx="1044" cy="798" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="173" data-sec="15" cx="1046" cy="768" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="174" data-sec="15" cx="1054" cy="747" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="175" data-sec="15" cx="1094" cy="751" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="176" data-sec="15" cx="1134" cy="754" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="177" data-sec="15" cx="1178" cy="758" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="178" data-sec="15" cx="1238" cy="763" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="179" data-sec="15" cx="1297" cy="769" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="180" data-sec="15" cx="1337" cy="772" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="181" data-sec="15" cx="1320" cy="760" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="182" data-sec="15" cx="1306" cy="749" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="183" data-sec="15" cx="1291" cy="738" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="184" data-sec="15" cx="1276" cy="727" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="185" data-sec="15" cx="1262" cy="716" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="186" data-sec="15" cx="1245" cy="704" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="187" data-sec="15" cx="1230" cy="728" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="188" data-sec="15" cx="1228" cy="819" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="189" data-sec="15" cx="1227" cy="880" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="190" data-sec="15" cx="1225" cy="941" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="191" data-sec="15" cx="1224" cy="1010" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="192" data-sec="15" cx="1222" cy="1078" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="193" data-sec="15" cx="1221" cy="1139" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="194" data-sec="15" cx="1218" cy="1231" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="195" data-sec="15" cx="1216" cy="1330" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="196" data-sec="15" cx="1060" cy="1323" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="197" data-sec="15" cx="1060" cy="1323" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="198" data-sec="15" cx="1095" cy="1326" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="199" data-sec="15" cx="1117" cy="1239" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="200" data-sec="15" cx="1139" cy="1152" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="201" data-sec="15" cx="1163" cy="1054" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="202" data-sec="15" cx="1184" cy="967" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="203" data-sec="15" cx="1206" cy="880" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="204" data-sec="15" cx="1206" cy="908" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="205" data-sec="15" cx="1206" cy="934" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="206" data-sec="15" cx="1204" cy="960" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="207" data-sec="15" cx="1204" cy="988" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="208" data-sec="15" cx="1204" cy="1016" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="209" data-sec="15" cx="1204" cy="1044" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="210" data-sec="15" cx="1189" cy="1030" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="211" data-sec="15" cx="1174" cy="1016" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="212" data-sec="15" cx="1159" cy="1002" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="213" data-sec="15" cx="1144" cy="987" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="214" data-sec="15" cx="1127" cy="971" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="215" data-sec="15" cx="1114" cy="959" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="216" data-sec="15" cx="1114" cy="1041" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="217" data-sec="15" cx="1124" cy="1091" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="218" data-sec="15" cx="1133" cy="1135" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="219" data-sec="15" cx="1143" cy="1185" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="220" data-sec="15" cx="1153" cy="1235" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="221" data-sec="15" cx="1166" cy="1301" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="222" data-sec="15" cx="1179" cy="1368" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="223" data-sec="15" cx="1188" cy="1412" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="224" data-sec="15" cx="1198" cy="1462" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="225" data-sec="15" cx="1197" cy="1490" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="226" data-sec="15" cx="1199" cy="1421" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="227" data-sec="15" cx="1201" cy="1338" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="228" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="229" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="230" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="231" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="232" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="233" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="234" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="235" data-sec="15" cx="1150" cy="1242" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="236" data-sec="15" cx="1151" cy="1210" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="237" data-sec="15" cx="1151" cy="1187" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="238" data-sec="15" cx="1152" cy="1160" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="239" data-sec="15" cx="1153" cy="1129" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="240" data-sec="15" cx="1153" cy="1104" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="241" data-sec="15" cx="1154" cy="1075" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="242" data-sec="15" cx="1154" cy="1047" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="243" data-sec="15" cx="1155" cy="1018" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="244" data-sec="15" cx="1156" cy="986" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="245" data-sec="15" cx="1156" cy="960" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="246" data-sec="15" cx="1156" cy="934" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="247" data-sec="15" cx="1156" cy="907" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="248" data-sec="15" cx="1156" cy="878" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="249" data-sec="15" cx="1156" cy="850" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="250" data-sec="15" cx="1156" cy="822" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="251" data-sec="15" cx="1156" cy="796" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="252" data-sec="15" cx="1157" cy="767" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="253" data-sec="15" cx="1157" cy="741" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="254" data-sec="15" cx="1158" cy="695" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="255" data-sec="15" cx="1158" cy="650" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="256" data-sec="15" cx="1159" cy="604" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="257" data-sec="15" cx="1156" cy="617" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="258" data-sec="15" cx="1152" cy="635" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="259" data-sec="15" cx="1148" cy="653" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="260" data-sec="15" cx="1145" cy="665" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="261" data-sec="15" cx="1143" cy="677" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="262" data-sec="15" cx="1140" cy="691" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="263" data-sec="15" cx="1136" cy="704" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="264" data-sec="15" cx="1134" cy="716" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="265" data-sec="15" cx="1130" cy="734" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="266" data-sec="15" cx="1125" cy="753" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="267" data-sec="15" cx="1122" cy="770" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="268" data-sec="15" cx="1119" cy="783" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="269" data-sec="15" cx="1116" cy="795" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="270" data-sec="15" cx="1116" cy="822" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="271" data-sec="15" cx="1116" cy="860" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="272" data-sec="15" cx="1115" cy="918" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="273" data-sec="15" cx="1114" cy="975" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="274" data-sec="15" cx="1114" cy="1018" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="275" data-sec="15" cx="1113" cy="1061" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="276" data-sec="15" cx="1112" cy="1100" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="277" data-sec="15" cx="1112" cy="1143" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="278" data-sec="15" cx="1111" cy="1181" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="279" data-sec="15" cx="1111" cy="1215" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="280" data-sec="15" cx="1110" cy="1258" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="281" data-sec="15" cx="1110" cy="1296" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="282" data-sec="15" cx="1157" cy="768" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="283" data-sec="15" cx="1112" cy="1186" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="284" data-sec="15" cx="1158" cy="713" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="285" data-sec="15" cx="1112" cy="1240" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="286" data-sec="15" cx="1113" cy="1104" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="287" data-sec="15" cx="1112" cy="1214" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="288" data-sec="15" cx="1110" cy="1323" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="289" data-sec="15" cx="1110" cy="1350" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="290" data-sec="15" cx="1109" cy="1378" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="291" data-sec="15" cx="1107" cy="1406" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="292" data-sec="15" cx="1108" cy="1434" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="293" data-sec="15" cx="1109" cy="1452" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="294" data-sec="15" cx="1060" cy="1423" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="295" data-sec="15" cx="1058" cy="1404" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="296" data-sec="15" cx="1058" cy="1378" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="297" data-sec="15" cx="1059" cy="1349" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="298" data-sec="15" cx="1060" cy="1323" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="299" data-sec="15" cx="1060" cy="1296" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="300" data-sec="15" cx="1068" cy="1229" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="301" data-sec="15" cx="1074" cy="1173" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="302" data-sec="15" cx="1062" cy="1212" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="303" data-sec="15" cx="1061" cy="1184" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="304" data-sec="15" cx="1061" cy="1158" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="305" data-sec="15" cx="1061" cy="1132" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="306" data-sec="15" cx="1062" cy="1105" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="307" data-sec="15" cx="1062" cy="1076" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="308" data-sec="15" cx="1064" cy="1040" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="309" data-sec="15" cx="1064" cy="1013" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="310" data-sec="15" cx="1062" cy="986" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="311" data-sec="15" cx="1058" cy="965" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="312" data-sec="15" cx="1053" cy="936" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="313" data-sec="15" cx="1048" cy="908" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="314" data-sec="15" cx="1044" cy="889" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="315" data-sec="15" cx="1040" cy="868" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="316" data-sec="15" cx="1037" cy="849" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="317" data-sec="15" cx="1033" cy="830" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="318" data-sec="15" cx="1030" cy="811" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="319" data-sec="15" cx="1026" cy="792" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="320" data-sec="15" cx="1068" cy="712" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="321" data-sec="15" cx="1069" cy="683" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="322" data-sec="15" cx="1070" cy="654" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="323" data-sec="15" cx="1070" cy="634" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="324" data-sec="15" cx="1050" cy="658" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="325" data-sec="15" cx="1028" cy="686" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="326" data-sec="15" cx="1028" cy="711" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="327" data-sec="15" cx="1028" cy="732" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="328" data-sec="15" cx="1028" cy="765" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="329" data-sec="15" cx="1027" cy="795" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="330" data-sec="15" cx="1027" cy="820" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="331" data-sec="15" cx="1027" cy="848" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="332" data-sec="15" cx="1026" cy="874" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="333" data-sec="15" cx="1026" cy="902" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="334" data-sec="15" cx="1026" cy="929" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="335" data-sec="15" cx="1024" cy="958" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="336" data-sec="15" cx="1024" cy="984" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="337" data-sec="15" cx="1023" cy="1012" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="338" data-sec="15" cx="1022" cy="1038" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="339" data-sec="15" cx="1022" cy="1073" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="340" data-sec="15" cx="1024" cy="1101" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="341" data-sec="15" cx="1022" cy="1128" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="342" data-sec="15" cx="1022" cy="1152" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="343" data-sec="15" cx="1021" cy="1182" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="344" data-sec="15" cx="1021" cy="1210" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="345" data-sec="15" cx="1021" cy="1237" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="346" data-sec="15" cx="1020" cy="1264" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="347" data-sec="15" cx="1020" cy="1291" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="348" data-sec="15" cx="1020" cy="1322" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="349" data-sec="15" cx="1019" cy="1349" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="350" data-sec="15" cx="1019" cy="1376" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="351" data-sec="15" cx="1019" cy="1397" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="352" data-sec="15" cx="996" cy="1373" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="353" data-sec="15" cx="970" cy="1347" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="354" data-sec="15" cx="970" cy="1321" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="355" data-sec="15" cx="970" cy="1294" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="356" data-sec="15" cx="970" cy="1266" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="357" data-sec="15" cx="970" cy="1239" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="358" data-sec="15" cx="970" cy="1212" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="359" data-sec="15" cx="970" cy="1184" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="360" data-sec="15" cx="970" cy="1156" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="361" data-sec="15" cx="971" cy="1119" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="362" data-sec="15" cx="972" cy="1082" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="363" data-sec="15" cx="972" cy="1058" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="364" data-sec="15" cx="973" cy="1030" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="365" data-sec="15" cx="973" cy="1005" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="366" data-sec="15" cx="974" cy="981" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="367" data-sec="15" cx="974" cy="956" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="368" data-sec="15" cx="975" cy="931" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="369" data-sec="15" cx="976" cy="902" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="370" data-sec="15" cx="961" cy="909" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="371" data-sec="15" cx="946" cy="917" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="372" data-sec="15" cx="936" cy="922" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="373" data-sec="15" cx="924" cy="945" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="374" data-sec="15" cx="924" cy="953" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="375" data-sec="15" cx="926" cy="937" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="376" data-sec="15" cx="927" cy="923" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="377" data-sec="15" cx="929" cy="903" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="378" data-sec="15" cx="932" cy="880" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="379" data-sec="15" cx="933" cy="861" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="380" data-sec="15" cx="935" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="381" data-sec="15" cx="935" cy="872" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="382" data-sec="15" cx="934" cy="902" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="383" data-sec="15" cx="934" cy="930" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="384" data-sec="15" cx="952" cy="1112" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="385" data-sec="15" cx="970" cy="1294" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="386" data-sec="15" cx="933" cy="1010" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="387" data-sec="15" cx="933" cy="1041" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="388" data-sec="15" cx="932" cy="1069" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="389" data-sec="15" cx="932" cy="1100" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="390" data-sec="15" cx="931" cy="1127" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="391" data-sec="15" cx="931" cy="1151" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="392" data-sec="15" cx="930" cy="1182" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="393" data-sec="15" cx="930" cy="1210" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="394" data-sec="15" cx="930" cy="1155" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="395" data-sec="15" cx="930" cy="1265" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="396" data-sec="15" cx="930" cy="1294" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="397" data-sec="15" cx="928" cy="1320" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="398" data-sec="15" cx="930" cy="1340" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="399" data-sec="15" cx="921" cy="1303" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="400" data-sec="15" cx="914" cy="1279" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="401" data-sec="15" cx="907" cy="1252" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="402" data-sec="15" cx="901" cy="1227" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="403" data-sec="15" cx="895" cy="1203" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="404" data-sec="15" cx="888" cy="1178" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="405" data-sec="15" cx="882" cy="1154" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="406" data-sec="15" cx="882" cy="1126" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="407" data-sec="15" cx="882" cy="1100" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="408" data-sec="15" cx="882" cy="1062" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="409" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="410" data-sec="15" cx="887" cy="1023" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="411" data-sec="15" cx="892" cy="1008" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="412" data-sec="15" cx="898" cy="992" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="413" data-sec="15" cx="903" cy="978" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="414" data-sec="15" cx="907" cy="964" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="415" data-sec="15" cx="899" cy="973" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="416" data-sec="15" cx="893" cy="980" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="417" data-sec="15" cx="887" cy="986" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="418" data-sec="15" cx="883" cy="991" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="419" data-sec="15" cx="877" cy="997" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="420" data-sec="15" cx="873" cy="1003" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="421" data-sec="15" cx="865" cy="1011" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="422" data-sec="15" cx="858" cy="1019" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="423" data-sec="15" cx="853" cy="1025" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="424" data-sec="15" cx="848" cy="1031" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="425" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="426" data-sec="15" cx="842" cy="1071" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="427" data-sec="15" cx="841" cy="1100" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="428" data-sec="15" cx="843" cy="1126" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="429" data-sec="15" cx="842" cy="1156" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="430" data-sec="15" cx="841" cy="1182" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="431" data-sec="15" cx="841" cy="1182" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="432" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="433" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="434" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="435" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="436" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="437" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="438" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="439" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="440" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="441" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="442" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="443" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="444" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="445" data-sec="15" cx="935" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="446" data-sec="15" cx="935" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="447" data-sec="15" cx="935" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="448" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="449" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="450" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="451" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="452" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="453" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="454" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="455" data-sec="15" cx="840" cy="1262" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="456" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="457" data-sec="15" cx="882" cy="1037" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="458" data-sec="15" cx="935" cy="846" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="459" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="460" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="461" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="462" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="463" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="464" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="465" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="466" data-sec="15" cx="843" cy="1036" r="15" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="2" data-sec="16" cx="192" cy="155" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="3" data-sec="16" cx="648" cy="149" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="9" data-sec="16" cx="786" cy="630" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="12" data-sec="16" cx="799" cy="388" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="16" data-sec="16" cx="502" cy="171" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="18" data-sec="16" cx="632" cy="177" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="19" data-sec="16" cx="398" cy="596" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="22" data-sec="16" cx="178" cy="239" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="27" data-sec="16" cx="148" cy="308" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="34" data-sec="16" cx="274" cy="614" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="44" data-sec="16" cx="503" cy="124" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="77" data-sec="16" cx="692" cy="796" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="86" data-sec="16" cx="833" cy="666" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="88" data-sec="16" cx="836" cy="603" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="90" data-sec="16" cx="838" cy="552" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="113" data-sec="16" cx="798" cy="415" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="116" data-sec="16" cx="794" cy="496" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="117" data-sec="16" cx="792" cy="522" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="118" data-sec="16" cx="791" cy="550" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="122" data-sec="16" cx="786" cy="664" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="123" data-sec="16" cx="784" cy="692" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="127" data-sec="16" cx="772" cy="798" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="130" data-sec="16" cx="744" cy="802" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="132" data-sec="16" cx="744" cy="744" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="133" data-sec="16" cx="744" cy="717" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="134" data-sec="16" cx="746" cy="690" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="135" data-sec="16" cx="748" cy="662" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="136" data-sec="16" cx="750" cy="636" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="137" data-sec="16" cx="748" cy="602" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="138" data-sec="16" cx="750" cy="576" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="143" data-sec="16" cx="756" cy="440" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="144" data-sec="16" cx="758" cy="414" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="145" data-sec="16" cx="758" cy="386" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="148" data-sec="16" cx="764" cy="297" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="150" data-sec="16" cx="766" cy="244" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="157" data-sec="16" cx="718" cy="241" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="158" data-sec="16" cx="717" cy="269" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="159" data-sec="16" cx="716" cy="296" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="162" data-sec="16" cx="711" cy="384" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="164" data-sec="16" cx="710" cy="438" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="168" data-sec="16" cx="704" cy="547" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="169" data-sec="16" cx="702" cy="574" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="172" data-sec="16" cx="698" cy="660" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="173" data-sec="16" cx="697" cy="687" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="174" data-sec="16" cx="696" cy="715" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="175" data-sec="16" cx="695" cy="741" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="184" data-sec="16" cx="648" cy="848" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="185" data-sec="16" cx="650" cy="821" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="186" data-sec="16" cx="651" cy="794" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="189" data-sec="16" cx="656" cy="712" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="190" data-sec="16" cx="658" cy="685" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="192" data-sec="16" cx="660" cy="633" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="193" data-sec="16" cx="660" cy="597" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="194" data-sec="16" cx="660" cy="573" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="198" data-sec="16" cx="666" cy="464" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="199" data-sec="16" cx="666" cy="436" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="202" data-sec="16" cx="673" cy="356" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="204" data-sec="16" cx="674" cy="294" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="205" data-sec="16" cx="676" cy="266" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="206" data-sec="16" cx="676" cy="240" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="208" data-sec="16" cx="675" cy="186" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="212" data-sec="16" cx="630" cy="211" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="213" data-sec="16" cx="628" cy="239" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="214" data-sec="16" cx="626" cy="265" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="219" data-sec="16" cx="620" cy="406" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="220" data-sec="16" cx="619" cy="434" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="226" data-sec="16" cx="612" cy="598" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="227" data-sec="16" cx="612" cy="632" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="228" data-sec="16" cx="612" cy="656" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="229" data-sec="16" cx="610" cy="684" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="230" data-sec="16" cx="608" cy="712" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="231" data-sec="16" cx="606" cy="739" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="232" data-sec="16" cx="606" cy="766" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="233" data-sec="16" cx="605" cy="792" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="234" data-sec="16" cx="604" cy="820" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="235" data-sec="16" cx="603" cy="846" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="236" data-sec="16" cx="600" cy="871" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="244" data-sec="16" cx="563" cy="908" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="247" data-sec="16" cx="566" cy="818" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="248" data-sec="16" cx="568" cy="791" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="249" data-sec="16" cx="569" cy="764" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="250" data-sec="16" cx="570" cy="738" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="251" data-sec="16" cx="571" cy="710" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="274" data-sec="16" cx="543" cy="208" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="275" data-sec="16" cx="541" cy="234" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="276" data-sec="16" cx="540" cy="260" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="277" data-sec="16" cx="538" cy="288" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="280" data-sec="16" cx="534" cy="376" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="282" data-sec="16" cx="532" cy="430" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="283" data-sec="16" cx="532" cy="458" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="284" data-sec="16" cx="530" cy="484" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="285" data-sec="16" cx="530" cy="511" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="287" data-sec="16" cx="525" cy="566" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="289" data-sec="16" cx="522" cy="628" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="290" data-sec="16" cx="522" cy="654" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="291" data-sec="16" cx="521" cy="682" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="292" data-sec="16" cx="520" cy="708" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="293" data-sec="16" cx="520" cy="736" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="294" data-sec="16" cx="520" cy="762" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="295" data-sec="16" cx="517" cy="790" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="296" data-sec="16" cx="516" cy="818" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="298" data-sec="16" cx="516" cy="867" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="306" data-sec="16" cx="475" cy="814" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="307" data-sec="16" cx="478" cy="786" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="308" data-sec="16" cx="478" cy="760" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="310" data-sec="16" cx="480" cy="707" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="312" data-sec="16" cx="483" cy="652" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="313" data-sec="16" cx="484" cy="626" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="319" data-sec="16" cx="490" cy="456" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="322" data-sec="16" cx="494" cy="374" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="323" data-sec="16" cx="496" cy="349" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="324" data-sec="16" cx="497" cy="312" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="325" data-sec="16" cx="497" cy="287" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="326" data-sec="16" cx="500" cy="260" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="327" data-sec="16" cx="500" cy="233" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="328" data-sec="16" cx="502" cy="206" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="329" data-sec="16" cx="505" cy="182" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="334" data-sec="16" cx="456" cy="230" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="335" data-sec="16" cx="456" cy="257" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="336" data-sec="16" cx="454" cy="284" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="338" data-sec="16" cx="448" cy="348" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="339" data-sec="16" cx="450" cy="372" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="340" data-sec="16" cx="448" cy="398" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="342" data-sec="16" cx="446" cy="454" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="343" data-sec="16" cx="445" cy="481" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="346" data-sec="16" cx="441" cy="563" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="349" data-sec="16" cx="434" cy="648" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="350" data-sec="16" cx="431" cy="675" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="351" data-sec="16" cx="430" cy="702" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="353" data-sec="16" cx="970" cy="1347" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="354" data-sec="16" cx="970" cy="1321" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="356" data-sec="16" cx="970" cy="1266" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="357" data-sec="16" cx="970" cy="1239" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="358" data-sec="16" cx="971" cy="1210" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="359" data-sec="16" cx="970" cy="1184" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="362" data-sec="16" cx="394" cy="672" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="363" data-sec="16" cx="395" cy="647" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="366" data-sec="16" cx="399" cy="562" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="368" data-sec="16" cx="401" cy="506" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="369" data-sec="16" cx="402" cy="480" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="370" data-sec="16" cx="404" cy="454" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="371" data-sec="16" cx="404" cy="426" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="372" data-sec="16" cx="406" cy="398" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="373" data-sec="16" cx="408" cy="372" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="376" data-sec="16" cx="411" cy="284" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="377" data-sec="16" cx="412" cy="257" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="378" data-sec="16" cx="414" cy="229" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="379" data-sec="16" cx="418" cy="203" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="383" data-sec="16" cx="365" cy="228" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="384" data-sec="16" cx="364" cy="254" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="385" data-sec="16" cx="362" cy="281" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="386" data-sec="16" cx="932" cy="1073" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="387" data-sec="16" cx="357" cy="344" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="388" data-sec="16" cx="358" cy="369" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="389" data-sec="16" cx="356" cy="396" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="390" data-sec="16" cx="356" cy="423" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="391" data-sec="16" cx="354" cy="452" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="392" data-sec="16" cx="354" cy="478" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="393" data-sec="16" cx="354" cy="506" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="394" data-sec="16" cx="352" cy="533" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="395" data-sec="16" cx="930" cy="1265" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="396" data-sec="16" cx="930" cy="1294" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="397" data-sec="16" cx="348" cy="620" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="398" data-sec="16" cx="350" cy="645" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="399" data-sec="16" cx="886" cy="1311" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="400" data-sec="16" cx="338" cy="702" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="403" data-sec="16" cx="308" cy="642" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="405" data-sec="16" cx="882" cy="1154" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="406" data-sec="16" cx="310" cy="558" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="407" data-sec="16" cx="310" cy="531" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="408" data-sec="16" cx="883" cy="1072" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="409" data-sec="16" cx="313" cy="476" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="410" data-sec="16" cx="314" cy="450" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="412" data-sec="16" cx="316" cy="396" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="413" data-sec="16" cx="320" cy="368" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="416" data-sec="16" cx="322" cy="280" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="417" data-sec="16" cx="324" cy="253" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="420" data-sec="16" cx="278" cy="220" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="421" data-sec="16" cx="277" cy="252" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="422" data-sec="16" cx="276" cy="278" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="423" data-sec="16" cx="274" cy="306" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="424" data-sec="16" cx="271" cy="340" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="425" data-sec="16" cx="270" cy="366" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="426" data-sec="16" cx="842" cy="1071" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="427" data-sec="16" cx="268" cy="420" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="428" data-sec="16" cx="267" cy="448" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="429" data-sec="16" cx="268" cy="472" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="430" data-sec="16" cx="841" cy="1182" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="431" data-sec="16" cx="265" cy="529" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="433" data-sec="16" cx="264" cy="580" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="437" data-sec="16" cx="789" cy="1180" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="438" data-sec="16" cx="790" cy="1152" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="439" data-sec="16" cx="790" cy="1124" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="445" data-sec="16" cx="240" cy="250" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="446" data-sec="16" cx="241" cy="224" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="450" data-sec="16" cx="791" cy="1098" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="452" data-sec="16" cx="750" cy="1070" r="17" fill="none" stroke="none" style="cursor:pointer"/>
+    <circle data-lot="465" data-sec="16" cx="657" cy="1094" r="17" fill="none" stroke="none" style="cursor:pointer"/>`;
 
-var _lvScale=1,_lvBlinkTimer=null,_lvActiveLot=null;
+var _lvScale=1, _lvBT=null, _lvAL=null;
 
 function openLotView(sec,lotNo){
-  if(_lvBlinkTimer){clearInterval(_lvBlinkTimer);_lvBlinkTimer=null;}
-  _lvActiveLot=null; _lvHide();
-  var title=(sec&&lotNo)?('Section '+sec+' - Lot '+lotNo):'Section 15 & 16';
-  document.getElementById('lotViewTitle').textContent=title;
+  if(_lvBT){clearInterval(_lvBT);_lvBT=null;}
+  _lvAL=null; _lvHide();
+  document.getElementById('lotViewTitle').textContent=(sec&&lotNo)?('Section '+sec+' - Lot '+lotNo):'Section 15 & 16';
   document.getElementById('lotViewOverlay').style.display='flex';
+
+  // SVG 초기화
   var g=document.getElementById('lv-lots');
   if(!g.dataset.ok){
     g.innerHTML=LV_SVG; g.dataset.ok='1';
@@ -529,6 +687,8 @@ function openLotView(sec,lotNo){
       if(typeof showToast==='function')showToast('Section '+el.dataset.sec+' Lot '+el.dataset.lot);
     });
   }
+
+  // 드래그
   var body=document.getElementById('lotViewBody');
   if(body._lv)body._lv();
   var drag=false,sx,sy,sl,st;
@@ -538,14 +698,32 @@ function openLotView(sec,lotNo){
   body.addEventListener('mousedown',d);body.addEventListener('mouseleave',u);
   body.addEventListener('mouseup',u);body.addEventListener('mousemove',m);
   body._lv=function(){body.removeEventListener('mousedown',d);body.removeEventListener('mouseleave',u);body.removeEventListener('mouseup',u);body.removeEventListener('mousemove',m);};
+
+  // 터치
   body.addEventListener('touchstart',function(e){if(e.touches.length===1){sx=e.touches[0].clientX;sy=e.touches[0].clientY;sl=body.scrollLeft;st=body.scrollTop;}},{passive:true});
   body.addEventListener('touchmove',function(e){if(e.touches.length===1){body.scrollLeft=sl-(e.touches[0].clientX-sx);body.scrollTop=st-(e.touches[0].clientY-sy);}},{passive:true});
+
+  // 마우스 휠 줌
+  if(!body._wheelOk){
+    body._wheelOk=true;
+    body.addEventListener('wheel',function(e){
+      e.preventDefault();
+      var f=e.deltaY<0?1.15:0.87;
+      var rect=body.getBoundingClientRect();
+      var mx=(e.clientX-rect.left+body.scrollLeft)/_lvScale;
+      var my=(e.clientY-rect.top +body.scrollTop )/_lvScale;
+      _lvApply(Math.min(Math.max(_lvScale*f,0.3),8));
+      body.scrollLeft=mx*_lvScale-(e.clientX-rect.left);
+      body.scrollTop =my*_lvScale-(e.clientY-rect.top);
+    },{passive:false});
+  }
+
   setTimeout(function(){
     var bw=body.clientWidth,bh=body.clientHeight;
-    _lvScale=Math.min(bw/LV_IMG_W,bh/LV_IMG_H,1);
-    _lvApply(_lvScale);
+    var fit=Math.min(bw/LV_IMG_W,bh/LV_IMG_H,1);
+    _lvApply(fit);
     body.scrollLeft=Math.max(0,(LV_IMG_W*_lvScale-bw)/2);
-    body.scrollTop=Math.max(0,(LV_IMG_H*_lvScale-bh)/2);
+    body.scrollTop =Math.max(0,(LV_IMG_H*_lvScale-bh)/2);
     if(sec&&lotNo){_lvShow(sec,lotNo);_lvScroll(sec,lotNo);}
   },150);
 }
@@ -553,61 +731,56 @@ function openLotView(sec,lotNo){
 function _lvApply(s){
   _lvScale=s;
   var inner=document.getElementById('lotViewInner');
-  inner.style.transformOrigin='top left';inner.style.transform='scale('+s+')';
+  inner.style.transformOrigin='top left';
+  inner.style.transform='scale('+s+')';
   document.getElementById('lotViewImg').style.width=LV_IMG_W+'px';
   document.getElementById('lotViewImg').style.height=LV_IMG_H+'px';
   var svg=document.getElementById('lv-overlay');
   if(svg){svg.setAttribute('width',LV_IMG_W);svg.setAttribute('height',LV_IMG_H);}
 }
 
-function _lvGetPos(sec,lot){
-  return String(sec)==='15'?LV_S15[String(lot)]:LV_S16[String(lot)];
-}
+function _lvP(sec,lot){return String(sec)==='15'?LV_S15[String(lot)]:LV_S16[String(lot)];}
 
 function _lvShow(sec,lot){
-  _lvHide();
-  _lvActiveLot={sec:String(sec),lot:String(lot)};
-  var p=_lvGetPos(sec,lot);
-  if(!p)return;
+  _lvHide(); _lvAL={sec:String(sec),lot:String(lot)};
+  var p=_lvP(sec,lot); if(!p)return;
   var hi=document.getElementById('lv-hi-circ');
-  hi.setAttribute('cx',p.x);hi.setAttribute('cy',p.y);hi.setAttribute('r','20');
+  hi.setAttribute('cx',p.x);hi.setAttribute('cy',p.y);hi.setAttribute('r','22');
   hi.style.display='';
-  var vis=true;hi.style.opacity='1';
-  if(_lvBlinkTimer)clearInterval(_lvBlinkTimer);
-  _lvBlinkTimer=setInterval(function(){vis=!vis;hi.style.opacity=vis?'1':'0';},500);
+  var vis=true; hi.style.opacity='1';
+  _lvBT=setInterval(function(){vis=!vis;hi.style.opacity=vis?'1':'0';},500);
 }
 
 function _lvHide(){
-  if(_lvBlinkTimer){clearInterval(_lvBlinkTimer);_lvBlinkTimer=null;}
+  if(_lvBT){clearInterval(_lvBT);_lvBT=null;}
   var hi=document.getElementById('lv-hi-circ');
   if(hi){hi.style.display='none';hi.style.opacity='1';}
   var hr=document.getElementById('lv-hi-rect');
   if(hr)hr.style.display='none';
-  _lvActiveLot=null;
+  _lvAL=null;
 }
 
 function _lvScroll(sec,lot){
-  var p=_lvGetPos(sec,lot);
-  if(!p)return;
+  var p=_lvP(sec,lot); if(!p)return;
   var body=document.getElementById('lotViewBody'),s=_lvScale;
   body.scrollLeft=Math.max(0,p.x*s-body.clientWidth/2);
-  body.scrollTop=Math.max(0,p.y*s-body.clientHeight/2);
+  body.scrollTop =Math.max(0,p.y*s-body.clientHeight/2);
 }
 
 function closeLotView(){document.getElementById('lotViewOverlay').style.display='none';_lvHide();}
 
 function lvZoom(f){
   var body=document.getElementById('lotViewBody'),px,py;
-  if(_lvActiveLot){var p=_lvGetPos(_lvActiveLot.sec,_lvActiveLot.lot);if(p){px=p.x;py=p.y;}}
+  if(_lvAL){var p=_lvP(_lvAL.sec,_lvAL.lot);if(p){px=p.x;py=p.y;}}
   if(!px){px=(body.scrollLeft+body.clientWidth/2)/_lvScale;py=(body.scrollTop+body.clientHeight/2)/_lvScale;}
-  _lvApply(Math.min(Math.max(_lvScale*f,0.3),6));
+  _lvApply(Math.min(Math.max(_lvScale*f,0.3),8));
   body.scrollLeft=px*_lvScale-body.clientWidth/2;
-  body.scrollTop=py*_lvScale-body.clientHeight/2;
+  body.scrollTop =py*_lvScale-body.clientHeight/2;
 }
 
 function lvReset(){
   var body=document.getElementById('lotViewBody');
   _lvApply(Math.min(body.clientWidth/LV_IMG_W,body.clientHeight/LV_IMG_H,1));
   body.scrollLeft=Math.max(0,(LV_IMG_W*_lvScale-body.clientWidth)/2);
-  body.scrollTop=Math.max(0,(LV_IMG_H*_lvScale-body.clientHeight)/2);
+  body.scrollTop =Math.max(0,(LV_IMG_H*_lvScale-body.clientHeight)/2);
 }
