@@ -148,11 +148,11 @@
     <div id="lotViewBody" style="flex:1;overflow:auto;cursor:grab;position:relative;min-height:0;background:#f5f3ee;">
       <div id="lotViewInner" style="position:relative;display:inline-block;transform-origin:top left;">
         <img id="lotViewImg" src="lot_map_clean.jpg" alt="Lot Map"
-          style="display:block;width:1600px;height:1304px;user-select:none;-webkit-user-drag:none;">
-        <!-- SVG 오버레이: 각 lot box 클릭 영역 + 하이라이트 -->
+          style="display:block;width:1588px;height:1605px;transform:rotate(-15deg);transform-origin:center center;user-select:none;-webkit-user-drag:none;">
+        <!-- SVG 오버레이: 이미지와 동일 크기/회전 -->
         <svg id="lv-overlay" xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1600 1304"
-          style="position:absolute;top:0;left:0;width:1600px;height:1304px;pointer-events:none;">
+          viewBox="0 0 1588 1605"
+          style="position:absolute;top:0;left:0;width:1588px;height:1605px;transform:rotate(-15deg);transform-origin:center center;pointer-events:none;">
           <g id="lv-lots" style="pointer-events:all;cursor:crosshair;"></g>
           <rect id="lv-hi-rect" x="0" y="0" width="0" height="0"
             fill="rgba(230,57,70,0.2)" stroke="#e63946" stroke-width="3" rx="2"
