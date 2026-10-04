@@ -145,10 +145,11 @@
         <button class="close-x" onclick="closeLotView()">&times;</button>
       </div>
     </div>
-    <div id="lotViewBody" style="flex:1;overflow:auto;cursor:grab;position:relative;min-height:0;background:#f5f3ee;">
-      <div id="lotViewInner" style="position:relative;display:inline-block;transform-origin:top left;">
+    <div id="lotViewBody" style="flex:1;overflow:auto;cursor:grab;position:relative;min-height:0;background:#fff;">
+      <div id="lotViewInner" style="position:relative;display:inline-block;transform-origin:top left;background:#fff;">
         <!-- rotate(-15deg) 를 wrapper에 적용 → 이미지+SVG 동시 회전, 좌표계 일치 -->
-        <div id="lotViewRotate" style="display:inline-block;transform:rotate(-15deg);transform-origin:center center;">
+        <!-- padding으로 회전 여백 확보하여 모서리 흰 삼각형 제거 -->
+        <div id="lotViewRotate" style="display:inline-block;transform:rotate(-15deg);transform-origin:center center;background:#fff;padding:200px;margin:-200px;">
         <img id="lotViewImg" src="lot_map_clean.jpg" alt="Lot Map"
           style="display:block;width:1588px;height:1605px;user-select:none;-webkit-user-drag:none;">
         <!-- SVG 오버레이: 이미지와 동일 크기 -->
