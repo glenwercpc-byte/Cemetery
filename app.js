@@ -249,7 +249,7 @@ function renderList() {
       html += `
       <div class="lot-group">
         <div class="lot-header">
-          <span class="lot-num" onclick="openLotView('${STATE.section}','${lotNo}')" style="cursor:pointer;text-decoration:underline dotted;" title="구역도에서 보기">Lot ${lotNo}</span>
+          <span class="lot-num" onclick="openLotView('${STATE.section}','${lotNo}')" style="cursor:pointer;text-decoration:underline dotted;" title="Lot View에서 위치 확인">Lot ${lotNo}</span>
           <span class="lot-summary">
             <span class="ls-used">사용중/예약 ${usedCount}</span>
             <span class="ls-avail">Available ${availCount}</span>
@@ -604,7 +604,7 @@ function renderMap() {
 
     // 첫 번째 블록만 lot 라벨 표시
     if (!isContinuation) {
-      html += `<div class="imap-lot-label" onclick="event.stopPropagation();openLotView('${STATE.section}','${lotDef.lot}')" style="cursor:pointer;" title="구역도에서 보기">${lotDef.lot}</div>`;
+      html += `<div class="imap-lot-label" onclick="event.stopPropagation();openLotView('${STATE.section}','${lotDef.lot}')" style="cursor:pointer;" title="Lot View에서 위치 확인">${lotDef.lot}</div>`;
     }
 
     html += `<div class="imap-cells" style="grid-template-columns:repeat(${nCols},1fr);">`;
