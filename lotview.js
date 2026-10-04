@@ -765,7 +765,7 @@ function _lvShow(sec,lot){
   _lvHide(); _lvAL={sec:String(sec),lot:String(lot)};
   var p=_lvP(sec,lot); if(!p)return;
   var hi=document.getElementById('lv-hi-circ');
-  hi.setAttribute('cx',p.x);hi.setAttribute('cy',p.y);hi.setAttribute('r','22');
+  hi.setAttribute('cx',p.x);hi.setAttribute('cy',p.y);hi.setAttribute('r','44');
   hi.style.display='';
   var vis=true; hi.style.opacity='1';
   _lvBT=setInterval(function(){vis=!vis;hi.style.opacity=vis?'1':'0';},500);
